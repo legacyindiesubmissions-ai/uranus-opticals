@@ -917,52 +917,73 @@ footer .footer-joke {
       Pick your glass. Pick your sensor. We handle the rest behind the curtain and only show you the outcome.
       </p>
 
-    <div class="config-demo">
-      <div class="config-step">
-        <div class="step-num">1</div>
-        <div>
-          <strong>You pick the glass:</strong> Uranus Penetrator 9000 (90mm Triplet APO)
+    <div class="config-shell">
+      <div class="controls">
+        <div class="controls-title">
+          <h3>Penetrator Control</h3>
+          <span>Gear Select</span>
         </div>
-      </div>
-      <div class="config-step">
-        <div class="step-num">2</div>
-        <div>
-          <strong>You pick the sensor:</strong> Uranus DeepGaze 571 (Sony IMX571, M42 female)
-        </div>
-      </div>
-      <div class="config-step">
-        <div class="step-num">3</div>
-        <div>
-          <strong>Compatibility checked:</strong> We verify the match before anything gets awkward.
-        </div>
-      </div>
-      <div class="config-step">
-        <div class="step-num">4</div>
-        <div>
-          <strong>Setup adjusted:</strong> The rig is configured for a clean fit.
-        </div>
-      </div>
-      <div class="config-step">
-        <div class="step-num">5</div>
-        <div>
-          <strong>Backfocus verified:</strong> Locked and ready. <span style="color:var(--green)">&#10003;</span>
-        </div>
-      </div>
-      <div class="config-step">
-        <div class="step-num">6</div>
-        <div>
-          <strong>Payload check:</strong> Within range for the chosen mount.
-        </div>
+        <label>
+          <span>Telescope (The Glass)</span>
+          <select id="scopeSelect">
+            <option value="sv503">Svbony SV503 80ED (Beginner Probe)</option>
+            <option value="fra300">Askar FRA300 Pro (The Deep Explorer)</option>
+            <option value="kuo80" selected>Uranus Signature 80 APO (Full Insertion)</option>
+          </select>
+        </label>
+        <label>
+          <span>Camera (The Sensor)</span>
+          <select id="cameraSelect">
+            <option value="sv605">Svbony SV605CC (Cooled Deep Sensor)</option>
+            <option value="poseidon">Player One Poseidon-C (Direct Core)</option>
+            <option value="touptek533" selected>Uranus Signature 533C (High Penetration)</option>
+          </select>
+        </label>
+        <label>
+          <span>Mount (The Handler)</span>
+          <select id="mountSelect">
+            <option value="gti">Sky-Watcher GTi (Light duty)</option>
+            <option value="am3n">ZWO AM3N (Medium load)</option>
+            <option value="juwei17" selected>Uranus Harmonic 17 (Heavy handler)</option>
+          </select>
+        </label>
       </div>
 
-      <div class="config-warning" id="weightWarning" style="display:none">
-        &#9888; MOUNT BLOCKED: The chosen mount cannot support this setup. We have stopped the purchase before it gets expensive and embarrassing.
-      </div>
+      <div class="results" aria-live="polite">
+        <div class="result-header">
+          <h3>Compatibility Readout</h3>
+          <div class="result-status ok" id="resultStatus">Cleared for Contact</div>
+        </div>
 
-      <div class="config-success" id="weightSuccess">
-        &#10003; Setup cleared. <strong>You are cleared for deep penetration of Uranus.</strong>
-        <div style="margin-top:12px;font-size:0.78rem;color:var(--muted);font-style:italic">
-          Just a very serious telescope with a deeply unserious name.
+        <div class="optical-train">
+          <div class="train-node">
+            <span>Telescope</span>
+            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
+          </div>
+          <div class="train-connector" id="adapterResult">Direct thread</div>
+          <div class="train-node">
+            <span>Camera</span>
+            <b id="cameraName">Uranus Signature 533C (High Penetration)</b>
+          </div>
+        </div>
+
+        <div class="readout-grid">
+          <div class="readout">
+            <span>Required spacer stack</span>
+            <strong id="spacerResult">37.5mm</strong>
+          </div>
+          <div class="readout">
+            <span>Payload Weight</span>
+            <strong id="payloadResult">4.5kg / 10kg</strong>
+          </div>
+          <div class="readout">
+            <span>Cart Addition</span>
+            <strong id="cartResult">2 spacer rings</strong>
+          </div>
+        </div>
+
+        <div class="result-note" id="resultNote">
+          This rig clears the 55mm backfocus target and stays inside the practical imaging payload rule.
         </div>
       </div>
     </div>
@@ -1051,7 +1072,7 @@ footer .footer-joke {
         <div class="pricing-name">Mission Control</div>
         <div class="pricing-feature">For people who want a second set of eyes on Uranus</div>
         <div class="pricing-price">$29.99<span>/mo</span></div>
-        <div class="pricing-month">Human review. No fake VIP nonsense.</div>
+        <div class="pricing-month">You are now a Uranus shareholder.</div>
         <ul class="pricing-features">
           <li>Everything in Deep Probe</li>
           <li>Priority Uranus consultation queue</li>
