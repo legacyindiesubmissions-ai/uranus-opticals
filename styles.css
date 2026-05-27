@@ -1109,3 +1109,230 @@ select:focus, input:focus {
     text-align: center;
   }
 }
+
+/* ── Deep Probe Simulation Overlay ── */
+.sim-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #05070a;
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: 'Space Grotesk', monospace;
+  overflow: hidden;
+}
+
+.sim-planet {
+  position: relative;
+  width: 300px; height: 300px;
+  margin-bottom: 40px;
+}
+
+.sim-planet-body {
+  position: absolute;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle at 30% 30%, #a0d0f0, #4a90e2, #1a2b3c);
+  border-radius: 50%;
+  top: 70px; left: 70px;
+  box-shadow:
+    inset -20px -20px 50px rgba(0,0,0,0.8),
+    0 0 40px rgba(160,208,240,0.3);
+  animation: planetPulse 4s infinite ease-in-out;
+}
+
+.sim-planet-ring {
+  position: absolute;
+  width: 280px; height: 20px;
+  border: 2px solid rgba(160,208,240,0.2);
+  border-radius: 50%;
+  top: 140px; left: 10px;
+  transform: rotate(85deg);
+  box-shadow: 0 0 15px rgba(160,208,240,0.1);
+}
+
+.sim-scanner {
+  position: absolute;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ice), transparent);
+  top: 50%; left: 0;
+  opacity: 0;
+  box-shadow: 0 0 20px var(--ice);
+}
+
+.sim-logs {
+  width: 80%; max-width: 500px;
+  text-align: left;
+  min-height: 120px;
+}
+
+.sim-log-header {
+  color: var(--ice);
+  margin-bottom: 10px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(160,208,240,0.2);
+  padding-bottom: 5px;
+}
+
+.sim-log-ticker {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-height: 90px;
+  overflow-y: hidden;
+}
+
+.sim-progress-bar {
+  width: 80%; max-width: 500px;
+  background: rgba(255,255,255,0.1);
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sim-progress-fill {
+  position: absolute; top: 0; left: 0;
+  width: 0%; height: 100%;
+  background: var(--ice);
+  transition: width 0.1s linear;
+}
+
+/* ── Paywall Modal ── */
+.paywall-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(5,7,10,0.95);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.paywall-card {
+  background: #111827;
+  width: 100%; max-width: 450px;
+  border: 1px solid var(--ice);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.paywall-badge {
+  color: var(--ice);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.paywall-title {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.paywall-desc {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.paywall-price-box {
+  background: rgba(0,0,0,0.3);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  margin-bottom: 24px;
+}
+
+.paywall-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.paywall-price-label {
+  font-size: 0.75rem;
+  color: var(--ice);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.paywall-features {
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-bottom: 32px;
+  padding-left: 20px;
+}
+
+.paywall-features li {
+  margin-bottom: 10px;
+}
+
+.paywall-credit {
+  font-weight: 700;
+  color: var(--ice);
+}
+
+.paywall-btn {
+  width: 100%;
+  background: var(--ice);
+  color: #05070a;
+  border: none;
+  padding: 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.paywall-btn:hover {
+  box-shadow: 0 0 30px rgba(160,208,240,0.4);
+  transform: translateY(-1px);
+}
+
+.paywall-close {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.paywall-close:hover { color: var(--ink); }
+
+/* ── Simulation Keyframes ── */
+@keyframes planetPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.03); filter: brightness(1.12); }
+}
+
+@keyframes scan {
+  0% { top: 10%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 90%; opacity: 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
