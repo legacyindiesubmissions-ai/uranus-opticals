@@ -38,11 +38,12 @@ async function fetchPrices() {
     const res = await fetch("/api/uranus/prices");
     if (res.ok) {
       dbPrices = await res.json();
-      updatePriceTags();
-      updateConfigurator();
     }
   } catch (e) {
     console.error("Failed to load live prices", e);
+  } finally {
+    updatePriceTags();
+    updateConfigurator();
   }
 }
 
@@ -304,4 +305,5 @@ function initNavHighlighting() {
 document.addEventListener("DOMContentLoaded", () => {
   initScrollAnimations();
   initNavHighlighting();
+  updateConfigurator();
 });
