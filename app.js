@@ -95,22 +95,39 @@ async function updateConfigurator() {
 
     // Flattener Rules
     if (item.id === 'flattener') {
-      if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for 80ED)'; }
-      else if (scopeId === 'none') { show = true; note = '(Optional)'; }
-      else { show = false; } // Completely hide for Petzval
+      if (scopeId === 'glancer') { 
+        show = true; forceCheck = true; note = '(Required for 80ED Doublet)'; 
+      }
+      else if (scopeId === 'none') { 
+        show = true; note = '(Optional)'; 
+      }
+      else { 
+        show = false; // Completely hide for Petzval (FRA300/FRA500)
+      }
     }
-    // Case Rules: glancer (80ED) and panoramic (80 APO) fit hard case, penetrator (FRA300) does not
+    // Case Rules: Glancer (470mm) and Panoramic (410mm) REQUIRE the 55cm Hard Case.
+    // Penetrator (303mm) fits it but it's overkill.
     else if (item.id === 'case') {
-      if (scopeId === 'penetrator') show = false;
+      show = true; // Hard case fits everything in our catalog
+      if (scopeId === 'penetrator') note = '(Optional - Padded Bag preferred)';
     }
-    // Bag Rules: penetrator and panoramic fit bag, glancer does not
+    // Bag Rules: ONLY fits the Penetrator (303mm). Glancer (470mm) and Panoramic (410mm) are too long.
     else if (item.id === 'bag') {
-      if (scopeId === 'glancer') show = false;
+      if (scopeId === 'penetrator' || scopeId === 'none') {
+        show = true;
+        note = scopeId === 'penetrator' ? '(Perfect fit for FRA300)' : '(Optional)';
+      } else {
+        show = false; // Hide for scopes > 400mm
+      }
     }
     // Spacer Rules
     else if (item.id === 'spacers') {
-      if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for 55mm Backfocus)'; }
-      else { show = true; note = '(Optional)'; }
+      if (scopeId !== 'none' && cameraId !== 'none') { 
+        show = true; forceCheck = true; note = '(Required for Backfocus)'; 
+      }
+      else { 
+        show = true; note = '(Optional)'; 
+      }
     }
 
     if (!show) {
