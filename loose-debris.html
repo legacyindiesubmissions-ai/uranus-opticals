@@ -684,322 +684,189 @@ footer .footer-joke {
   <div class="container">
     <div class="logo"><img src="assets/logo.png" alt="Uranus Opticals Logo" style="height: 38px;"> URANUS <span>OPTICALS</span></div>
     <ul class="nav-links">
-      <li><a href="#problem">The Hole</a></li>
+      <li><a href="index.html#problem">The Hole</a></li>
       <li><a href="loose-debris.html">Loose Debris</a></li>
-      <li><a href="#configurator">Penetrator&trade;</a></li>
+      <li><a href="index.html#configurator">Penetrator&trade;</a></li>
       <li><a href="community.html">Image Feed</a></li>
-      <li><a href="#pricing">Plans</a></li>
+      <li><a href="index.html#pricing">Plans</a></li>
     </ul>
-    <a href="#configurator" class="nav-cta">PROBE NOW</a>
+    <a href="index.html#configurator" class="nav-cta">PROBE NOW</a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+
+<!-- HERO FOR LOOSE DEBRIS -->
+<section class="hero" style="padding: 120px 0 40px;">
   <div class="container">
-    <div class="hero-badge">&#9798; EST. 2026 — FOREST CITY, IOWA</div>
-    <h1>We Put the <em>"Anus"</em><br>in Uranus.</h1>
+    <div class="hero-badge">&#9798; SCATTERED PARTS</div>
+    <h1>Loose <em>Debris</em></h1>
     <p class="hero-sub">
-      The world's first mathematically guaranteed "Peer Deeper Into Uranus" astrophotography configurator. 
-      We don't just sell telescopes. We sell certainty about what's happening back there.
+      Just looking for a spare probe, sensor, or a heavy-duty mount? You're in the right place.
     </p>
-    <div class="hero-ctas">
-      <a href="#configurator" class="btn btn-primary">START PROBING URANUS</a>
-      <a href="#products" class="btn btn-outline">BROWSE REAR-VIEW GEAR</a>
-    </div>
-    <p class="joke-counter" id="jokeCounter">Loading joke count...</p>
   </div>
 </section>
-
-<!-- CONFIGURATOR -->
-<section id="configurator">
+<!-- PRODUCTS -->
+<section id="products">
   <div class="container">
-    <div class="section-label">THE URANUS PENETRATOR&trade;</div>
-    <h2 class="section-title">We Do the Math So You Can Focus on Uranus.</h2>
-      <p class="section-sub">
-      Pick your glass. Pick your sensor. We handle the rest behind the curtain and only show you the outcome.
-      </p>
-
-    <div class="config-shell">
-      <div class="controls" id="builderControls">
-        <div class="controls-title">
-          <h3>Penetrator Control</h3>
-          <span>Gear Select</span>
-        </div>
-        <label>
-          <span>Telescope (The Glass)</span>
-          <select id="scopeSelect">
-            <option value="glancer">Svbony SV503 80ED (Beginner Probe)</option>
-            <option value="penetrator">Askar FRA300 Pro (The Deep Explorer)</option>
-            <option value="panoramic" selected>Uranus Signature 80 APO (Full Insertion)</option>
-          </select>
-        </label>
-        <label>
-          <span>Camera (The Sensor)</span>
-          <select id="cameraSelect">
-            <option value="snapshot533">Svbony SV605CC (Cooled Deep Sensor)</option>
-            <option value="deepgaze571">Player One Poseidon-C (Direct Core)</option>
-            <option value="omnivision455" selected>Uranus Signature 533C (High Penetration)</option>
-          </select>
-        </label>
-        <label>
-          <span>Mount (The Handler)</span>
-          <select id="mountSelect">
-            <option value="steadygaze">Sky-Watcher GTi (Light duty)</option>
-            <option value="am3">ZWO AM3N (Medium load)</option>
-            <option value="hm17" selected>Uranus Harmonic 17 (Heavy handler)</option>
-          </select>
-        </label>
-
-        <div class="controls-title" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
-          <h3>Field Gear</h3>
-          <span>Required &amp; Optional Add-ons</span>
-        </div>
-        
-        <div class="addon-grid" style="display: grid; gap: 12px; margin-top: 12px;">
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_flattener" class="addon-chk" value="acc_flattener" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Svbony 0.8x Field Flattener <br><small style="color: var(--muted); font-weight: 400;">(Required for 80ED)</small></span>
-            <span class="price-tag" id="price_flattener">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_spacers" class="addon-chk" value="acc_spacers" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">M42/M48 Spacer Kit <br><small style="color: var(--muted); font-weight: 400;">(Required for 55mm Backfocus)</small></span>
-            <span class="price-tag" id="price_spacers">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_guidescope" class="addon-chk" value="acc_guidescope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">30mm Guide Scope</span>
-            <span class="price-tag" id="price_guidescope">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_guidecam" class="addon-chk" value="acc_guidecam" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Ceres-M Guide Camera</span>
-            <span class="price-tag" id="price_guidecam">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_filter" class="addon-chk" value="acc_filter" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">2" Dual-Band Light Pollution Filter</span>
-            <span class="price-tag" id="price_filter">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_dewheater" class="addon-chk" value="acc_dewheater" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">USB Dew Heater Strip</span>
-            <span class="price-tag" id="price_dewheater">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_case" class="addon-chk" value="acc_case_hard" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Hard Case w/ Pluck Foam</span>
-            <span class="price-tag" id="price_case">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_bag" class="addon-chk" value="acc_bag_scope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Padded Telescope Bag</span>
-            <span class="price-tag" id="price_bag">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_power" class="addon-chk" value="acc_power" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">12V Portable Power Bank</span>
-            <span class="price-tag" id="price_power">...</span>
-          </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-            <input type="checkbox" id="chk_tripod" class="addon-chk" value="acc_tripod" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Carbon Fiber Tripod</span>
-            <span class="price-tag" id="price_tripod">...</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="results" aria-live="polite">
-        <div class="result-header">
-          <h3>Compatibility Readout</h3>
-          <div class="result-status ok" id="resultStatus">Cleared for Contact</div>
-        </div>
-
-        <div class="optical-train">
-          <div class="train-node">
-            <span>Telescope</span>
-            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
-          </div>
-          <div class="train-connector" id="adapterResult">Fit reviewed</div>
-          <div class="train-node">
-            <span>Camera</span>
-            <b id="cameraName">Uranus Signature 533C (High Penetration)</b>
-          </div>
-        </div>
-
-        <div class="readout-grid">
-          <div class="readout">
-            <span>Alignment status</span>
-            <strong id="spacerResult">Locked</strong>
-          </div>
-          <div class="readout">
-            <span>Mount status</span>
-            <strong id="payloadResult">Within range</strong>
-          </div>
-          <div class="readout">
-            <span>Setup status</span>
-            <strong id="cartResult">Ready</strong>
-          </div>
-        </div>
-
-        <div class="result-note" id="resultNote" style="margin-bottom: 24px;">
-          This rig passed the private compatibility checks. We show the verdict, not the recipe.
-        </div>
-
-        <div class="checkout-box" style="background: var(--deep); border: 2px solid var(--accent); padding: 24px; border-radius: 12px; text-align: center;">
-          <h3 style="font-size: 1rem; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em;">Total Rig Price</h3>
-          <div id="rigTotal" style="font-size: 3rem; font-weight: 900; color: var(--text); margin-bottom: 20px;">$0.00</div>
-          <button class="btn btn-primary" id="btnCheckoutRig" style="width: 100%; font-size: 1.1rem; padding: 18px;">SECURE YOUR RIG</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- THE PROBLEM — aka "THE HOLE" -->
-<section id="problem">
-  <div class="container">
-    <div class="section-label">THE HOLE IN THE MARKET</div>
-    <h2 class="section-title">Getting a Clear View of Uranus Shouldn't Be This Hard.</h2>
+    <div class="section-label">REAR-VIEW GEAR</div>
+    <h2 class="section-title">Professional-Grade Probes for Uranus.</h2>
     <p class="section-sub">
-      Every year, thousands of amateur astronomers drop $4,000 on gear, only to discover they can't 
-      actually get their equipment into Uranus. Thread mismatches, backfocus violations, payload disasters — 
-      amateur probing of Uranus is a logistical nightmare.
+      From casual peeks to deep penetration, our Signature Series hardware is sourced from the same 
+      factories as the big brands — but we slap our name on it and charge less, because everyone 
+      deserves affordable access to Uranus.
     </p>
 
-    <div class="problem-grid">
-      <div class="problem-item">
-        <div class="problem-icon">&#128301;</div>
-        <h3>The 0.5mm Problem</h3>
-        <p>You've got M48 on your telescope and M42 on your camera. That's like showing up to probe 
-        Uranus with the wrong adapter. Our Configurator automatically injects the correct step-down ring 
-        so your penetration of Uranus is always flush and secure.</p>
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-badge">ENTRY-LEVEL PEEK</div>
+        <div class="product-name">Uranus Glancer 80ED</div>
+        <div class="product-desc">For the curious observer who just wants a quick look at Uranus. 
+        FPL-53 doublet. Won't penetrate too deep, but you'll definitely see what's going on back there.</div>
+        <ul class="product-specs">
+          <li>Aperture: 80mm — enough to spot the rings</li>
+          <li>Backfocus: 55mm (strict, like our policy)</li>
+          <li>Thread: M48 male (uncircumcised)</li>
+          <li>Weight: 2.8kg — lightweight probe</li>
+        </ul>
+        <div class="product-price">$699 <s>$1,199</s></div>
+        <a href="#" onclick="checkoutHardware('glancer'); return false;" class="btn btn-outline" style="width:100%;text-align:center">THRUST INTO URANUS</a>
       </div>
-      <div class="problem-item">
-        <div class="problem-icon">&#9878;</div>
-        <h3>The "Oops, Too Heavy" Disaster</h3>
-        <p>You strapped a 5kg payload to a mount rated for 3kg. Now your Uranus probe is sagging and 
-        tracking accuracy is ruined. Mission Control flags weak support before your Uranus session collapses 
-        into an expensive little shame spiral.</p>
+
+      <div class="product-card featured">
+        <div class="product-badge">DEEP PENETRATION</div>
+        <div class="product-name">Uranus Penetrator 9000</div>
+        <div class="product-desc">Our flagship. When you're ready to really get in there. Triplet APO with 
+        FPL-53 glass. Penetrates deeper than any amateur has any business going.</div>
+        <ul class="product-specs">
+          <li>Aperture: 90mm — full penetration enabled</li>
+          <li>Backfocus: 55mm — we enforce it hard</li>
+          <li>Thread: M54 — girthier connection</li>
+          <li>Weight: 4.2kg — substantial probe</li>
+        </ul>
+        <div class="product-price">$1,299 <s>$2,499</s></div>
+        <a href="#" onclick="checkoutHardware('penetrator'); return false;" class="btn btn-primary" style="width:100%;text-align:center">GO DEEP</a>
       </div>
-      <div class="problem-item">
-        <div class="problem-icon">&#128301;</div>
-        <h3>The Backfocus Blunder</h3>
-        <p>That strict 55mm backfocus requirement isn't a suggestion — miss it and your image of Uranus 
-        is a fuzzy brown smear. Our logic engine enforces the math so every photon from Uranus lands 
-        exactly where it belongs.</p>
+
+      <div class="product-card">
+        <div class="product-badge">WIDE-ANGLE SWEEP</div>
+        <div class="product-name">Uranus Panoramic 60mm</div>
+        <div class="product-desc">For those who want the full picture of Uranus. Petzval design, flat 
+        field. When you need to see the entire gas giant in one glorious, unobstructed frame.</div>
+        <ul class="product-specs">
+          <li>Aperture: 60mm — nimble but effective</li>
+          <li>Backfocus: 55mm — no exceptions</li>
+          <li>Thread: M48 — standard connection</li>
+          <li>Weight: 1.9kg — quick-deploy probe</li>
+        </ul>
+        <div class="product-price">$549 <s>$899</s></div>
+        <a href="#" onclick="checkoutHardware('panoramic'); return false;" class="btn btn-outline" style="width:100%;text-align:center">SCOPE URANUS</a>
+      </div>
+    </div>
+
+    <!-- Cameras -->
+    <h3 style="margin-top: 60px; margin-bottom: 8px; font-size: 1.5rem; font-weight: 700;">Imaging Sensors for Uranus</h3>
+    <p style="color: var(--muted); margin-bottom: 32px;">Because your eyes can only see so much of Uranus. These cooled CMOS sensors capture every detail.</p>
+
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-badge">BEGINNER'S SENSOR</div>
+        <div class="product-name">Uranus Snapshot 533</div>
+        <div class="product-desc">Sony IMX533 sensor. Zero amp-glow. Captures the subtle gas bands of Uranus 
+        with shocking clarity. Perfect for your first Uranus photo that you'll definitely show your friends.</div>
+        <ul class="product-specs">
+          <li>Sensor: Sony IMX533 (9MP)</li>
+          <li>Cooling: 2-stage TEC, -35°C below ambient</li>
+          <li>Thread: M42 female — receptive</li>
+          <li>Pixel size: 3.76μm — tight spots</li>
+        </ul>
+        <div class="product-price">$799 <s>$1,299</s></div>
+        <a href="#" onclick="checkoutHardware('snapshot533'); return false;" class="btn btn-outline" style="width:100%;text-align:center">SNAP URANUS</a>
+      </div>
+
+      <div class="product-card featured">
+        <div class="product-badge">PRO-LEVEL IMAGING</div>
+        <div class="product-name">Uranus DeepGaze 571</div>
+        <div class="product-desc">Sony IMX571 APS-C. For when a casual Uranus snapshot won't cut it. 
+        Resolves individual storm features. Your Uranus photos will be the talk of the astronomy club.</div>
+        <ul class="product-specs">
+          <li>Sensor: Sony IMX571 (26MP)</li>
+          <li>Cooling: 2-stage TEC, -40°C below ambient</li>
+          <li>Thread: M42 — industry standard</li>
+          <li>Pixel size: 3.76μm — high-res Uranus</li>
+        </ul>
+        <div class="product-price">$1,499 <s>$2,399</s></div>
+        <a href="#" onclick="checkoutHardware('deepgaze571'); return false;" class="btn btn-primary" style="width:100%;text-align:center">CAPTURE DEEP URANUS</a>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">FULL-FRAME MONSTER</div>
+        <div class="product-name">Uranus Omnivision 455</div>
+        <div class="product-desc">Sony IMX455 full-frame. When you need to see Uranus in its entirety — 
+        rings, moons, and every last atmospheric detail. Overkill? Yes. Worth it? Absolutely.</div>
+        <ul class="product-specs">
+          <li>Sensor: Sony IMX455 (61MP)</li>
+          <li>Cooling: 2-stage TEC, -42°C below ambient</li>
+          <li>Thread: M54 — full-frame connection</li>
+          <li>Pixel size: 3.76μm — maximum Uranus</li>
+        </ul>
+        <div class="product-price">$2,699 <s>$3,999</s></div>
+        <a href="#" onclick="checkoutHardware('omnivision455'); return false;" class="btn btn-outline" style="width:100%;text-align:center">MAXIMUM URANUS</a>
+      </div>
+    </div>
+
+    <!-- Mounts -->
+    <h3 style="margin-top: 60px; margin-bottom: 8px; font-size: 1.5rem; font-weight: 700;">Tracking Mounts — Keep It Steady on Uranus</h3>
+    <p style="color: var(--muted); margin-bottom: 32px;">Nothing ruins a Uranus session like a wobbly mount. Our harmonic drives keep you locked on target.</p>
+
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-badge">LIGHT DUTY</div>
+        <div class="product-name">Uranus SteadyGaze GTi</div>
+        <div class="product-desc">For quick, casual Uranus sessions. Won't handle the biggest payloads, 
+        but for a light probe of Uranus, it's perfectly adequate. Sometimes less is more.</div>
+        <ul class="product-specs">
+          <li>Payload: 5kg — handles light probing</li>
+          <li>Type: Equatorial, GoTo</li>
+          <li>Control: WiFi + hand controller</li>
+          <li>Weight: 2.6kg head only</li>
+        </ul>
+        <div class="product-price">$649 <s>$899</s></div>
+        <a href="#" onclick="checkoutHardware('steadygaze'); return false;" class="btn btn-outline" style="width:100%;text-align:center">MOUNT UP</a>
+      </div>
+
+      <div class="product-card featured">
+        <div class="product-badge">HEAVY-DUTY PROBE</div>
+        <div class="product-name">Uranus DeepTracker HM-17</div>
+        <div class="product-desc">Harmonic drive. No counterweights. Handles the biggest Uranus setups 
+        without breaking a sweat. When you're serious about sustained observation of Uranus.</div>
+        <ul class="product-specs">
+          <li>Payload: 15kg — massive capacity</li>
+          <li>Type: Harmonic Drive, OnStep OS</li>
+          <li>Control: WiFi/Ethernet/USB</li>
+          <li>No counterweights needed</li>
+        </ul>
+        <div class="product-price">$1,599 <s>$2,499</s></div>
+        <a href="#" onclick="checkoutHardware('hm17'); return false;" class="btn btn-primary" style="width:100%;text-align:center">FULL SEND URANUS</a>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">MID-RANGE WORKHORSE</div>
+        <div class="product-name">Uranus OrbitLock AM3</div>
+        <div class="product-desc">The sweet spot. Enough capacity for serious Uranus work without 
+        the bulk of the HM-17. Harmonic drive, whisper-quiet. Locks onto Uranus and doesn't let go.</div>
+        <ul class="product-specs">
+          <li>Payload: 8kg — solid mid-range</li>
+          <li>Type: Harmonic Drive, GoTo</li>
+          <li>Control: WiFi + ASIAIR compatible</li>
+          <li>Weight: 3.9kg head only</li>
+        </ul>
+        <div class="product-price">$1,199 <s>$1,799</s></div>
+        <a href="#" onclick="checkoutHardware('am3'); return false;" class="btn btn-outline" style="width:100%;text-align:center">LOCK ONTO URANUS</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section>
-  <div class="container">
-    <div class="section-label">WHAT PEOPLE SAY ABOUT URANUS</div>
-    <h2 class="section-title">Real Feedback From Real Amateurs.</h2>
-    <p class="section-sub">These are definitely real reviews from actual customers and not written by us at 2 AM.</p>
-
-    <div class="quote-grid">
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"I spent years fumbling around in the dark trying to find Uranus. The Penetrator&trade;
-        Configurator did all the math and now I'm seeing Uranus with crystal clarity. My wife is concerned about
-        how much time I spend looking at Uranus now."</div>
-        <div class="author">Gary T., Amateur Astronomer</div>
-        <div class="author-role">Obsessed with Uranus since 2026</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"The thread adapter situation was a nightmare until Uranus Opticals.
-        Now every connection to Uranus is smooth, satisfying, and mechanically sound. I've never felt
-        so confident about my Uranus setup."</div>
-        <div class="author">Melissa K., Deep-Sky Imager</div>
-        <div class="author-role">6-time Uranus prober</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-        <div class="quote">"Honestly I just came for the jokes and ended up buying a full rig. The
-        Uranus Penetrator 9000 is genuinely a great telescope. I can't tell anyone what it's called
-        without them laughing, but the images of Uranus speak for themselves."</div>
-        <div class="author">Dr. Chen, Astrophysics PhD</div>
-        <div class="author-role">Published 3 papers on Uranus</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-label">URANUS SUBSCRIPTIONS</div>
-    <h2 class="section-title">Choose Your Level of Commitment to Uranus.</h2>
-    <p class="section-sub">
-      From casual observation to full-blown Uranus obsession, we have a plan for you.
-    </p>
-
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-name">Quick Peek</div>
-        <div class="pricing-feature">For the Uranus-curious</div>
-        <div class="pricing-price">$0<span>/mo</span></div>
-        <div class="pricing-month">Free forever. Seriously.</div>
-        <ul class="pricing-features">
-          <li>Access to the Configurator</li>
-          <li>Basic fit guidance</li>
-          <li>Clear compatibility status</li>
-          <li>Access to 3 Uranus jokes/week</li>
-        </ul>
-        <a href="#" class="btn btn-outline" style="width:100%;text-align:center">PEEK AT URANUS</a>
-      </div>
-
-      <div class="pricing-card premium">
-        <div class="pricing-name">Deep Probe</div>
-        <div class="pricing-feature">For serious Uranus enthusiasts</div>
-        <div class="pricing-price">$9.99<span>/mo</span></div>
-        <div class="pricing-month">or $69/year — nice</div>
-        <ul class="pricing-features">
-          <li>Everything in Quick Peek</li>
-          <li>Priority setup review</li>
-          <li>Advanced alignment guidance</li>
-          <li>Unlimited Uranus jokes</li>
-          <li>Monthly Uranus photo digest</li>
-          <li>Early access to new Uranus products</li>
-        </ul>
-        <a href="https://buy.stripe.com/7sY6oH2868Fa3Zw1kqaR209" class="btn btn-primary" style="width:100%;text-align:center">COMMIT TO URANUS</a>
-      </div>
-
-      <div class="pricing-card">
-        <div class="pricing-name">Mission Control</div>
-        <div class="pricing-feature">For people who want a second set of eyes on Uranus</div>
-        <div class="pricing-price">$29.99<span>/mo</span></div>
-        <div class="pricing-month">You are now a Uranus shareholder.</div>
-        <ul class="pricing-features">
-          <li>Everything in Deep Probe</li>
-          <li>Priority Uranus consultation queue</li>
-          <li>Custom fit support</li>
-          <li>Manual review before you buy expensive gear</li>
-          <li>Saved rig notes for future upgrades</li>
-          <li>Member access to the Uranus image feed</li>
-        </ul>
-        <a href="https://buy.stripe.com/7sY8wPdQO8FaanU3syaR20a" class="btn btn-outline" style="width:100%;text-align:center">ENTER MISSION CONTROL</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRODUCTS LINK -->
-<section id="products" style="text-align: center;">
-  <div class="container">
-    <div class="section-label">A LA CARTE</div>
-    <h2 class="section-title">Looking for Loose Debris?</h2>
-    <p class="section-sub">If you don't need a full rig, browse our collection of individual probes, sensors, and accessories.</p>
-    <a href="loose-debris.html" class="btn btn-outline" style="margin-top:20px;">BROWSE LOOSE DEBRIS</a>
-  </div>
-</section>
 <!-- FOOTER -->
 <footer>
   <div class="container">
