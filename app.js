@@ -107,19 +107,57 @@ function selectGlobalScope(scope) {
 
 // ── Accessory Definitions ──
 const accessoryDefs = [
-  {id: 'flattener',  name: 'Field Flattener',               desc: 'Corrects field curvature. Required for doublet refractors.',               priceKey: 'acc_flattener',   forceId: 'glancer' },
-  {id: 'spacers',    name: 'M42/M48 Spacer Kit',             desc: 'Dial in exact 55mm backfocus. Included free with every scope+camera pair.', priceKey: 'acc_spacers',    forceId: null },
-  {id: 'guidescope', name: '30mm Guide Scope',               desc: 'High-precision tracking for sub-arcsecond guiding.',                         priceKey: 'acc_guidescope',  forceId: null },
-  {id: 'guidecam',   name: 'Ceres-M Guide Camera',           desc: 'Mono sensor for rock-solid autoguiding lock.',                                priceKey: 'acc_guidecam',    forceId: null },
-  {id: 'filter',     name: 'Dual-Band Light Pollution Filter', desc: 'Cuts city glow. Saturates nebulae. 2" mounted.',                           priceKey: 'acc_filter',      forceId: null },
-  {id: 'dewheater',  name: 'USB Dew Heater Strip',           desc: 'Prevents lens fog during long winter sessions.',                             priceKey: 'acc_dewheater',   forceId: null },
-  {id: 'bag',        name: 'Padded Telescope Bag (Small)',   desc: 'Fits scopes up to 380mm retracted. Padded shell.',                           priceKey: 'acc_bag_scope',   forceId: null, maxLen: 380 },
-  {id: 'bag_lg',     name: 'XL Padded Telescope Bag (65cm)', desc: 'Heavy padding for large refractors up to 620mm.',                            priceKey: 'acc_bag_lg',      forceId: null, minLen: 381, maxLen: 620 },
-  {id: 'case',       name: 'Hard Case w/ Pluck Foam (Small)', desc: 'Waterproof protection for scopes up to 520mm.',                             priceKey: 'acc_case_hard',   forceId: null, maxLen: 520 },
-  {id: 'case_xl',    name: 'XL Waterproof Hard Case (60cm)', desc: 'Deep rugged case. Fits the big glass.',                                      priceKey: 'acc_case_xl',     forceId: null, minLen: 521 },
-  {id: 'power',      name: '12V Portable Power Bank',        desc: '60Wh capacity. Runs mount + camera for 4-6 hours.',                          priceKey: 'acc_power',       forceId: null },
-  {id: 'tripod',     name: 'Carbon Fiber Tripod',            desc: 'Lightweight, vibration-dampening. 8kg payload.',                              priceKey: 'acc_tripod',      forceId: null },
+  {id: 'flattener',  name: 'Field Flattener',               desc: 'Corrects field curvature for sharp stars edge-to-edge.',                  priceKey: 'acc_flattener' },
+  {id: 'spacers',    name: 'M42/M48 Spacer Kit',             desc: 'Precision spacers to dial in exact backfocus distance.',                   priceKey: 'acc_spacers' },
+  {id: 'guidescope', name: '30mm Guide Scope',               desc: 'Compact guide scope for sub-arcsecond autoguiding.',                       priceKey: 'acc_guidescope' },
+  {id: 'guidecam',   name: 'Ceres-M Guide Camera',           desc: 'High-sensitivity mono guide sensor. Rock-solid lock.',                     priceKey: 'acc_guidecam' },
+  {id: 'filter',     name: 'Dual-Band Light Pollution Filter', desc: '2" mounted. Cuts city glow, saturates nebulae.',                        priceKey: 'acc_filter' },
+  {id: 'dewheater',  name: 'USB Dew Heater Strip',           desc: 'Prevents lens fog on cold nights. Wraps any OTA.',                         priceKey: 'acc_dewheater' },
+  {id: 'bag',        name: 'Padded Telescope Bag (Small)',   desc: 'Fits scopes up to 380mm retracted. Padded shell.',                         priceKey: 'acc_bag_scope' },
+  {id: 'bag_lg',     name: 'XL Padded Telescope Bag (65cm)', desc: 'Heavy padding for refractors up to 620mm retracted.',                      priceKey: 'acc_bag_lg' },
+  {id: 'case',       name: 'Hard Case w/ Pluck Foam (Small)', desc: 'Waterproof protection for scopes up to 520mm retracted.',                priceKey: 'acc_case_hard' },
+  {id: 'case_xl',    name: 'XL Waterproof Hard Case (60cm)', desc: 'Deep rugged case for large OTAs and refractors.',                          priceKey: 'acc_case_xl' },
+  {id: 'power',      name: '12V Portable Power Bank',        desc: '60Wh capacity. Runs mount + camera for 4-6 hours in the field.',           priceKey: 'acc_power' },
+  {id: 'tripod',     name: 'Carbon Fiber Tripod',            desc: 'Lightweight, vibration-dampening. 8kg payload rating.',                    priceKey: 'acc_tripod' },
 ];
+
+// Compute effective scope properties from whatever the user selected
+function getEffectiveScope() {
+  const scopeId = byId('scopeSelect').value;
+  const cLen = parseFloat(byId('customScopeLen').value) || 0;
+  const cFR  = parseFloat(byId('customScopeFR').value) || 0;
+
+  if (scopeId !== 'none') {
+    const s = scopes[scopeId];
+    if (!s) return null;
+    // Determine type from the preset
+    let type = 'Refractor';
+    if (scopeId === 'penetrator') type = 'Petzval';
+    else if (scopeId === 'glancer') type = 'Doublet';
+    else if (scopeId === 'panoramic') type = 'Triplet';
+    return { len: s.len, weight: s.weight, thread: s.thread, backfocus: s.backfocus, type, reqFlattener: s.reqFlattener, name: s.name };
+  }
+
+  // Custom scope — check if global scope is loaded
+  if (selectedGlobalScope) {
+    return {
+      len: selectedGlobalScope.len,
+      weight: selectedGlobalScope.weight,
+      thread: selectedGlobalScope.thread,
+      backfocus: selectedGlobalScope.backfocus,
+      type: selectedGlobalScope.type || 'Refractor',
+      reqFlattener: selectedGlobalScope.type === 'Doublet',
+      name: `${selectedGlobalScope.brand} ${selectedGlobalScope.model}`
+    };
+  }
+
+  // Fully custom — only length and FR known
+  if (cLen > 0) {
+    return { len: cLen, weight: 0, thread: 'Unknown', backfocus: 55, type: (cFR >= 6 ? 'Doublet' : 'Refractor'), reqFlattener: (cFR >= 6), name: 'Custom Telescope' };
+  }
+
+  return null;
+}
 
 function getAccessoryState() {
   const state = {};
@@ -136,8 +174,7 @@ function renderAccessories() {
 
   const scopeId = byId('scopeSelect').value;
   const cameraId = byId('cameraSelect').value;
-  const cLen = parseFloat(byId('customScopeLen').value) || 0;
-  const effectiveLen = (scopeId === 'none') ? cLen : (scopes[scopeId] ? scopes[scopeId].len : 0);
+  const eff = getEffectiveScope();
 
   let html = `
     <div class="picker-header-row">
@@ -147,29 +184,81 @@ function renderAccessories() {
     </div>`;
 
   accessoryDefs.forEach(a => {
-    // Visibility rules
     let visible = true;
     let forceOn = false;
     let note = '';
+    let rowClass = 'excluded';
 
-    if (a.forceId && scopeId === a.forceId) { forceOn = true; note = 'Required for this scope'; }
-    if (a.maxLen && effectiveLen > a.maxLen) visible = false;
-    if (a.minLen && effectiveLen < a.minLen) visible = false;
+    // ── Flattener logic ──
+    if (a.id === 'flattener') {
+      if (!eff || eff.len === 0) {
+        visible = true; note = 'Select a scope to evaluate';
+      } else if (eff.type === 'Petzval' || eff.type === 'Astrograph' || eff.type === 'SCT') {
+        visible = false; note = 'Built-in field correction — flattener not needed';
+      } else if (eff.type === 'Doublet') {
+        visible = true; forceOn = true; note = 'Required — doublet refractors need field flattening';
+        rowClass = 'included';
+      } else if (eff.type === 'Triplet') {
+        visible = true; note = 'Optional — triplet is well-corrected but flattener improves edges';
+      } else {
+        visible = true; note = 'Recommended for best edge performance';
+      }
+    }
 
-    // Auto-force spacers when both scope and camera selected
-    if (a.id === 'spacers' && scopeId !== 'none' && cameraId !== 'none') { forceOn = true; note = 'Required for backfocus'; }
+    // ── Spacers logic ──
+    if (a.id === 'spacers') {
+      if (scopeId !== 'none' && cameraId !== 'none') {
+        forceOn = true; note = 'Required — included free with scope + camera purchase';
+        rowClass = 'included';
+      } else if (eff && eff.len > 0 && cameraId !== 'none') {
+        visible = true; note = 'Recommended for backfocus adjustment';
+      } else {
+        visible = true; note = 'Optional — needed when camera is connected';
+      }
+    }
 
-    // Special: bag/case sizing
-    if (a.id === 'bag' && effectiveLen > 0 && effectiveLen <= 380) note = 'Perfect fit';
-    if (a.id === 'bag_lg' && effectiveLen > 380 && effectiveLen <= 620) note = 'Confirmed fit';
-    if (a.id === 'case' && effectiveLen > 0 && effectiveLen <= 520) note = 'Hard shell protection';
-    if (!visible && (a.id === 'bag' || a.id === 'bag_lg' || a.id === 'case' || a.id === 'case_xl')) note = 'Wrong size for this scope';
+    // ── Bag / Case sizing ──
+    if (a.id === 'bag') {
+      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
+      else if (eff.len <= 380) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
+      else { visible = false; note = `Too small — your scope is ${eff.len}mm`; }
+    }
+    if (a.id === 'bag_lg') {
+      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
+      else if (eff.len > 380 && eff.len <= 620) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
+      else if (eff.len <= 380) { visible = false; note = `Overkill — your ${eff.len}mm scope fits the small bag`; }
+      else { visible = false; note = `Too large — your scope is ${eff.len}mm`; }
+    }
+    if (a.id === 'case') {
+      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
+      else if (eff.len <= 520) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
+      else { visible = false; note = `Too small — your scope is ${eff.len}mm`; }
+    }
+    if (a.id === 'case_xl') {
+      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
+      else if (eff.len > 520 || scopeId === 'glancer' || scopeId === 'panoramic') { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
+      else if (eff.len <= 520 && eff.len > 0) { visible = true; note = 'Fits — but the small case is more compact'; }
+      else { visible = false; }
+    }
+
+    // ── Dew heater ──
+    if (a.id === 'dewheater') {
+      if (eff && eff.len > 400) note = 'Recommended — longer scopes dew up faster';
+      else if (eff && eff.len > 0) note = 'Optional — good insurance for humid nights';
+      else note = 'Optional — prevents fogged optics';
+    }
+
+    // ── Tripod weight note ──
+    if (a.id === 'tripod') {
+      if (eff && eff.weight > 5) note = `Your ${eff.weight}kg scope is within the 8kg payload limit`;
+      else if (eff && eff.weight > 0) note = `Well within limits — your scope is only ${eff.weight}kg`;
+      else note = 'Select a scope for weight verification';
+    }
 
     const price = dbPrices[a.priceKey] ? `$${dbPrices[a.priceKey].toFixed(2)}` : '...';
-    const included = forceOn || (visible && false); // default all off unless forced
 
     html += `
-      <div class="picker-row excluded" id="row_${a.id}" style="${visible ? '' : 'display:none;'}">
+      <div class="picker-row ${rowClass}" id="row_${a.id}" style="${visible ? '' : 'display:none;'}">
         <div class="col-part">
           <h4>${a.name}</h4>
         </div>
