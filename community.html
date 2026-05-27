@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uranus Opticals Mission Control</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<style>
+:root {
+  --space: #070b14;
+  --deep: #0d1326;
+  --surface: #131b33;
+  --border: #1e2d52;
+  --text: #d4dcee;
+  --muted: #6b7da8;
+  --accent: #7eb8da;
+  --accent-glow: #a0d0f0;
+  --hot: #e0558a;
+  --green: #4ec9a0;
+  --warn: #e8a84c;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(126,184,218,0.16), transparent 28%),
+    radial-gradient(circle at 88% 8%, rgba(224,85,138,0.12), transparent 24%),
+    var(--space);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.6;
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.7;
+  background:
+    radial-gradient(1px 1px at 8% 18%, rgba(255,255,255,0.65), transparent),
+    radial-gradient(1px 1px at 22% 38%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(1.5px 1.5px at 42% 12%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 66% 22%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 82% 64%, rgba(255,255,255,0.42), transparent),
+    radial-gradient(2px 2px at 17% 86%, rgba(126,184,218,0.5), transparent);
+}
+
+.container {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(7,11,20,0.86);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+}
+
+nav .container {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.logo img { width: 38px; height: 38px; }
+.logo span { color: var(--hot); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.hero {
+  padding: 72px 0 44px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: end;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+
+h1 {
+  font-size: clamp(2.8rem, 7vw, 6.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  margin-bottom: 22px;
+}
+
+.hero p {
+  max-width: 650px;
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+.hero-panel {
+  background: rgba(19,27,51,0.72);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+}
+
+.hero-panel strong {
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--green);
+}
+
+.hero-panel span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 28px;
+  padding-bottom: 80px;
+}
+
+.composer,
+.post,
+.side-card {
+  background: rgba(19,27,51,0.84);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.composer {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+  padding: 24px;
+}
+
+.composer h2,
+.side-card h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.composer label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.composer input,
+.composer textarea,
+.composer select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #0a1020;
+  color: var(--text);
+  padding: 11px 12px;
+}
+
+.composer textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.upload-box {
+  border: 1px dashed rgba(126,184,218,0.45);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.upload-box input { margin-top: 10px; padding: 0; border: 0; background: transparent; }
+
+.btn {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--space);
+  padding: 13px 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.feed {
+  display: grid;
+  gap: 20px;
+}
+
+.feed-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.feed-top h2 { font-size: 1.4rem; }
+.feed-top p { color: var(--muted); font-size: 0.9rem; }
+
+.post {
+  overflow: hidden;
+}
+
+.post-image {
+  min-height: 290px;
+  background:
+    radial-gradient(circle at 40% 45%, rgba(126,184,218,0.8), transparent 7%),
+    radial-gradient(circle at 54% 48%, rgba(224,85,138,0.22), transparent 18%),
+    radial-gradient(circle at 70% 24%, rgba(255,255,255,0.7), transparent 1px),
+    radial-gradient(circle at 18% 34%, rgba(255,255,255,0.55), transparent 1px),
+    linear-gradient(135deg, #091121, #151d3a 58%, #090d18);
+  background-size: cover;
+  background-position: center;
+}
+
+.post-body {
+  padding: 20px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.post h3 {
+  font-size: 1.35rem;
+  margin-bottom: 8px;
+}
+
+.post p {
+  color: var(--muted);
+}
+
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.side-stack {
+  display: grid;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.side-card {
+  padding: 20px;
+}
+
+.side-card p,
+.side-card li {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.side-card ul {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.side-card li::before {
+  content: '✓ ';
+  color: var(--green);
+  font-weight: 900;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 36px 0;
+  text-align: center;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .composer {
+    position: static;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="index.html"><img src="assets/logo.png" alt="Uranus Opticals logo">URANUS <span>OPTICALS</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#products">Probes</a></li>
+      <li><a href="index.html#configurator">Penetrator&trade;</a></li>
+      <li><a href="index.html#pricing">Plans</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Mission Control Image Feed</div>
+      <h1>Show Us Uranus.</h1>
+      <p>
+        A member image feed for astrophotographers to post captures, rig details, exposure notes,
+        and the exact kind of smug little victory lap earned after keeping a mount steady all night.
+      </p>
+    </div>
+    <aside class="hero-panel">
+      <strong>MC</strong>
+      <span>Included with Mission Control access.</span>
+    </aside>
+  </section>
+
+  <section class="layout">
+    <aside>
+      <form class="composer" id="postForm">
+        <h2>Post an Image</h2>
+        <label>Display name
+          <input id="displayName" type="text" placeholder="Gary T.">
+        </label>
+        <label>Image title
+          <input id="postTitle" type="text" placeholder="First clean look at Uranus">
+        </label>
+        <label>Object
+          <select id="postObject">
+            <option>Uranus</option>
+            <option>Moon</option>
+            <option>Saturn</option>
+            <option>Jupiter</option>
+            <option>Deep-sky target</option>
+          </select>
+        </label>
+        <label>Rig notes
+          <textarea id="postNotes" placeholder="Scope, camera, mount, exposure time, filters, and how long you stared at the result."></textarea>
+        </label>
+        <div class="upload-box">
+          Upload image
+          <input id="postImage" type="file" accept="image/*">
+        </div>
+        <button class="btn" type="submit">POST TO MISSION CONTROL</button>
+      </form>
+
+      <div class="side-stack">
+        <div class="side-card">
+          <h2>Mission Control Includes</h2>
+          <ul>
+            <li>Image posts with rig notes</li>
+            <li>Target tags and exposure details</li>
+            <li>Member-only Uranus gallery access</li>
+            <li>Saved captures tied to your rig history</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <section class="feed" aria-live="polite">
+      <div class="feed-top">
+        <div>
+          <h2>Latest Captures</h2>
+          <p>Member captures, rig notes, and hard-earned proof that the mount stayed civilized.</p>
+        </div>
+      </div>
+      <div id="feed"></div>
+    </section>
+  </section>
+</main>
+
+<footer>
+  Uranus Opticals Mission Control. Serious images. Deeply unserious naming discipline.
+</footer>
+
+<script>
+const samplePosts = [
+  {
+    name: "Melissa K.",
+    title: "Four hours on Uranus, finally worth it",
+    object: "Uranus",
+    notes: "90mm triplet, cooled color camera, steady seeing, 4h integration. The mount behaved for once.",
+    tag: "Featured Capture"
+  },
+  {
+    name: "Dr. Chen",
+    title: "Clean ring geometry and zero shame",
+    object: "Uranus",
+    notes: "High-gain stack with conservative sharpening. Not the biggest image, but the shape held together.",
+    tag: "Rig Verified"
+  }
+];
+
+const feed = document.getElementById("feed");
+const form = document.getElementById("postForm");
+const imageInput = document.getElementById("postImage");
+
+function getPosts() {
+  try {
+    return JSON.parse(localStorage.getItem("uo_posts") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function savePost(post) {
+  const posts = getPosts();
+  posts.unshift(post);
+  localStorage.setItem("uo_posts", JSON.stringify(posts.slice(0, 24)));
+}
+
+function renderPost(post) {
+  const article = document.createElement("article");
+  article.className = "post";
+
+  const image = document.createElement("div");
+  image.className = "post-image";
+  if (post.image) {
+    image.style.backgroundImage = `url('${post.image}')`;
+  }
+
+  const body = document.createElement("div");
+  body.className = "post-body";
+  body.innerHTML = `
+    <div class="post-meta"><span>${post.tag || "Member Capture"}</span><span>${post.object}</span></div>
+    <h3></h3>
+    <p></p>
+    <div class="post-actions">
+      <span class="pill">Posted by ${post.name || "Anonymous Observer"}</span>
+      <span class="pill">Mission Control</span>
+    </div>
+  `;
+
+  body.querySelector("h3").textContent = post.title || "Untitled Uranus Capture";
+  body.querySelector("p").textContent = post.notes || "No rig notes posted.";
+  article.append(image, body);
+  return article;
+}
+
+function renderFeed() {
+  feed.innerHTML = "";
+  [...getPosts(), ...samplePosts].forEach((post) => feed.appendChild(renderPost(post)));
+}
+
+function readImageFile(file) {
+  return new Promise((resolve) => {
+    if (!file) {
+      resolve("");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const image = await readImageFile(imageInput.files[0]);
+  savePost({
+    name: document.getElementById("displayName").value.trim(),
+    title: document.getElementById("postTitle").value.trim(),
+    object: document.getElementById("postObject").value,
+    notes: document.getElementById("postNotes").value.trim(),
+    image,
+    tag: "New Capture"
+  });
+  form.reset();
+  renderFeed();
+});
+
+renderFeed();
+</script>
+</body>
+</html>
