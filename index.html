@@ -729,6 +729,7 @@ footer .footer-joke {
         <label>
           <span>Telescope (The Glass)</span>
           <select id="scopeSelect">
+            <option value="none">None (I have my own)</option>
             <option value="glancer">Svbony SV503 80ED (Beginner Probe)</option>
             <option value="penetrator">Askar FRA300 Pro (The Deep Explorer)</option>
             <option value="panoramic" selected>Uranus Signature 80 APO (Full Insertion)</option>
@@ -737,6 +738,7 @@ footer .footer-joke {
         <label>
           <span>Camera (The Sensor)</span>
           <select id="cameraSelect">
+            <option value="none">None (I have my own)</option>
             <option value="snapshot533">Svbony SV605CC (Cooled Deep Sensor)</option>
             <option value="deepgaze571">Player One Poseidon-C (Direct Core)</option>
             <option value="omnivision455" selected>Uranus Signature 533C (High Penetration)</option>
@@ -745,6 +747,7 @@ footer .footer-joke {
         <label>
           <span>Mount (The Handler)</span>
           <select id="mountSelect">
+            <option value="none">None (I have my own)</option>
             <option value="steadygaze">Sky-Watcher GTi (Light duty)</option>
             <option value="am3">ZWO AM3N (Medium load)</option>
             <option value="hm17" selected>Uranus Harmonic 17 (Heavy handler)</option>
@@ -757,54 +760,54 @@ footer .footer-joke {
         </div>
         
         <div class="addon-grid" style="display: grid; gap: 12px; margin-top: 12px;">
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_flattener" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_flattener" class="addon-chk" value="acc_flattener" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Svbony 0.8x Field Flattener <br><small style="color: var(--muted); font-weight: 400;">(Required for 80ED)</small></span>
+            <span id="desc_flattener" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Svbony 0.8x Field Flattener</span>
             <span class="price-tag" id="price_flattener">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_spacers" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_spacers" class="addon-chk" value="acc_spacers" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">M42/M48 Spacer Kit <br><small style="color: var(--muted); font-weight: 400;">(Required for 55mm Backfocus)</small></span>
+            <span id="desc_spacers" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">M42/M48 Spacer Kit</span>
             <span class="price-tag" id="price_spacers">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_guidescope" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_guidescope" class="addon-chk" value="acc_guidescope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">30mm Guide Scope</span>
+            <span id="desc_guidescope" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">30mm Guide Scope</span>
             <span class="price-tag" id="price_guidescope">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_guidecam" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_guidecam" class="addon-chk" value="acc_guidecam" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Ceres-M Guide Camera</span>
+            <span id="desc_guidecam" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Ceres-M Guide Camera</span>
             <span class="price-tag" id="price_guidecam">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_filter" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_filter" class="addon-chk" value="acc_filter" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">2" Dual-Band Light Pollution Filter</span>
+            <span id="desc_filter" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">2" Dual-Band Light Pollution Filter</span>
             <span class="price-tag" id="price_filter">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_dewheater" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_dewheater" class="addon-chk" value="acc_dewheater" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">USB Dew Heater Strip</span>
+            <span id="desc_dewheater" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">USB Dew Heater Strip</span>
             <span class="price-tag" id="price_dewheater">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_case" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_case" class="addon-chk" value="acc_case_hard" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Hard Case w/ Pluck Foam</span>
+            <span id="desc_case" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Hard Case w/ Pluck Foam</span>
             <span class="price-tag" id="price_case">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_bag" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_bag" class="addon-chk" value="acc_bag_scope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Padded Telescope Bag</span>
+            <span id="desc_bag" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Padded Telescope Bag</span>
             <span class="price-tag" id="price_bag">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_power" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_power" class="addon-chk" value="acc_power" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">12V Portable Power Bank</span>
+            <span id="desc_power" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">12V Portable Power Bank</span>
             <span class="price-tag" id="price_power">...</span>
           </label>
-          <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+          <label id="lbl_tripod" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
             <input type="checkbox" id="chk_tripod" class="addon-chk" value="acc_tripod" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Carbon Fiber Tripod</span>
+            <span id="desc_tripod" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Carbon Fiber Tripod</span>
             <span class="price-tag" id="price_tripod">...</span>
           </label>
         </div>
