@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   URANUS OPTICALS — Alibaba-Sourced Deep Scope Engine
+   URANUS OPTICALS — Mission Ready-Sourced Deep Scope Engine
    "We've seen the backside of every telescope."
    ═══════════════════════════════════════════ */
 
