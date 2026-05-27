@@ -1,15 +1,15 @@
 /* ═══════════════════════════════════════════
-   URANUS OPTICALS — Deep Scope Bundle Engine
+   URANUS OPTICALS — Alibaba-Sourced Deep Scope Engine
    "We've seen the backside of every telescope."
    ═══════════════════════════════════════════ */
 
 let dbPrices = {};
 
 const scopes = {
-  none:       { name: "None / Have my own",                         backfocus: 0,  thread: "N/A", weight: 0,   reqFlattener: false },
-  glancer:    { name: "Svbony SV503 80ED (Beginner Probe)",         backfocus: 55, thread: "M48", weight: 2.7, reqFlattener: true },
-  penetrator: { name: "Askar FRA300 Pro (The Deep Explorer)",       backfocus: 55, thread: "M48", weight: 2.9, reqFlattener: false },
-  panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 4.1, reqFlattener: false } // Fixed weight to 4.1kg for FRA500 eq
+  none:       { name: "None / Have my own",                         backfocus: 0,  thread: "N/A", weight: 0,   len: 0,   reqFlattener: false },
+  glancer:    { name: "Svbony SV503 80ED (Beginner Probe)",         backfocus: 55, thread: "M48", weight: 3.9, len: 470, reqFlattener: true },
+  penetrator: { name: "Askar FRA300 Pro (The Deep Explorer)",       backfocus: 55, thread: "M48", weight: 3.1, len: 303, reqFlattener: false },
+  panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 5.2, len: 410, reqFlattener: false }
 };
 
 const cameras = {
@@ -23,7 +23,7 @@ const mounts = {
   none:       { name: "None / Have my own",                capacity: 999 },
   steadygaze: { name: "Sky-Watcher GTi (Light duty)",      capacity: 5  },
   am3:        { name: "ZWO AM3N (Medium load)",            capacity: 8  },
-  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 15 } // Fixed from 10kg to 15kg for AM5 equivalent
+  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 15 }
 };
 
 const accessoriesWeight = 1.2;
@@ -48,11 +48,26 @@ async function fetchPrices() {
 }
 
 function updatePriceTags() {
-  const accessories = ['flattener', 'spacers', 'guidescope', 'guidecam', 'filter', 'dewheater', 'case', 'bag', 'power', 'tripod'];
+  const accessories = [
+    {id: 'flattener', priceId: 'price_flattener', chk: 'chk_flattener'},
+    {id: 'spacers', priceId: 'price_spacers', chk: 'chk_spacers'},
+    {id: 'guidescope', priceId: 'price_guidescope', chk: 'chk_guidescope'},
+    {id: 'guidecam', priceId: 'price_guidecam', chk: 'chk_guidecam'},
+    {id: 'filter', priceId: 'price_filter', chk: 'chk_filter'},
+    {id: 'dewheater', priceId: 'price_dewheater', chk: 'chk_dewheater'},
+    {id: 'bag', priceId: 'price_bag', chk: 'chk_bag'},
+    {id: 'bag_lg', priceId: 'price_bag_lg', chk: 'chk_bag_lg'},
+    {id: 'case', priceId: 'price_case', chk: 'chk_case'},
+    {id: 'case_xl', priceId: 'price_case_xl', chk: 'chk_case_xl'},
+    {id: 'power', priceId: 'price_power', chk: 'chk_power'},
+    {id: 'tripod', priceId: 'price_tripod', chk: 'chk_tripod'}
+  ];
+  
   accessories.forEach(acc => {
-    const chk = byId(`chk_${acc}`);
-    if (chk && dbPrices[chk.value]) {
-      byId(`price_${acc}`).textContent = `$${dbPrices[chk.value].toFixed(2)}`;
+    const chk = byId(acc.chk);
+    const pTag = byId(acc.priceId);
+    if (chk && pTag && dbPrices[chk.value]) {
+      pTag.textContent = `$${dbPrices[chk.value].toFixed(2)}`;
     }
   });
 }
@@ -77,8 +92,10 @@ async function updateConfigurator() {
     { id: 'guidecam' },
     { id: 'filter' },
     { id: 'dewheater' },
-    { id: 'case' },
     { id: 'bag' },
+    { id: 'bag_lg' },
+    { id: 'case' },
+    { id: 'case_xl' },
     { id: 'power' },
     { id: 'tripod' }
   ];
@@ -95,39 +112,34 @@ async function updateConfigurator() {
 
     // Flattener Rules
     if (item.id === 'flattener') {
-      if (scopeId === 'glancer') { 
-        show = true; forceCheck = true; note = '(Required for 80ED Doublet)'; 
-      }
-      else if (scopeId === 'none') { 
-        show = true; note = '(Optional)'; 
-      }
-      else { 
-        show = false; // Completely hide for Petzval (FRA300/FRA500)
-      }
+      if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for Doublet)'; }
+      else if (scopeId === 'none') { show = true; note = '(Optional)'; }
+      else { show = false; }
     }
-    // Case Rules: Glancer (470mm) and Panoramic (410mm) REQUIRE the 55cm Hard Case.
-    // Penetrator (303mm) fits it but it's overkill.
-    else if (item.id === 'case') {
-      show = true; // Hard case fits everything in our catalog
-      if (scopeId === 'penetrator') note = '(Optional - Padded Bag preferred)';
-    }
-    // Bag Rules: ONLY fits the Penetrator (303mm). Glancer (470mm) and Panoramic (410mm) are too long.
+    // Bag Rules
     else if (item.id === 'bag') {
-      if (scopeId === 'penetrator' || scopeId === 'none') {
-        show = true;
-        note = scopeId === 'penetrator' ? '(Perfect fit for FRA300)' : '(Optional)';
-      } else {
-        show = false; // Hide for scopes > 400mm
-      }
+      if (scopeId === 'penetrator' || scopeId === 'none') { show = true; note = scopeId === 'penetrator' ? '(Perfect Fit)' : '(Small Scopes)'; }
+      else { show = false; }
+    }
+    else if (item.id === 'bag_lg') {
+      if (scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(High Quality Soft Shell)'; }
+      else if (scopeId === 'none') { show = true; note = '(65cm Large)'; }
+      else { show = false; }
+    }
+    // Case Rules
+    else if (item.id === 'case') {
+      if (scopeId === 'penetrator' || scopeId === 'none') { show = true; note = '(Hard Shell Protection)'; }
+      else { show = false; }
+    }
+    else if (item.id === 'case_xl') {
+      if (scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(Maximum Protection)'; }
+      else if (scopeId === 'none') { show = true; note = '(60cm Extra Large)'; }
+      else { show = false; }
     }
     // Spacer Rules
     else if (item.id === 'spacers') {
-      if (scopeId !== 'none' && cameraId !== 'none') { 
-        show = true; forceCheck = true; note = '(Required for Backfocus)'; 
-      }
-      else { 
-        show = true; note = '(Optional)'; 
-      }
+      if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for Backfocus)'; }
+      else { show = true; note = '(Optional)'; }
     }
 
     if (!show) {
@@ -240,6 +252,7 @@ async function checkoutRig() {
 
   if (items.length === 0) {
     checkoutBtn.textContent = 'SELECT GEAR';
+    checkoutBtn.disabled = false;
     return;
   }
 
