@@ -69,6 +69,34 @@ body {
   filter: blur(2px);
 }
 
+/* Background floating logo watermark */
+.bg-logo-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 550px;
+  height: 550px;
+  background-image: url('assets/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(1px);
+  animation: float-watermark 25s ease-in-out infinite;
+}
+
+@keyframes float-watermark {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-20px) rotate(3deg);
+  }
+}
+
 .container {
   position: relative;
   z-index: 1;
@@ -647,6 +675,7 @@ footer .footer-joke {
 
 <div class="stars"></div>
 <div class="uranus-orb"></div>
+<div class="bg-logo-watermark"></div>
 
 <!-- NAV -->
 <nav>
