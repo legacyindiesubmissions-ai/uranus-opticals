@@ -1,1182 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URANUS OPTICALS — Peer Deeper</title>
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="stylesheet" href="styles.css">
-<script src="app.js" defer></script>
-<style>
-:root {
-  --space: #070b14;
-  --deep: #0d1326;
-  --surface: #131b33;
-  --border: #1e2d52;
-  --text: #d4dcee;
-  --muted: #6b7da8;
-  --accent: #7eb8da;
-  --accent-glow: #a0d0f0;
-  --hot: #e0558a;
-  --warn: #e8a84c;
-  --green: #4ec9a0;
-  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-body {
-  background: var(--space);
-  color: var(--text);
-  font-family: var(--font);
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* Stars background */
-.stars {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  background: radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),
-              radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.5), transparent),
-              radial-gradient(1.5px 1.5px at 40% 10%, rgba(255,255,255,0.7), transparent),
-              radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.4), transparent),
-              radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.6), transparent),
-              radial-gradient(1.5px 1.5px at 85% 50%, rgba(255,255,255,0.5), transparent),
-              radial-gradient(1px 1px at 15% 65%, rgba(255,255,255,0.4), transparent),
-              radial-gradient(1px 1px at 35% 75%, rgba(255,255,255,0.6), transparent),
-              radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.5), transparent),
-              radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.3), transparent),
-              radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.5), transparent),
-              radial-gradient(2px 2px at 20% 90%, rgba(160,208,240,0.5), transparent),
-              radial-gradient(1.5px 1.5px at 50% 60%, rgba(255,255,255,0.4), transparent),
-              radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,0.6), transparent);
-}
-
-/* Uranus planet orb */
-.uranus-orb {
-  position: fixed;
-  top: -180px;
-  right: -120px;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, 
-    #c8e8f8 0%, #8ec8e0 15%, #5aa8c0 30%, #3a7a98 50%, #1a4a60 70%, #0d2a3a 100%);
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(2px);
-}
-
-/* Background floating logo watermark */
-.bg-logo-watermark {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 1200px;
-  height: 1200px;
-  background-image: url('assets/logo.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.26;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(1px);
-  animation: float-watermark 25s ease-in-out infinite;
-}
-
-@keyframes float-watermark {
-  0%, 100% {
-    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translate(-50%, -50%) translateY(-20px) rotate(3deg);
-  }
-}
-
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-/* Nav */
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(7,11,20,0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 0;
-}
-nav .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--accent);
-}
-.logo span { color: var(--hot); }
-.nav-links {
-  display: flex;
-  gap: 24px;
-  list-style: none;
-}
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--text); }
-.nav-cta {
-  background: var(--accent);
-  color: var(--space) !important;
-  padding: 8px 18px;
-  border-radius: 6px;
-  font-weight: 700;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.nav-cta:hover {
-  background: var(--accent-glow);
-  box-shadow: 0 0 20px rgba(160,208,240,0.3);
-}
-
-/* Hero */
-.hero {
-  padding: 100px 0 80px;
-  text-align: center;
-}
-.hero-badge {
-  display: inline-block;
-  background: rgba(160,208,240,0.1);
-  border: 1px solid rgba(160,208,240,0.2);
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 5px 14px;
-  border-radius: 20px;
-  margin-bottom: 24px;
-}
-.hero h1 {
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  margin-bottom: 16px;
-}
-.hero h1 em {
-  font-style: normal;
-  color: var(--accent);
-  position: relative;
-}
-.hero h1 em::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: var(--accent);
-  opacity: 0.3;
-}
-.hero-sub {
-  font-size: 1.2rem;
-  color: var(--muted);
-  max-width: 600px;
-  margin: 0 auto 32px;
-}
-.hero-ctas {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.btn {
-  display: inline-block;
-  padding: 14px 32px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-primary {
-  background: var(--accent);
-  color: var(--space);
-  box-shadow: 0 0 24px rgba(160,208,240,0.2);
-}
-.btn-primary:hover {
-  background: var(--accent-glow);
-  box-shadow: 0 0 36px rgba(160,208,240,0.4);
-  transform: translateY(-1px);
-}
-.btn-outline {
-  border: 1.5px solid var(--border);
-  color: var(--text);
-  background: transparent;
-}
-.btn-outline:hover {
-  border-color: var(--accent);
-  background: rgba(160,208,240,0.05);
-}
-
-/* Sections */
-section {
-  padding: 80px 0;
-}
-.section-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  margin-bottom: 12px;
-}
-.section-title {
-  font-size: 2.4rem;
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
-}
-.section-sub {
-  color: var(--muted);
-  font-size: 1.05rem;
-  max-width: 640px;
-  margin-bottom: 48px;
-}
-
-/* Joke callout cards */
-.joke-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-.joke-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: var(--accent);
-  opacity: 0.4;
-}
-.joke-card .punchline {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--accent);
-  margin-top: 8px;
-  font-style: italic;
-}
-
-/* Problem grid */
-.problem-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 40px;
-}
-.problem-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 32px 24px;
-  transition: border-color 0.2s;
-}
-.problem-item:hover { border-color: var(--accent); }
-.problem-icon {
-  font-size: 2rem;
-  margin-bottom: 16px;
-}
-.problem-item h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.problem-item p { color: var(--muted); font-size: 0.92rem; }
-
-/* Products */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-top: 40px;
-}
-.product-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px 24px;
-  transition: all 0.3s;
-  position: relative;
-}
-.product-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-}
-.product-card.featured { border-color: var(--accent); }
-.product-card.featured::after {
-  content: 'BEST FOR DEEP PROBING';
-  position: absolute;
-  top: -12px;
-  right: 24px;
-  background: var(--accent);
-  color: var(--space);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.product-badge {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--accent);
-  margin-bottom: 12px;
-}
-.product-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-.product-desc {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-  min-height: 44px;
-}
-.product-specs {
-  list-style: none;
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-family: var(--mono);
-  margin-bottom: 20px;
-}
-.product-specs li {
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(30,45,82,0.5);
-}
-.product-price {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 16px;
-}
-.product-price s {
-  color: var(--muted);
-  font-size: 0.8rem;
-  margin-left: 8px;
-  font-weight: 400;
-}
-
-/* Business model */
-.model-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-top: 40px;
-}
-.model-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 36px 28px;
-}
-.model-card h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-.model-card .model-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  margin-bottom: 16px;
-}
-.model-card p { color: var(--muted); font-size: 0.92rem; margin-bottom: 12px; }
-.model-card ul {
-  list-style: none;
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-.model-card ul li {
-  padding: 4px 0;
-  padding-left: 16px;
-  position: relative;
-}
-.model-card ul li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-}
-
-/* Configurator demo */
-.config-demo {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 40px;
-  margin-top: 40px;
-  font-family: var(--mono);
-}
-.config-step {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.88rem;
-}
-.config-step:last-child { border-bottom: none; }
-.config-step .step-num {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--space);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.8rem;
-  flex-shrink: 0;
-}
-.config-warning {
-  margin-top: 24px;
-  padding: 16px;
-  background: rgba(232,168,76,0.08);
-  border: 1px solid rgba(232,168,76,0.25);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: var(--warn);
-  font-weight: 600;
-}
-.config-success {
-  margin-top: 24px;
-  padding: 16px;
-  background: rgba(78,201,160,0.08);
-  border: 1px solid rgba(78,201,160,0.25);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: var(--green);
-  font-weight: 600;
-}
-
-/* Testimonials */
-.quote-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 40px;
-}
-.quote-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 28px;
-}
-.quote-card .stars { color: var(--warn); font-size: 0.9rem; margin-bottom: 12px; }
-.quote-card .quote {
-  font-style: italic;
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-.quote-card .author {
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-.quote-card .author-role {
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
-/* Pricing */
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 40px;
-}
-.pricing-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 36px 28px;
-  text-align: center;
-  transition: border-color 0.3s;
-}
-.pricing-card:hover { border-color: var(--accent); }
-.pricing-card.premium {
-  border-color: var(--accent);
-  box-shadow: 0 0 30px rgba(160,208,240,0.1);
-}
-.pricing-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.pricing-feature {
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin-bottom: 16px;
-  font-style: italic;
-}
-.pricing-price {
-  font-size: 2.4rem;
-  font-weight: 900;
-  margin-bottom: 4px;
-}
-.pricing-price span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
-.pricing-month { color: var(--muted); font-size: 0.8rem; margin-bottom: 20px; }
-.pricing-features {
-  list-style: none;
-  text-align: left;
-  margin-bottom: 24px;
-}
-.pricing-features li {
-  padding: 6px 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.pricing-features li::before { content: '✓ '; color: var(--green); font-weight: 700; }
-
-/* Footer */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 48px 0;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.82rem;
-  position: relative;
-  z-index: 1;
-}
-footer .footer-joke {
-  font-style: italic;
-  color: var(--accent);
-  margin-top: 8px;
-  font-size: 0.85rem;
-}
-
-/* Tweaks panel */
-.tweaks-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 200;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-.tweaks-toggle:hover { border-color: var(--accent); color: var(--text); }
-.tweaks-panel {
-  position: fixed;
-  bottom: 72px;
-  right: 20px;
-  z-index: 200;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  width: 260px;
-  display: none;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-}
-.tweaks-panel.open { display: block; }
-.tweaks-panel h4 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-.tweak-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 0.82rem;
-}
-.tweak-row select {
-  background: var(--deep);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 0.78rem;
-}
-
-/* Joke counter */
-.joke-counter {
-  text-align: center;
-  padding: 16px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-style: italic;
-  position: relative;
-  z-index: 1;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .hero h1 { font-size: 2.4rem; }
-  .section-title { font-size: 1.7rem; }
-  .nav-links { display: none; }
-  .config-demo { padding: 24px; }
-  .hero { padding: 60px 0 50px; }
-  section { padding: 50px 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uranus Opticals | Penetrator Configurator</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <header style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+    <div style="font-weight: 800; font-size: 1.5rem; letter-spacing: -1px;">URANUS <span style="color: var(--accent);">OPTICALS</span></div>
+    <nav style="display: flex; gap: 24px; font-size: 0.9rem; font-weight: 600;">
+      <a href="index.html" style="color: var(--accent);">Builder</a>
+      <a href="loose-debris.html" style="color: var(--text); text-decoration: none;">Loose Debris</a>
+    </nav>
+  </header>
 
-<div class="stars"></div>
-<div class="uranus-orb"></div>
-<div class="bg-logo-watermark"></div>
+  <main class="configurator-shell">
+    <!-- LEFT PANEL: PART PICKER -->
+    <div class="part-picker-table">
+      <div class="picker-header-row">
+        <div class="col-part">Core Component</div>
+        <div class="col-selection">Selection & Tier</div>
+        <div class="col-price">Cost</div>
+      </div>
 
-<!-- NAV -->
-<nav>
-  <div class="container">
-    <div class="logo"><img src="assets/logo.png" alt="Uranus Opticals Logo" style="height: 38px;"> URANUS <span>OPTICALS</span></div>
-    <ul class="nav-links">
-      <li><a href="#problem">The Hole</a></li>
-      <li><a href="loose-debris.html">Loose Debris</a></li>
-      <li><a href="#configurator">Penetrator&trade;</a></li>
-      <li><a href="community.html">Image Feed</a></li>
-      <li><a href="#pricing">Plans</a></li>
-    </ul>
-    <a href="#configurator" class="nav-cta">PROBE NOW</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-badge">&#9798; EST. 2026 — FOREST CITY, IOWA</div>
-    <h1>We Put the <em>"Anus"</em><br>in Uranus.</h1>
-    <p class="hero-sub">
-      The world's first mathematically guaranteed "Peer Deeper Into Uranus" astrophotography configurator. 
-      We don't just sell telescopes. We sell certainty about what's happening back there.
-    </p>
-    <div class="hero-ctas">
-      <a href="#configurator" class="btn btn-primary">START PROBING URANUS</a>
-      <a href="#products" class="btn btn-outline">BROWSE REAR-VIEW GEAR</a>
-    </div>
-    <p class="joke-counter" id="jokeCounter">Loading joke count...</p>
-  </div>
-</section>
-
-<!-- CONFIGURATOR -->
-<section id="configurator">
-  <div class="container">
-    <div class="section-label">THE URANUS PENETRATOR&trade;</div>
-    <h2 class="section-title">We Do the Math So You Can Focus on Uranus.</h2>
-      <p class="section-sub">
-      Pick your glass. Pick your sensor. We handle the rest behind the curtain and only show you the outcome.
-      </p>
-
-    <div class="config-shell">
-      <div class="controls" id="builderControls">
-        <div class="controls-title">
-          <h3>Penetrator Control</h3>
-          <span>Gear Select</span>
+      <!-- TELESCOPE ROW -->
+      <div class="picker-row included" id="row-scope">
+        <div class="col-part">
+          <div class="comp-title-row">
+            <h4>Telescope</h4>
+            <span style="background: var(--accent); color: #05070a; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase;">Required</span>
+          </div>
+          <span class="comp-meta">Primary Optical Tube (OTA)</span>
         </div>
-        <label>
-          <span>Telescope (The Glass)</span>
-          <select id="scopeSelect">
+        <div class="col-selection">
+          <select class="tier-select" id="scopeSelect">
+            <option value="glancer">Uranus Glancer (Svbony 80ED)</option>
+            <option value="penetrator">Uranus Penetrator (Askar FRA300)</option>
+            <option value="panoramic" selected>Uranus Panoramic (Signature 80 APO)</option>
             <option value="none">None (I have my own)</option>
-            <option value="glancer">Svbony SV503 80ED (Beginner Probe)</option>
-            <option value="penetrator">Askar FRA300 Pro (The Deep Explorer)</option>
-            <option value="panoramic" selected>Uranus Signature 80 APO (Full Insertion)</option>
           </select>
-        </label>
-
-        <!-- CUSTOM SCOPE FORM (Hidden by default) -->
-        <div id="customScopeForm" style="display: none; background: rgba(160,208,240,0.05); border: 1px dashed var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-          <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Global Mission Profile</h4>
-          
-          <div style="margin-bottom: 12px; position: relative;">
-            <span style="font-size: 0.7rem; color: var(--muted);">Search 100+ Verified Telescopes</span>
-            <input type="text" id="scopeSearch" placeholder="e.g. RedCat 51, EdgeHD..." style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
-            <div id="searchSuggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); z-index: 100; max-height: 200px; overflow-y: auto; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);"></div>
+          <div id="customScopeForm" style="display: none; margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+            <input type="text" id="scopeSearch" placeholder="Search 100+ models..." style="width:100%; padding: 8px; background: var(--deep); border: 1px solid var(--border); color: white; margin-bottom: 8px;">
+            <div id="searchSuggestions" style="display:none; background: var(--surface); border:1px solid var(--border);"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <input type="number" id="customScopeLen" placeholder="Length (mm)" style="padding: 8px; background: var(--deep); border: 1px solid var(--border); color: white;">
+                <input type="number" id="customScopeFR" placeholder="F-Ratio" style="padding: 8px; background: var(--deep); border: 1px solid var(--border); color: white;">
+            </div>
           </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <label style="padding: 0; background: transparent; border: none;">
-              <span style="font-size: 0.7rem; color: var(--muted);">Retracted Length (mm)</span>
-              <input type="number" id="customScopeLen" placeholder="e.g. 450" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
-            </label>
-            <label style="padding: 0; background: transparent; border: none;">
-              <span style="font-size: 0.7rem; color: var(--muted);">Focal Ratio (f/)</span>
-              <input type="number" id="customScopeFR" placeholder="e.g. 7" step="0.1" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
-            </label>
+          <div class="specs-box">
+            <p id="scopeSpecs" class="specs-desc">High-end triplet optimization for full-frame sensors.</p>
+            <span class="stock-badge in-stock">🟢 In Stock (Alibaba Bulk)</span>
           </div>
-          <p style="font-size: 0.65rem; color: var(--muted); margin-top: 8px;">Selected: <span id="selectedScopeLabel" style="color: var(--accent);">Generic Profile</span></p>
         </div>
+        <div class="col-price" id="scopePriceDisplay">$0.00</div>
+      </div>
 
-        <label>
-          <span>Camera (The Sensor)</span>
-          <select id="cameraSelect">
-            <option value="none">None (I have my own)</option>
-            <option value="snapshot533">Svbony SV605CC (Cooled Deep Sensor)</option>
-            <option value="deepgaze571">Player One Poseidon-C (Direct Core)</option>
-            <option value="omnivision455" selected>Uranus Signature 533C (High Penetration)</option>
+      <!-- CAMERA ROW -->
+      <div class="picker-row included" id="row-camera">
+        <div class="col-part">
+          <h4>Imaging Sensor</h4>
+          <span class="comp-meta">Cooled Astrophotography Camera</span>
+        </div>
+        <div class="col-selection">
+          <select class="tier-select" id="cameraSelect">
+            <option value="snapshot533">Uranus 533C (Starter)</option>
+            <option value="deepgaze571">Uranus 571C (Professional)</option>
+            <option value="omnivision455">Uranus 455C (Full Frame)</option>
+            <option value="none">None / Have my own</option>
           </select>
-        </label>
-        <label>
-          <span>Mount (The Handler)</span>
-          <select id="mountSelect">
-            <option value="none">None (I have my own)</option>
-            <option value="steadygaze">Sky-Watcher GTi (Light duty)</option>
-            <option value="am3">ZWO AM3N (Medium load)</option>
-            <option value="hm17" selected>Uranus Harmonic 17 (Heavy handler)</option>
-          </select>
-        </label>
-
-        <div class="controls-title" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
-          <h3>Field Gear</h3>
-          <span>Required &amp; Optional Add-ons</span>
-        </div>
-        
-        <div class="addon-grid" style="display: grid; gap: 12px; margin-top: 12px;">
-          <label id="lbl_flattener" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_flattener" class="addon-chk" value="acc_flattener" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_flattener" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Svbony 0.8x Field Flattener</span>
-            <span class="price-tag" id="price_flattener">...</span>
-          </label>
-          <label id="lbl_spacers" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_spacers" class="addon-chk" value="acc_spacers" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_spacers" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">M42/M48 Spacer Kit</span>
-            <span class="price-tag" id="price_spacers">...</span>
-          </label>
-          <label id="lbl_guidescope" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_guidescope" class="addon-chk" value="acc_guidescope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_guidescope" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">30mm Guide Scope</span>
-            <span class="price-tag" id="price_guidescope">...</span>
-          </label>
-          <label id="lbl_guidecam" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_guidecam" class="addon-chk" value="acc_guidecam" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_guidecam" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Ceres-M Guide Camera</span>
-            <span class="price-tag" id="price_guidecam">...</span>
-          </label>
-          <label id="lbl_filter" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_filter" class="addon-chk" value="acc_filter" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_filter" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">2" Dual-Band Light Pollution Filter</span>
-            <span class="price-tag" id="price_filter">...</span>
-          </label>
-          <label id="lbl_dewheater" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_dewheater" class="addon-chk" value="acc_dewheater" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_dewheater" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">USB Dew Heater Strip</span>
-            <span class="price-tag" id="price_dewheater">...</span>
-          </label>
-          <label id="lbl_bag" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_bag" class="addon-chk" value="acc_bag_scope" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_bag" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Padded Telescope Bag (Small)</span>
-            <span class="price-tag" id="price_bag">...</span>
-          </label>
-          <label id="lbl_bag_lg" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_bag_lg" class="addon-chk" value="acc_bag_lg" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_bag_lg" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">XL Padded Telescope Bag (65cm)</span>
-            <span class="price-tag" id="price_bag_lg">...</span>
-          </label>
-          <label id="lbl_case" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_case" class="addon-chk" value="acc_case_hard" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_case" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Hard Case w/ Pluck Foam (Small)</span>
-            <span class="price-tag" id="price_case">...</span>
-          </label>
-          <label id="lbl_case_xl" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_case_xl" class="addon-chk" value="acc_case_xl" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_case_xl" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">XL Waterproof Hard Case (60cm)</span>
-            <span class="price-tag" id="price_case_xl">...</span>
-          </label>
-          <label id="lbl_power" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_power" class="addon-chk" value="acc_power" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_power" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">12V Portable Power Bank</span>
-            <span class="price-tag" id="price_power">...</span>
-          </label>
-          <label id="lbl_tripod" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex-direction: row; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; transition: opacity 0.2s;">
-            <input type="checkbox" id="chk_tripod" class="addon-chk" value="acc_tripod" style="width: 18px; height: 18px; accent-color: var(--accent);">
-            <span id="desc_tripod" style="flex-grow: 1; font-weight: 600; font-size: 0.9rem;">Carbon Fiber Tripod</span>
-            <span class="price-tag" id="price_tripod">...</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="results" aria-live="polite">
-        <div class="result-header">
-          <h3>Compatibility Readout</h3>
-          <div class="result-status ok" id="resultStatus">Cleared for Contact</div>
-        </div>
-
-        <div class="optical-train">
-          <div class="train-node">
-            <span>Telescope</span>
-            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
-          </div>
-          <div class="train-connector" id="adapterResult">Fit reviewed</div>
-          <div class="train-node">
-            <span>Camera</span>
-            <b id="cameraName">Uranus Signature 533C (High Penetration)</b>
+          <div class="specs-box">
+            <p id="cameraSpecs" class="specs-desc">Cooled to -35C for ultra-low noise deep sky imaging.</p>
+            <span class="stock-badge in-stock">🟢 In Stock</span>
           </div>
         </div>
+        <div class="col-price" id="cameraPriceDisplay">$0.00</div>
+      </div>
 
-        <div class="readout-grid">
-          <div class="readout">
-            <span>Alignment status</span>
-            <strong id="spacerResult">Locked</strong>
-          </div>
-          <div class="readout">
-            <span>Mount status</span>
-            <strong id="payloadResult">Within range</strong>
-          </div>
-          <div class="readout">
-            <span>Setup status</span>
-            <strong id="cartResult">Ready</strong>
-          </div>
-        </div>
-
-        <div class="result-note" id="resultNote" style="margin-bottom: 24px;">
-          This rig passed the private compatibility checks. We show the verdict, not the recipe.
-        </div>
-
-        <div class="checkout-box" style="background: var(--deep); border: 2px solid var(--accent); padding: 24px; border-radius: 12px; text-align: center;">
-          <h3 style="font-size: 1rem; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em;">Total Rig Price</h3>
-          <div id="rigTotal" style="font-size: 3rem; font-weight: 900; color: var(--text); margin-bottom: 20px;">$0.00</div>
-          <button class="btn btn-primary" id="btnCheckoutRig" style="width: 100%; font-size: 1.1rem; padding: 18px;">SECURE YOUR RIG</button>
+      <!-- ACCESSORIES GRID (Riot Style) -->
+      <div style="margin-top: 32px; border-top: 1px solid var(--border); padding-top: 32px;">
+        <h3 style="margin-bottom: 20px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;">Field Gear & Optimization</h3>
+        <div id="accessoryList" class="part-picker-table">
+            <!-- Dynamically injected accessories -->
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- THE PROBLEM — aka "THE HOLE" -->
-<section id="problem">
-  <div class="container">
-    <div class="section-label">THE HOLE IN THE MARKET</div>
-    <h2 class="section-title">Getting a Clear View of Uranus Shouldn't Be This Hard.</h2>
-    <p class="section-sub">
-      Every year, thousands of amateur astronomers drop $4,000 on gear, only to discover they can't 
-      actually get their equipment into Uranus. Thread mismatches, backfocus violations, payload disasters — 
-      amateur probing of Uranus is a logistical nightmare.
-    </p>
+    <!-- RIGHT PANEL: QUOTE SHEET (Riot Style) -->
+    <aside class="quote-panel">
+      <div class="panel-heading">
+        <h3 style="font-size: 0.9rem; text-transform: uppercase;">Mission Manifest</h3>
+        <span id="selectedCount" style="font-size: 0.7rem; background: var(--accent); color: #05070a; padding: 2px 8px; border-radius: 10px; font-weight: 800;">3 Items</span>
+      </div>
+      
+      <div id="manifestList" style="margin-bottom: 24px;">
+        <!-- Dynamically injected items -->
+      </div>
 
-    <div class="problem-grid">
-      <div class="problem-item">
-        <div class="problem-icon">&#128301;</div>
-        <h3>The 0.5mm Problem</h3>
-        <p>You've got M48 on your telescope and M42 on your camera. That's like showing up to probe 
-        Uranus with the wrong adapter. Our Configurator automatically injects the correct step-down ring 
-        so your penetration of Uranus is always flush and secure.</p>
+      <div style="background: rgba(160,208,240,0.05); border: 1px solid var(--border); padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+        <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Analysis Engine</div>
+        <div class="selected-item">
+            <span>Fitment Status</span>
+            <span id="resultStatus" style="font-weight: 800;">---</span>
+        </div>
+        <div class="selected-item">
+            <span>Backfocus</span>
+            <span id="spacerResult" style="color: var(--accent); font-family: monospace;">---</span>
+        </div>
+        <div class="selected-item">
+            <span>Thread Map</span>
+            <span id="adapterResult" style="color: var(--accent); font-family: monospace;">---</span>
+        </div>
       </div>
-      <div class="problem-item">
-        <div class="problem-icon">&#9878;</div>
-        <h3>The "Oops, Too Heavy" Disaster</h3>
-        <p>You strapped a 5kg payload to a mount rated for 3kg. Now your Uranus probe is sagging and 
-        tracking accuracy is ruined. Mission Control flags weak support before your Uranus session collapses 
-        into an expensive little shame spiral.</p>
+
+      <div class="sidebar-total-block">
+        <div class="total-row">
+          <span style="font-size: 1rem; color: var(--muted);">Total</span>
+          <span id="rigTotal">$0.00</span>
+        </div>
+        <button id="btnCheckoutRig" class="btn-primary">Secure Your Rig</button>
       </div>
-      <div class="problem-item">
-        <div class="problem-icon">&#128301;</div>
-        <h3>The Backfocus Blunder</h3>
-        <p>That strict 55mm backfocus requirement isn't a suggestion — miss it and your image of Uranus 
-        is a fuzzy brown smear. Our logic engine enforces the math so every photon from Uranus lands 
-        exactly where it belongs.</p>
-      </div>
+    </aside>
+  </main>
+
+  <!-- OVERLAYS & MODALS -->
+  <div id="simulationOverlay">
+    <div id="uranusAnimation" style="position: relative; width: 300px; height: 300px;">
+        <div style="position: absolute; width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #a0d0f0, #4a90e2, #1a2b3c); border-radius: 50%; top: 70px; left: 70px; box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(160,208,240,0.3); animation: planetPulse 4s infinite ease-in-out;"></div>
+        <div style="position: absolute; width: 280px; height: 20px; border: 2px solid rgba(160,208,240,0.2); border-radius: 50%; top: 140px; left: 10px; transform: rotate(85deg);"></div>
+        <div id="scannerBeam" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #a0d0f0, transparent); top: 50%; left: 0; opacity: 0; box-shadow: 0 0 20px #a0d0f0;"></div>
     </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section>
-  <div class="container">
-    <div class="section-label">WHAT PEOPLE SAY ABOUT URANUS</div>
-    <h2 class="section-title">Real Feedback From Real Amateurs.</h2>
-    <p class="section-sub">These are definitely real reviews from actual customers and not written by us at 2 AM.</p>
-
-    <div class="quote-grid">
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"I spent years fumbling around in the dark trying to find Uranus. The Penetrator&trade;
-        Configurator did all the math and now I'm seeing Uranus with crystal clarity. My wife is concerned about
-        how much time I spend looking at Uranus now."</div>
-        <div class="author">Gary T., Amateur Astronomer</div>
-        <div class="author-role">Obsessed with Uranus since 2026</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"The thread adapter situation was a nightmare until Uranus Opticals.
-        Now every connection to Uranus is smooth, satisfying, and mechanically sound. I've never felt
-        so confident about my Uranus setup."</div>
-        <div class="author">Melissa K., Deep-Sky Imager</div>
-        <div class="author-role">6-time Uranus prober</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-        <div class="quote">"Honestly I just came for the jokes and ended up buying a full rig. The
-        Uranus Penetrator 9000 is genuinely a great telescope. I can't tell anyone what it's called
-        without them laughing, but the images of Uranus speak for themselves."</div>
-        <div class="author">Dr. Chen, Astrophysics PhD</div>
-        <div class="author-role">Published 3 papers on Uranus</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-label">URANUS SUBSCRIPTIONS</div>
-    <h2 class="section-title">Choose Your Level of Commitment to Uranus.</h2>
-    <p class="section-sub">
-      From casual observation to full-blown Uranus obsession, we have a plan for you.
-    </p>
-
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-name">Quick Peek</div>
-        <div class="pricing-feature">For the Uranus-curious</div>
-        <div class="pricing-price">$0<span>/mo</span></div>
-        <div class="pricing-month">Free forever. Seriously.</div>
-        <ul class="pricing-features">
-          <li>Access to the Configurator</li>
-          <li>Basic fit guidance</li>
-          <li>Clear compatibility status</li>
-          <li>Access to 3 Uranus jokes/week</li>
-        </ul>
-        <a href="#" class="btn btn-outline" style="width:100%;text-align:center">PEEK AT URANUS</a>
-      </div>
-
-      <div class="pricing-card premium">
-        <div class="pricing-name">Deep Probe</div>
-        <div class="pricing-feature">For serious Uranus enthusiasts</div>
-        <div class="pricing-price">$9.99<span>/mo</span></div>
-        <div class="pricing-month">or $69/year — nice</div>
-        <ul class="pricing-features">
-          <li>Everything in Quick Peek</li>
-          <li>Priority setup review</li>
-          <li>Advanced alignment guidance</li>
-          <li>Unlimited Uranus jokes</li>
-          <li>Monthly Uranus photo digest</li>
-          <li>Early access to new Uranus products</li>
-        </ul>
-        <a href="https://buy.stripe.com/7sY6oH2868Fa3Zw1kqaR209" class="btn btn-primary" style="width:100%;text-align:center">COMMIT TO URANUS</a>
-      </div>
-
-      <div class="pricing-card">
-        <div class="pricing-name">Mission Control</div>
-        <div class="pricing-feature">For people who want a second set of eyes on Uranus</div>
-        <div class="pricing-price">$29.99<span>/mo</span></div>
-        <div class="pricing-month">You are now a Uranus shareholder.</div>
-        <ul class="pricing-features">
-          <li>Everything in Deep Probe</li>
-          <li>Priority Uranus consultation queue</li>
-          <li>Custom fit support</li>
-          <li>Manual review before you buy expensive gear</li>
-          <li>Saved rig notes for future upgrades</li>
-          <li>Member access to the Uranus image feed</li>
-        </ul>
-        <a href="https://buy.stripe.com/7sY8wPdQO8FaanU3syaR20a" class="btn btn-outline" style="width:100%;text-align:center">ENTER MISSION CONTROL</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRODUCTS LINK -->
-<section id="products" style="text-align: center;">
-  <div class="container">
-    <div class="section-label">A LA CARTE</div>
-    <h2 class="section-title">Looking for Loose Debris?</h2>
-    <p class="section-sub">If you don't need a full rig, browse our collection of individual probes, sensors, and accessories.</p>
-    <a href="loose-debris.html" class="btn btn-outline" style="margin-top:20px;">BROWSE LOOSE DEBRIS</a>
-  </div>
-</section>
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <div class="logo" style="margin-bottom:12px; justify-content: center;"><img src="assets/logo.png" alt="Uranus Opticals Logo" style="height: 38px;"> URANUS <span>OPTICALS</span></div>
-    <p>Peer Deeper&trade; | Forest City, Iowa | Not affiliated with the actual planet Uranus</p>
-    <p>(though we're told it's flattered by the attention)</p>
-    <p class="footer-joke">
-      "Uranus Opticals — because every astronomer eventually looks back there." &#9798;
-    </p>
-    <p style="margin-top:16px;font-size:0.7rem;color:var(--border)">
-      This website is satire. Please don't sue us, actual optical companies. We love you.
-    </p>
-  </div>
-</footer>
-
-<!-- TWEAAKS -->
-<button class="tweaks-toggle" id="tweaksToggle" aria-label="Tweaks">&#9881;</button>
-<div class="tweaks-panel" id="tweaksPanel">
-  <h4>Tweaks</h4>
-  <div class="tweak-row">
-    <span>Joke Intensity</span>
-    <select id="jokeIntensity" onchange="setJokeIntensity(this.value)">
-      <option value="unbearable" selected>Unbearable</option>
-      <option value="extreme">Extreme</option>
-      <option value="apocalyptic">Apocalyptic</option>
-    </select>
-  </div>
-  <div class="tweak-row">
-    <span>Theme</span>
-    <select id="themeSelect" onchange="setTheme(this.value)">
-      <option value="dark" selected>Deep Space</option>
-      <option value="brown">Gas Giant</option>
-    </select>
-  </div>
-  <div style="margin-top:12px;font-size:0.7rem;color:var(--muted)">
-    Jokes detected: <span id="tweakJokeCount">--</span>
-  </div>
-</div>
-
-<script>
-// Tweaks panel toggle
-const toggle = document.getElementById('tweaksToggle');
-const panel = document.getElementById('tweaksPanel');
-toggle.addEventListener('click', () => panel.classList.toggle('open'));
-
-// Joke counter
-let jokeCount = 0;
-function countJokes() {
-  // Count every instance of "Uranus" as a joke (because it is)
-  const text = document.body.innerText;
-  const matches = text.match(/Uranus/gi);
-  jokeCount = matches ? matches.length : 0;
-  document.getElementById('jokeCounter').textContent = 
-    jokeCount + ' Uranus references detected. You\'re welcome.';
-  const tc = document.getElementById('tweakJokeCount');
-  if (tc) tc.textContent = jokeCount;
-}
-countJokes();
-
-// Joke intensity
-function setJokeIntensity(level) {
-  const planets = document.querySelectorAll('.uranus-orb');
-  if (level === 'apocalyptic') {
-    document.body.style.setProperty('--accent', '#ff6b9d');
-    document.body.style.setProperty('--accent-glow', '#ff8fb3');
-    document.body.style.setProperty('--hot', '#ff3366');
-  } else if (level === 'extreme') {
-    document.body.style.setProperty('--accent', '#8ec8e0');
-    document.body.style.setProperty('--accent-glow', '#b0ddf0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  } else {
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  }
-}
-
-// Theme
-function setTheme(theme) {
-  if (theme === 'brown') {
-    document.body.style.setProperty('--space', '#1a1008');
-    document.body.style.setProperty('--deep', '#241810');
-    document.body.style.setProperty('--surface', '#2d1f14');
-    document.body.style.setProperty('--border', '#4a3522');
-    document.body.style.setProperty('--accent', '#d4a76a');
-    document.body.style.setProperty('--accent-glow', '#e8c48a');
-  } else {
-    document.body.style.setProperty('--space', '#070b14');
-    document.body.style.setProperty('--deep', '#0d1326');
-    document.body.style.setProperty('--surface', '#131b33');
-    document.body.style.setProperty('--border', '#1e2d52');
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-  }
-}
-</script>
-
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "424cae6297b84535ba71d370ddca8146"}'></script><!-- End Cloudflare Web Analytics -->
-
-</body>
-</html>
-  <!-- DEEP PROBE SIMULATION OVERLAY -->
-  <div id="simulationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05070a; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: monospace; overflow: hidden; opacity: 1;">
-    <div id="uranusAnimation" style="position: relative; width: 300px; height: 300px; margin-bottom: 40px;">
-      <div style="position: absolute; width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #a0d0f0, #4a90e2, #1a2b3c); border-radius: 50%; top: 70px; left: 70px; box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(160,208,240,0.3); animation: planetPulse 4s infinite ease-in-out;"></div>
-      <div style="position: absolute; width: 280px; height: 20px; border: 2px solid rgba(160,208,240,0.2); border-radius: 50%; top: 140px; left: 10px; transform: rotate(85deg); box-shadow: 0 0 15px rgba(160,208,240,0.1);"></div>
-      <div id="scannerBeam" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #a0d0f0, transparent); top: 50%; left: 0; opacity: 0; box-shadow: 0 0 20px #a0d0f0;"></div>
-    </div>
-    <div id="simLogs" style="width: 80%; max-width: 500px; text-align: left; height: 120px;">
-      <div id="logHeader" style="color: #a0d0f0; margin-bottom: 10px; font-weight: bold; border-bottom: 1px solid rgba(160,208,240,0.2); padding-bottom: 5px;">PROBE STATUS: INITIALIZING...</div>
-      <div id="logTicker" style="font-size: 0.9rem; line-height: 1.5; color: #cbd5e1;"></div>
-    </div>
-    <div style="width: 80%; max-width: 500px; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 20px; position: relative; overflow: hidden;">
-      <div id="simProgress" style="position: absolute; top: 0; left: 0; width: 0%; height: 100%; background: #a0d0f0; transition: width 0.1s linear;"></div>
+    <div id="logTicker" style="width: 80%; max-width: 500px; text-align: left; height: 100px; margin-top: 40px; font-family: monospace; color: var(--accent);"></div>
+    <div style="width: 80%; max-width: 500px; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 20px; overflow: hidden;">
+        <div id="simProgress" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear;"></div>
     </div>
   </div>
 
   <div id="paywallModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,7,10,0.95); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #111827; width: 100%; max-width: 450px; border: 1px solid #a0d0f0; border-radius: 12px; padding: 32px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
-      <div style="color: #a0d0f0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;">Mission Analysis Complete</div>
-      <h2 style="font-size: 1.8rem; margin-bottom: 12px; color: #f9fafb;">FITMENT SECURED</h2>
-      <p style="color: #9ca3af; font-size: 0.95rem; margin-bottom: 24px; line-height: 1.6;">Our Deep Probe simulation has calculated your specific optical train requirements. Unlock the full millimetric recipe and storage verification report.</p>
-      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; border: 1px solid #374151; margin-bottom: 24px;">
-        <div style="font-size: 2rem; font-weight: 800; color: #f9fafb;">$19.99</div>
-        <div style="font-size: 0.75rem; color: #a0d0f0; text-transform: uppercase; margin-top: 4px;">One-Time Consultation Fee</div>
+    <div style="background: var(--surface); width: 100%; max-width: 450px; border: 1px solid var(--accent); border-radius: 12px; padding: 32px; text-align: center;">
+      <h2 style="font-size: 1.8rem; margin-bottom: 12px;">FITMENT SECURED</h2>
+      <p style="color: var(--muted); margin-bottom: 24px;">Unlock the full millimetric recipe and storage verification report.</p>
+      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px;">
+        <div style="font-size: 2rem; font-weight: 800;">$19.99</div>
+        <div style="font-size: 0.75rem; color: var(--accent);">Analysis Fee (Credited on Purchase)</div>
       </div>
-      <ul style="text-align: left; font-size: 0.85rem; color: #f9fafb; margin-bottom: 32px; padding-left: 20px;">
-        <li style="margin-bottom: 10px;">Exact spacer length recipe (0.1mm accuracy)</li>
-        <li style="margin-bottom: 10px;">Millimetric storage fitment certificate</li>
-        <li style="margin-bottom: 10px;">Thread adapter mapping (M42/M48/M54)</li>
-        <li style="font-weight: 700; color: #a0d0f0;">Analysis fee credited back on any hardware purchase!</li>
-      </ul>
-      <button id="btnUnlockAnalysis" style="width: 100%; background: #a0d0f0; color: #05070a; border: none; padding: 16px; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Unlock Mission Data</button>
-      <button onclick="document.getElementById('paywallModal').style.display='none'" style="background: transparent; border: none; color: #9ca3af; margin-top: 16px; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">Return to Base</button>
+      <button id="btnUnlockAnalysis" class="btn-primary">Unlock Mission Data</button>
     </div>
   </div>
 
-  <style>
-    @keyframes planetPulse {
-      0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.02); filter: brightness(1.1); }
-    }
-  </style>
+  <script src="app.js?v=2.0.1"></script>
+</body>
+</html>
