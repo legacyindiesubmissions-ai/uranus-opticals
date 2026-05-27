@@ -987,6 +987,120 @@ select:focus, input:focus {
     flex-direction: column;
   }
 
+  .picker-table { overflow-x: auto; }
+}
+
+/* ── Picker Table (Riot Motoco-style accessory rows) ── */
+.picker-table {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.picker-header-row {
+  display: none; /* Hidden in sidebar; shown on wide layouts */
+}
+
+.picker-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(6, 3, 15, 0.3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: background 0.2s, opacity 0.2s, border-color 0.2s;
+}
+
+.picker-row.included {
+  background: rgba(79, 195, 247, 0.06);
+  border-color: var(--ice);
+}
+
+.picker-row.excluded { opacity: 0.5; }
+
+.picker-row .col-part h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.picker-row .col-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tier-select {
+  min-height: 38px;
+  padding: 0 10px;
+  background: rgba(6, 3, 15, 0.6);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color 0.25s;
+}
+
+.tier-select:hover { border-color: var(--purple); }
+.tier-select:focus { outline: none; border-color: var(--ice); box-shadow: 0 0 0 3px rgba(79,195,247,0.15); }
+.tier-select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.specs-box { display: flex; flex-direction: column; gap: 3px; }
+
+.specs-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.stock-badge {
+  display: inline-block;
+  width: max-content;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: var(--ice);
+  background: rgba(79, 195, 247, 0.1);
+  border: 1px solid rgba(79, 195, 247, 0.2);
+}
+
+.picker-row .col-price {
+  text-align: right;
+}
+
+.price-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+@media (min-width: 1025px) {
+  .picker-header-row {
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    gap: 16px;
+    padding: 10px 16px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 4px;
+  }
+  }
+
+@media (max-width: 640px) {
   .btn { width: 100%; }
 
   .site-footer {

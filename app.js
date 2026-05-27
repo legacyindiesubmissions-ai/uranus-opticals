@@ -50,7 +50,7 @@ async function initData() {
   } catch (e) {
     console.error("Failed to load mission data", e);
   } finally {
-    updatePriceTags();
+    renderAccessories();
     updateConfigurator();
   }
 }
@@ -105,28 +105,102 @@ function selectGlobalScope(scope) {
   updateConfigurator();
 }
 
-function updatePriceTags() {
-  const accessories = [
-    {id: 'flattener', priceId: 'price_flattener', chk: 'chk_flattener'},
-    {id: 'spacers', priceId: 'price_spacers', chk: 'chk_spacers'},
-    {id: 'guidescope', priceId: 'price_guidescope', chk: 'chk_guidescope'},
-    {id: 'guidecam', priceId: 'price_guidecam', chk: 'chk_guidecam'},
-    {id: 'filter', priceId: 'price_filter', chk: 'chk_filter'},
-    {id: 'dewheater', priceId: 'price_dewheater', chk: 'chk_dewheater'},
-    {id: 'bag', priceId: 'price_bag', chk: 'chk_bag'},
-    {id: 'bag_lg', priceId: 'price_bag_lg', chk: 'chk_bag_lg'},
-    {id: 'case', priceId: 'price_case', chk: 'chk_case'},
-    {id: 'case_xl', priceId: 'price_case_xl', chk: 'chk_case_xl'},
-    {id: 'power', priceId: 'price_power', chk: 'chk_power'},
-    {id: 'tripod', priceId: 'price_tripod', chk: 'chk_tripod'}
-  ];
-  
-  accessories.forEach(acc => {
-    const chk = byId(acc.chk);
-    const pTag = byId(acc.priceId);
-    if (chk && pTag && dbPrices[chk.value]) {
-      pTag.textContent = `$${dbPrices[chk.value].toFixed(2)}`;
-    }
+// ── Accessory Definitions ──
+const accessoryDefs = [
+  {id: 'flattener',  name: 'Field Flattener',               desc: 'Corrects field curvature. Required for doublet refractors.',               priceKey: 'acc_flattener',   forceId: 'glancer' },
+  {id: 'spacers',    name: 'M42/M48 Spacer Kit',             desc: 'Dial in exact 55mm backfocus. Included free with every scope+camera pair.', priceKey: 'acc_spacers',    forceId: null },
+  {id: 'guidescope', name: '30mm Guide Scope',               desc: 'High-precision tracking for sub-arcsecond guiding.',                         priceKey: 'acc_guidescope',  forceId: null },
+  {id: 'guidecam',   name: 'Ceres-M Guide Camera',           desc: 'Mono sensor for rock-solid autoguiding lock.',                                priceKey: 'acc_guidecam',    forceId: null },
+  {id: 'filter',     name: 'Dual-Band Light Pollution Filter', desc: 'Cuts city glow. Saturates nebulae. 2" mounted.',                           priceKey: 'acc_filter',      forceId: null },
+  {id: 'dewheater',  name: 'USB Dew Heater Strip',           desc: 'Prevents lens fog during long winter sessions.',                             priceKey: 'acc_dewheater',   forceId: null },
+  {id: 'bag',        name: 'Padded Telescope Bag (Small)',   desc: 'Fits scopes up to 380mm retracted. Padded shell.',                           priceKey: 'acc_bag_scope',   forceId: null, maxLen: 380 },
+  {id: 'bag_lg',     name: 'XL Padded Telescope Bag (65cm)', desc: 'Heavy padding for large refractors up to 620mm.',                            priceKey: 'acc_bag_lg',      forceId: null, minLen: 381, maxLen: 620 },
+  {id: 'case',       name: 'Hard Case w/ Pluck Foam (Small)', desc: 'Waterproof protection for scopes up to 520mm.',                             priceKey: 'acc_case_hard',   forceId: null, maxLen: 520 },
+  {id: 'case_xl',    name: 'XL Waterproof Hard Case (60cm)', desc: 'Deep rugged case. Fits the big glass.',                                      priceKey: 'acc_case_xl',     forceId: null, minLen: 521 },
+  {id: 'power',      name: '12V Portable Power Bank',        desc: '60Wh capacity. Runs mount + camera for 4-6 hours.',                          priceKey: 'acc_power',       forceId: null },
+  {id: 'tripod',     name: 'Carbon Fiber Tripod',            desc: 'Lightweight, vibration-dampening. 8kg payload.',                              priceKey: 'acc_tripod',      forceId: null },
+];
+
+function getAccessoryState() {
+  const state = {};
+  accessoryDefs.forEach(a => {
+    const sel = byId(`accsel_${a.id}`);
+    state[a.id] = sel ? sel.value === 'yes' : false;
+  });
+  return state;
+}
+
+function renderAccessories() {
+  const container = byId('accessoryPicker');
+  if (!container) return;
+
+  const scopeId = byId('scopeSelect').value;
+  const cameraId = byId('cameraSelect').value;
+  const cLen = parseFloat(byId('customScopeLen').value) || 0;
+  const effectiveLen = (scopeId === 'none') ? cLen : (scopes[scopeId] ? scopes[scopeId].len : 0);
+
+  let html = `
+    <div class="picker-header-row">
+      <div class="col-part">Field Gear</div>
+      <div class="col-selection">Status &amp; Recommendation</div>
+      <div class="col-price">Price</div>
+    </div>`;
+
+  accessoryDefs.forEach(a => {
+    // Visibility rules
+    let visible = true;
+    let forceOn = false;
+    let note = '';
+
+    if (a.forceId && scopeId === a.forceId) { forceOn = true; note = 'Required for this scope'; }
+    if (a.maxLen && effectiveLen > a.maxLen) visible = false;
+    if (a.minLen && effectiveLen < a.minLen) visible = false;
+
+    // Auto-force spacers when both scope and camera selected
+    if (a.id === 'spacers' && scopeId !== 'none' && cameraId !== 'none') { forceOn = true; note = 'Required for backfocus'; }
+
+    // Special: bag/case sizing
+    if (a.id === 'bag' && effectiveLen > 0 && effectiveLen <= 380) note = 'Perfect fit';
+    if (a.id === 'bag_lg' && effectiveLen > 380 && effectiveLen <= 620) note = 'Confirmed fit';
+    if (a.id === 'case' && effectiveLen > 0 && effectiveLen <= 520) note = 'Hard shell protection';
+    if (!visible && (a.id === 'bag' || a.id === 'bag_lg' || a.id === 'case' || a.id === 'case_xl')) note = 'Wrong size for this scope';
+
+    const price = dbPrices[a.priceKey] ? `$${dbPrices[a.priceKey].toFixed(2)}` : '...';
+    const included = forceOn || (visible && false); // default all off unless forced
+
+    html += `
+      <div class="picker-row excluded" id="row_${a.id}" style="${visible ? '' : 'display:none;'}">
+        <div class="col-part">
+          <h4>${a.name}</h4>
+        </div>
+        <div class="col-selection">
+          <select class="tier-select acc-select" id="accsel_${a.id}" data-id="${a.id}" ${forceOn ? 'disabled' : ''}>
+            <option value="no" ${forceOn ? '' : 'selected'}>Exclude</option>
+            <option value="yes" ${forceOn ? 'selected' : ''}>Include in Rig</option>
+          </select>
+          <div class="specs-box">
+            <p class="specs-desc">${a.desc}</p>
+            <span class="stock-badge">${note || 'Uranus Global Precision'}</span>
+          </div>
+        </div>
+        <div class="col-price">
+          <span class="price-val">${price}</span>
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+
+  // Bind dropdown change events
+  container.querySelectorAll('.acc-select').forEach(sel => {
+    sel.addEventListener('change', (e) => {
+      const row = byId(`row_${e.target.dataset.id}`);
+      if (row) {
+        if (e.target.value === 'yes') row.classList.replace('excluded', 'included');
+        else row.classList.replace('included', 'excluded');
+      }
+      updateConfigurator();
+    });
   });
 }
 
@@ -152,66 +226,8 @@ async function updateConfigurator() {
 
   if (!scope || !camera || !mount) return;
 
-  // 1. Dynamic Accessory Logic
-  const accList = ['flattener', 'spacers', 'guidescope', 'guidecam', 'filter', 'dewheater', 'bag', 'bag_lg', 'case', 'case_xl', 'power', 'tripod'];
-
-  accList.forEach(id => {
-    const chk = byId(`chk_${id}`);
-    const lbl = byId(`lbl_${id}`);
-    const desc = byId(`desc_${id}`);
-    if (!chk || !lbl || !desc) return;
-
-    let show = true;
-    let forceCheck = false;
-    let note = '';
-
-    const effectiveLen = (scopeId === 'none') ? cLen : scope.len;
-
-    // Flattener Rules
-    if (id === 'flattener') {
-      if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for Doublet)'; }
-      else if (scopeId === 'none') { 
-        if (scope.type === 'Petzval') show = false;
-        else if (cFR >= 6 || scope.type === 'Doublet') { show = true; note = '(Highly Recommended)'; }
-        else { show = true; note = '(Optional for Refractors)'; }
-      }
-      else { show = false; }
-    }
-    // Bag/Case Rules
-    else if (id === 'bag') {
-      if (effectiveLen > 0 && effectiveLen <= 380) { show = true; note = '(Perfect Fit)'; }
-      else { show = false; }
-    }
-    else if (id === 'bag_lg') {
-      if (effectiveLen > 380 && effectiveLen <= 620) { show = true; note = '(Confirmed Fit)'; }
-      else { show = false; }
-    }
-    else if (id === 'case') {
-      if (effectiveLen > 0 && effectiveLen <= 520) { show = true; note = '(Hard Shell Protection)'; }
-      else { show = false; }
-    }
-    else if (id === 'case_xl') {
-      if (effectiveLen > 520 || scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(Maximum Protection)'; }
-      else { show = false; }
-    }
-    // Spacer Rules
-    else if (id === 'spacers') {
-      if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for Backfocus)'; }
-      else { show = true; note = '(Optional)'; }
-    }
-
-    if (!show) {
-      lbl.style.display = 'none';
-      chk.checked = false;
-    } else {
-      lbl.style.display = 'flex';
-      chk.disabled = forceCheck;
-      if (forceCheck) chk.checked = true;
-      
-      const baseText = desc.innerHTML.split('<br>')[0].trim();
-      desc.innerHTML = note ? `${baseText} <br><small style="color: ${forceCheck ? 'var(--accent)' : 'var(--muted)}; font-weight: ${forceCheck?600:400};">${note}</small>` : baseText;
-    }
-  });
+  // 1. Re-render accessories with current scope visibility rules
+  renderAccessories();
 
   // 2. Compatibility Math
   let payload = scope.weight + camera.weight;
@@ -267,8 +283,9 @@ async function updateConfigurator() {
   if (dbPrices[cameraId]) total += dbPrices[cameraId];
   if (dbPrices[mountId]) total += dbPrices[mountId];
 
-  document.querySelectorAll('.addon-chk:checked').forEach(chk => {
-    if (dbPrices[chk.value]) total += dbPrices[chk.value];
+  const accState = getAccessoryState();
+  accessoryDefs.forEach(a => {
+    if (accState[a.id] && dbPrices[a.priceKey]) total += dbPrices[a.priceKey];
   });
 
   const rigTotal = byId("rigTotal");
@@ -341,7 +358,10 @@ async function checkoutRig() {
   if (byId("scopeSelect").value !== 'none') items.push(byId("scopeSelect").value);
   if (byId("cameraSelect").value !== 'none') items.push(byId("cameraSelect").value);
   if (byId("mountSelect").value !== 'none') items.push(byId("mountSelect").value);
-  document.querySelectorAll('.addon-chk:checked').forEach(chk => items.push(chk.value));
+  const accState = getAccessoryState();
+  accessoryDefs.forEach(a => {
+    if (accState[a.id]) items.push(a.priceKey);
+  });
 
   try {
     const res = await fetch(`/api/uranus/checkout_hardware?items=${items.join(',')}`);
@@ -354,7 +374,10 @@ async function checkoutRig() {
 
 document.addEventListener("DOMContentLoaded", initData);
 if (byId("builderControls")) {
-  byId("builderControls").addEventListener("change", updateConfigurator);
-  byId("customScopeLen").addEventListener("input", updateConfigurator);
+  byId("builderControls").addEventListener("change", (e) => {
+    if (e.target.id === 'scopeSelect') renderAccessories();
+    updateConfigurator();
+  });
+  byId("customScopeLen").addEventListener("input", () => { renderAccessories(); updateConfigurator(); });
   byId("customScopeFR").addEventListener("input", updateConfigurator);
 }
