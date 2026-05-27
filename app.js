@@ -4,6 +4,9 @@
    ═══════════════════════════════════════════ */
 
 let dbPrices = {};
+let globalScopes = [];
+let selectedGlobalScope = null;
+let analysisUnlocked = false;
 
 const scopes = {
   none:       { name: "Custom Profile Active",                      backfocus: 0,  thread: "N/A", weight: 0,   len: 0,   reqFlattener: false },
@@ -32,19 +35,74 @@ function byId(id) {
   return document.getElementById(id);
 }
 
-// ── Price Fetching ──
-async function fetchPrices() {
+// ── Database & Price Loading ──
+async function initData() {
   try {
-    const res = await fetch("/api/uranus/prices");
-    if (res.ok) {
-      dbPrices = await res.json();
-    }
+    const [priceRes, scopeRes] = await Promise.all([
+      fetch("/api/uranus/prices"),
+      fetch("global_scopes.json")
+    ]);
+    
+    if (priceRes.ok) dbPrices = await priceRes.json();
+    if (scopeRes.ok) globalScopes = await scopeRes.json();
+    
+    initSearch();
   } catch (e) {
-    console.error("Failed to load live prices", e);
+    console.error("Failed to load mission data", e);
   } finally {
     updatePriceTags();
     updateConfigurator();
   }
+}
+
+function initSearch() {
+  const searchInput = byId("scopeSearch");
+  const suggestions = byId("searchSuggestions");
+  
+  if (!searchInput || !suggestions) return;
+
+  searchInput.addEventListener("input", () => {
+    const val = searchInput.value.toLowerCase();
+    suggestions.innerHTML = "";
+    if (val.length < 2) {
+      suggestions.style.display = "none";
+      return;
+    }
+
+    const matches = globalScopes.filter(s => 
+      s.brand.toLowerCase().includes(val) || s.model.toLowerCase().includes(val)
+    ).slice(0, 5);
+
+    if (matches.length > 0) {
+      matches.forEach(m => {
+        const div = document.createElement("div");
+        div.style.padding = "10px";
+        div.style.cursor = "pointer";
+        div.style.borderBottom = "1px solid var(--border)";
+        div.innerHTML = `<div style="font-weight:bold; font-size:0.85rem;">${m.brand} ${m.model}</div><div style="font-size:0.7rem; color:var(--muted);">${m.type} | ${m.len}mm</div>`;
+        div.addEventListener("click", () => selectGlobalScope(m));
+        suggestions.appendChild(div);
+      });
+      suggestions.style.display = "block";
+    } else {
+      suggestions.style.display = "none";
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target !== searchInput) suggestions.style.display = "none";
+  });
+}
+
+function selectGlobalScope(scope) {
+  selectedGlobalScope = scope;
+  byId("scopeSearch").value = `${scope.brand} ${scope.model}`;
+  byId("customScopeLen").value = scope.len;
+  byId("customScopeFR").value = 0; // Not strictly needed if we have the profile
+  byId("selectedScopeLabel").textContent = `${scope.brand} ${scope.model} Profile Loaded`;
+  byId("searchSuggestions").style.display = "none";
+  analysisUnlocked = false; // Reset lock on change
+  updateConfigurator();
 }
 
 function updatePriceTags() {
@@ -88,7 +146,7 @@ async function updateConfigurator() {
     customScopeDiv.style.display = 'none';
   }
 
-  const scope  = scopes[scopeId];
+  const scope  = selectedGlobalScope && scopeId === 'none' ? { ...selectedGlobalScope, name: selectedGlobalScope.model } : scopes[scopeId];
   const camera = cameras[cameraId];
   const mount  = mounts[mountId];
 
@@ -113,41 +171,33 @@ async function updateConfigurator() {
     if (id === 'flattener') {
       if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for Doublet)'; }
       else if (scopeId === 'none') { 
-        if (cFR > 0) {
-            show = true;
-            note = (cFR >= 6) ? '(Highly Recommended for f/' + cFR + ')' : '(Optional)';
-        } else {
-            show = true; note = '(Optional for Refractors)';
-        }
+        if (scope.type === 'Petzval') show = false;
+        else if (cFR >= 6 || scope.type === 'Doublet') { show = true; note = '(Highly Recommended)'; }
+        else { show = true; note = '(Optional for Refractors)'; }
       }
       else { show = false; }
     }
-    // Bag Rules (Small = 40cm, Large = 65cm)
+    // Bag/Case Rules
     else if (id === 'bag') {
       if (effectiveLen > 0 && effectiveLen <= 380) { show = true; note = '(Perfect Fit)'; }
-      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 40cm)'; }
       else { show = false; }
     }
     else if (id === 'bag_lg') {
       if (effectiveLen > 380 && effectiveLen <= 620) { show = true; note = '(Confirmed Fit)'; }
-      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 65cm)'; }
       else { show = false; }
     }
-    // Case Rules (Small = 55cm, XL = 60cm+)
     else if (id === 'case') {
       if (effectiveLen > 0 && effectiveLen <= 520) { show = true; note = '(Hard Shell Protection)'; }
-      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 55cm)'; }
       else { show = false; }
     }
     else if (id === 'case_xl') {
-      if (effectiveLen > 520 || (scopeId === 'glancer' || scopeId === 'panoramic')) { show = true; note = '(Maximum Protection)'; }
-      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 65cm)'; }
+      if (effectiveLen > 520 || scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(Maximum Protection)'; }
       else { show = false; }
     }
     // Spacer Rules
     else if (id === 'spacers') {
       if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for Backfocus)'; }
-      else { show = true; note = '(Recommended for focus)'; }
+      else { show = true; note = '(Optional)'; }
     }
 
     if (!show) {
@@ -159,13 +209,7 @@ async function updateConfigurator() {
       if (forceCheck) chk.checked = true;
       
       const baseText = desc.innerHTML.split('<br>')[0].trim();
-      if (note) {
-        const color = forceCheck ? 'var(--accent)' : 'var(--muted)';
-        const weight = forceCheck ? '600' : '400';
-        desc.innerHTML = `${baseText} <br><small style="color: ${color}; font-weight: ${weight};">${note}</small>`;
-      } else {
-        desc.innerHTML = baseText;
-      }
+      desc.innerHTML = note ? `${baseText} <br><small style="color: ${forceCheck ? 'var(--accent)' : 'var(--muted)}; font-weight: ${forceCheck?600:400};">${note}</small>` : baseText;
     }
   });
 
@@ -177,204 +221,140 @@ async function updateConfigurator() {
   let payloadMsg = "N/A (Loose Parts)";
   
   if (mountId !== 'none') {
-    const practicalLimit = mount.capacity * 0.5;
-    if (payload > practicalLimit) {
+    const limit = mount.capacity * 0.5;
+    if (payload > limit) {
       compatible = false;
-      payloadMsg = `Overloaded (${payload.toFixed(1)}kg / ${practicalLimit}kg limit)`;
+      payloadMsg = `Overloaded (${payload.toFixed(1)}kg / ${limit.toFixed(1)}kg limit)`;
     } else {
-      payloadMsg = `Within range (${payload.toFixed(1)}kg / ${practicalLimit}kg limit)`;
+      payloadMsg = `Within range (${payload.toFixed(1)}kg / ${limit.toFixed(1)}kg limit)`;
     }
   }
 
-  // 3. UI Updates
-  byId("scopeName").textContent   = (scopeId === 'none' && cLen > 0) ? `Custom Scope (${cLen}mm)` : scope.name;
-  byId("cameraName").textContent  = camera.name;
+  // 3. UI Updates (The Paywall Logic)
+  byId("scopeName").textContent = scope.name;
+  byId("cameraName").textContent = camera.name;
   
-  if (scopeId !== 'none' && cameraId !== 'none') {
-    const spacerRequired = scope.backfocus - camera.depth;
-    const adapterType = scope.thread === camera.thread ? `Direct ${scope.thread}` : `${scope.thread} to ${camera.thread} adapter`;
-    
-    byId("adapterResult").textContent = adapterType;
-    byId("spacerResult").textContent  = `${spacerRequired.toFixed(1)}mm Spacer required`;
+  const checkoutBtn = byId("btnCheckoutRig");
+
+  if (scopeId === 'none' && !analysisUnlocked) {
+    byId("adapterResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">Mxx to Mxx Adapter</span>';
+    byId("spacerResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">xx.x mm Required</span>';
+    checkoutBtn.textContent = "RUN MISSION SIMULATION";
+    checkoutBtn.onclick = startSimulation;
   } else {
-    byId("adapterResult").textContent = "N/A";
-    byId("spacerResult").textContent  = (scopeId === 'none' && cLen > 0) ? "Review Specs" : "N/A";
+    const spacerVal = scope.backfocus - camera.depth;
+    const adapterVal = scope.thread === camera.thread ? `Direct ${scope.thread}` : `${scope.thread} to ${camera.thread} adapter`;
+    
+    byId("adapterResult").textContent = (scopeId !== 'none' || analysisUnlocked) ? adapterVal : "N/A";
+    byId("spacerResult").textContent = (scopeId !== 'none' || analysisUnlocked) ? `${spacerVal.toFixed(1)}mm Required` : "N/A";
+    
+    checkoutBtn.textContent = compatible ? "SECURE YOUR RIG" : "RIG INVALID";
+    checkoutBtn.onclick = checkoutRig;
   }
 
   byId("payloadResult").textContent = payloadMsg;
-  byId("cartResult").textContent    = compatible ? "Ready" : "Blocked";
+  byId("cartResult").textContent = compatible ? "Ready" : "Blocked";
 
   const status = byId("resultStatus");
   status.textContent = compatible ? "Cleared for Contact" : "Mount Blocked";
-  status.className   = `result-status ${compatible ? "ok" : "bad"}`;
+  status.className = `result-status ${compatible ? "ok" : "bad"}`;
   
-  byId("resultNote").textContent = compatible
-    ? (scopeId === 'none' ? "Smart Recommendations active for your custom scope." : "This rig passed the private compatibility checks. We show the verdict, not the recipe.")
-    : "This rig did not pass the private compatibility checks. Mission Control caught it before checkout got ugly.";
+  byId("resultNote").textContent = compatible ? "Verification engine active." : "This rig did not pass the private compatibility checks.";
 
   // 4. Price Calculation
   let total = 0;
-  if (scopeId !== 'none' && dbPrices[scopeId]) total += dbPrices[scopeId];
-  if (cameraId !== 'none' && dbPrices[cameraId]) total += dbPrices[cameraId];
-  if (mountId !== 'none' && dbPrices[mountId]) total += dbPrices[mountId];
+  if (dbPrices[scopeId]) total += dbPrices[scopeId];
+  if (dbPrices[cameraId]) total += dbPrices[cameraId];
+  if (dbPrices[mountId]) total += dbPrices[mountId];
 
-  let checkedCount = 0;
   document.querySelectorAll('.addon-chk:checked').forEach(chk => {
-    if (dbPrices[chk.value]) {
-      total += dbPrices[chk.value];
-      checkedCount++;
-    }
+    if (dbPrices[chk.value]) total += dbPrices[chk.value];
   });
 
   const rigTotal = byId("rigTotal");
   if (rigTotal) rigTotal.textContent = `$${total.toFixed(2)}`;
-  
-  const checkoutBtn = byId("btnCheckoutRig");
-  if (checkoutBtn) {
-    const hasItems = (scopeId !== 'none' || cameraId !== 'none' || mountId !== 'none' || checkedCount > 0);
-    const canCheckout = compatible && hasItems;
-    
-    checkoutBtn.disabled = !canCheckout;
-    checkoutBtn.style.opacity = canCheckout ? "1" : "0.5";
-    if (!hasItems) {
-      checkoutBtn.textContent = "SELECT GEAR";
-    } else {
-      checkoutBtn.textContent = compatible ? "SECURE YOUR RIG" : "RIG INVALID";
-    }
-  }
 }
+
+// ── The Simulation & Humor Engine ──
+const jokes = [
+  "Uranus is 4x wider than Earth... that's a lot of aperture.",
+  "Probing the absolute depths of Uranus...",
+  "Scanning for obstructions in Uranus...",
+  "Adjusting focus for a closer look at Uranus...",
+  "Ensuring the payload slides easily into Uranus...",
+  "Uranus has 27 moons. We're checking fitment for all of them.",
+  "Atmospheric gasses detected. Uranus is a bit windy today.",
+  "Calibration complete. Uranus is looking quite round."
+];
+
+function startSimulation() {
+  const overlay = byId("simulationOverlay");
+  const progress = byId("simProgress");
+  const ticker = byId("logTicker");
+  const header = byId("logHeader");
+  const scanner = byId("scannerBeam");
+
+  overlay.style.display = "flex";
+  scanner.style.opacity = "1";
+  scanner.style.animation = "scan 2s infinite";
+
+  let p = 0;
+  let jokeIdx = 0;
+  
+  const interval = setInterval(() => {
+    p += 0.5;
+    progress.style.width = p + "%";
+    
+    if (Math.floor(p) % 15 === 0) {
+      ticker.innerHTML = `<div style="animation: fadeIn 0.5s;">${jokes[jokeIdx % jokes.length]}</div>` + ticker.innerHTML;
+      jokeIdx++;
+    }
+
+    if (p >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+          overlay.style.display = "none";
+          overlay.style.opacity = "1";
+          byId("paywallModal").style.display = "flex";
+        }, 500);
+      }, 1000);
+    }
+  }, 100);
+}
+
+byId("btnUnlockAnalysis").onclick = () => {
+  byId("btnUnlockAnalysis").textContent = "VERIFYING PAYMENT...";
+  setTimeout(() => {
+    analysisUnlocked = true;
+    byId("paywallModal").style.display = "none";
+    updateConfigurator();
+    alert("Consultation Unlocked. Millimetric Recipe now visible.");
+  }, 2000);
+};
 
 async function checkoutRig() {
   const checkoutBtn = byId("btnCheckoutRig");
   checkoutBtn.textContent = 'CONNECTING...';
-  checkoutBtn.disabled = true;
-
   const items = [];
   if (byId("scopeSelect").value !== 'none') items.push(byId("scopeSelect").value);
   if (byId("cameraSelect").value !== 'none') items.push(byId("cameraSelect").value);
   if (byId("mountSelect").value !== 'none') items.push(byId("mountSelect").value);
-
-  document.querySelectorAll('.addon-chk:checked').forEach(chk => {
-    items.push(chk.value);
-  });
-
-  if (items.length === 0) {
-    checkoutBtn.textContent = 'SELECT GEAR';
-    checkoutBtn.disabled = false;
-    return;
-  }
+  document.querySelectorAll('.addon-chk:checked').forEach(chk => items.push(chk.value));
 
   try {
     const res = await fetch(`/api/uranus/checkout_hardware?items=${items.join(',')}`);
-    if (!res.ok) throw new Error('Checkout API failed');
     const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
+    if (data.url) window.location.href = data.url;
   } catch (error) {
     alert("Checkout failed. Mission Control is looking into it.");
-    checkoutBtn.textContent = 'SECURE YOUR RIG';
-    checkoutBtn.disabled = false;
   }
 }
 
-// ── Event listeners ──
+document.addEventListener("DOMContentLoaded", initData);
 if (byId("builderControls")) {
   byId("builderControls").addEventListener("change", updateConfigurator);
   byId("customScopeLen").addEventListener("input", updateConfigurator);
   byId("customScopeFR").addEventListener("input", updateConfigurator);
-  byId("btnCheckoutRig").addEventListener("click", checkoutRig);
-  fetchPrices();
 }
-
-// ── Legacy Handlers ──
-async function checkoutHardware(itemSlug) {
-  try {
-    const res = await fetch(`/api/uranus/checkout_hardware?items=${itemSlug}`);
-    if (!res.ok) throw new Error('Checkout API failed');
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
-  } catch (error) {
-    alert("Checkout failed. Mission Control is looking into it.");
-  }
-}
-
-async function checkoutUranus(tier) {
-  let button;
-  if (tier === 'deepprobe') {
-    button = document.querySelector('#pricing .pricing-card.premium .btn');
-  } else if (tier === 'fullsend') {
-    button = document.querySelector('#pricing .pricing-card:nth-child(3) .btn');
-  }
-
-  const originalText = button ? button.textContent : '';
-  if (button) {
-    button.textContent = 'CONNECTING...';
-    button.style.pointerEvents = 'none';
-    button.style.opacity = '0.7';
-  }
-
-  try {
-    const res = await fetch(`/api/uranus/checkout?tier=${tier}`);
-    if (!res.ok) throw new Error('Checkout API failed');
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
-  } catch (error) {
-    alert('Payment gateway failed. Try again soon.');
-    if (button) {
-      button.textContent = originalText;
-      button.style.pointerEvents = 'auto';
-      button.style.opacity = '1';
-    }
-  }
-}
-
-// ── Scroll animations ──
-function initScrollAnimations() {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-        }
-      });
-    },
-    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-  );
-
-  document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
-}
-
-// ── Smooth active nav highlighting ──
-function initNavHighlighting() {
-  const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".site-nav a");
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          navLinks.forEach(link => {
-            link.style.color = link.getAttribute("href") === `#${id}`
-              ? "var(--ink)"
-              : "";
-          });
-        }
-      });
-    },
-    { threshold: 0.3 }
-  );
-
-  sections.forEach(section => observer.observe(section));
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  initScrollAnimations();
-  initNavHighlighting();
-  updateConfigurator();
-});

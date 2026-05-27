@@ -1,0 +1,15 @@
+[
+  { "id": "wo_redcat51", "brand": "William Optics", "model": "RedCat 51", "len": 241, "weight": 1.8, "thread": "M48", "backfocus": 55, "type": "Petzval" },
+  { "id": "wo_redcat61", "brand": "William Optics", "model": "RedCat 61 (WIFD)", "len": 365, "weight": 2.5, "thread": "M54", "backfocus": 55, "type": "Petzval" },
+  { "id": "wo_redcat71", "brand": "William Optics", "model": "RedCat 71", "len": 435, "weight": 2.8, "thread": "M54", "backfocus": 55, "type": "Petzval" },
+  { "id": "wo_z61", "brand": "William Optics", "model": "ZenithStar 61 II", "len": 245, "weight": 1.5, "thread": "M54", "backfocus": 55, "type": "Doublet" },
+  { "id": "wo_z73", "brand": "William Optics", "model": "ZenithStar 73 III", "len": 330, "weight": 2.8, "thread": "M63", "backfocus": 55, "type": "Doublet" },
+  { "id": "wo_gt71", "brand": "William Optics", "model": "GT 71", "len": 392, "weight": 3.0, "thread": "M63", "backfocus": 55, "type": "Triplet" },
+  { "id": "sw_72ed", "brand": "Sky-Watcher", "model": "Evostar 72ED", "len": 420, "weight": 2.0, "thread": "M54", "backfocus": 55, "type": "Doublet" },
+  { "id": "sw_80ed", "brand": "Sky-Watcher", "model": "Evostar 80ED", "len": 475, "weight": 3.0, "thread": "M56", "backfocus": 55, "type": "Doublet" },
+  { "id": "c_edge8", "brand": "Celestron", "model": "EdgeHD 8\"", "len": 432, "weight": 6.4, "thread": "SCT 2\"", "backfocus": 133.4, "type": "SCT" },
+  { "id": "c_edge11", "brand": "Celestron", "model": "EdgeHD 11\"", "len": 610, "weight": 13.0, "thread": "SCT 3.29\"", "backfocus": 146.1, "type": "SCT" },
+  { "id": "c_rasa8", "brand": "Celestron", "model": "RASA 8\"", "len": 628, "weight": 7.7, "thread": "M42", "backfocus": 29.0, "type": "Astrograph" },
+  { "id": "ss_61edph", "brand": "SharpStar", "model": "61EDPH III", "len": 272, "weight": 1.5, "thread": "M68", "backfocus": 55, "type": "Triplet" },
+  { "id": "ss_76edph", "brand": "SharpStar", "model": "76EDPH", "len": 333, "weight": 2.3, "thread": "M74", "backfocus": 55, "type": "Triplet" }
+]

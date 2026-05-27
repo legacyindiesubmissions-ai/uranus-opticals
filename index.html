@@ -738,7 +738,14 @@ footer .footer-joke {
 
         <!-- CUSTOM SCOPE FORM (Hidden by default) -->
         <div id="customScopeForm" style="display: none; background: rgba(160,208,240,0.05); border: 1px dashed var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-          <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Your Telescope Specs</h4>
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Global Mission Profile</h4>
+          
+          <div style="margin-bottom: 12px; position: relative;">
+            <span style="font-size: 0.7rem; color: var(--muted);">Search 100+ Verified Telescopes</span>
+            <input type="text" id="scopeSearch" placeholder="e.g. RedCat 51, EdgeHD..." style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+            <div id="searchSuggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); z-index: 100; max-height: 200px; overflow-y: auto; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);"></div>
+          </div>
+
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <label style="padding: 0; background: transparent; border: none;">
               <span style="font-size: 0.7rem; color: var(--muted);">Retracted Length (mm)</span>
@@ -749,7 +756,7 @@ footer .footer-joke {
               <input type="number" id="customScopeFR" placeholder="e.g. 7" step="0.1" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
             </label>
           </div>
-          <p style="font-size: 0.65rem; color: var(--muted); margin-top: 8px;">Input your specs and we'll dynamically filter the compatible gear below.</p>
+          <p style="font-size: 0.65rem; color: var(--muted); margin-top: 8px;">Selected: <span id="selectedScopeLabel" style="color: var(--accent);">Generic Profile</span></p>
         </div>
 
         <label>
@@ -1131,3 +1138,45 @@ function setTheme(theme) {
 
 </body>
 </html>
+  <!-- DEEP PROBE SIMULATION OVERLAY -->
+  <div id="simulationOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #05070a; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; color: white; font-family: monospace; overflow: hidden; opacity: 1;">
+    <div id="uranusAnimation" style="position: relative; width: 300px; height: 300px; margin-bottom: 40px;">
+      <div style="position: absolute; width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #a0d0f0, #4a90e2, #1a2b3c); border-radius: 50%; top: 70px; left: 70px; box-shadow: inset -20px -20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(160,208,240,0.3); animation: planetPulse 4s infinite ease-in-out;"></div>
+      <div style="position: absolute; width: 280px; height: 20px; border: 2px solid rgba(160,208,240,0.2); border-radius: 50%; top: 140px; left: 10px; transform: rotate(85deg); box-shadow: 0 0 15px rgba(160,208,240,0.1);"></div>
+      <div id="scannerBeam" style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #a0d0f0, transparent); top: 50%; left: 0; opacity: 0; box-shadow: 0 0 20px #a0d0f0;"></div>
+    </div>
+    <div id="simLogs" style="width: 80%; max-width: 500px; text-align: left; height: 120px;">
+      <div id="logHeader" style="color: #a0d0f0; margin-bottom: 10px; font-weight: bold; border-bottom: 1px solid rgba(160,208,240,0.2); padding-bottom: 5px;">PROBE STATUS: INITIALIZING...</div>
+      <div id="logTicker" style="font-size: 0.9rem; line-height: 1.5; color: #cbd5e1;"></div>
+    </div>
+    <div style="width: 80%; max-width: 500px; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 20px; position: relative; overflow: hidden;">
+      <div id="simProgress" style="position: absolute; top: 0; left: 0; width: 0%; height: 100%; background: #a0d0f0; transition: width 0.1s linear;"></div>
+    </div>
+  </div>
+
+  <div id="paywallModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,7,10,0.95); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #111827; width: 100%; max-width: 450px; border: 1px solid #a0d0f0; border-radius: 12px; padding: 32px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+      <div style="color: #a0d0f0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;">Mission Analysis Complete</div>
+      <h2 style="font-size: 1.8rem; margin-bottom: 12px; color: #f9fafb;">FITMENT SECURED</h2>
+      <p style="color: #9ca3af; font-size: 0.95rem; margin-bottom: 24px; line-height: 1.6;">Our Deep Probe simulation has calculated your specific optical train requirements. Unlock the full millimetric recipe and storage verification report.</p>
+      <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; border: 1px solid #374151; margin-bottom: 24px;">
+        <div style="font-size: 2rem; font-weight: 800; color: #f9fafb;">$19.99</div>
+        <div style="font-size: 0.75rem; color: #a0d0f0; text-transform: uppercase; margin-top: 4px;">One-Time Consultation Fee</div>
+      </div>
+      <ul style="text-align: left; font-size: 0.85rem; color: #f9fafb; margin-bottom: 32px; padding-left: 20px;">
+        <li style="margin-bottom: 10px;">Exact spacer length recipe (0.1mm accuracy)</li>
+        <li style="margin-bottom: 10px;">Millimetric storage fitment certificate</li>
+        <li style="margin-bottom: 10px;">Thread adapter mapping (M42/M48/M54)</li>
+        <li style="font-weight: 700; color: #a0d0f0;">Analysis fee credited back on any hardware purchase!</li>
+      </ul>
+      <button id="btnUnlockAnalysis" style="width: 100%; background: #a0d0f0; color: #05070a; border: none; padding: 16px; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Unlock Mission Data</button>
+      <button onclick="document.getElementById('paywallModal').style.display='none'" style="background: transparent; border: none; color: #9ca3af; margin-top: 16px; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">Return to Base</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes planetPulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.02); filter: brightness(1.1); }
+    }
+  </style>
