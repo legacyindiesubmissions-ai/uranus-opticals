@@ -33,7 +33,7 @@ async function updateConfigurator() {
   const mountId = byId("mountSelect").value;
 
   try {
-    const res = await fetch(`https://license.taterlabs.shop/api/uranus/configure?scope=${scopeId}&camera=${cameraId}&mount=${mountId}`);
+    const res = await fetch(`/api/uranus/configure?scope=${scopeId}&camera=${cameraId}&mount=${mountId}`);
     if (!res.ok) throw new Error("Backend error");
     const data = await res.json();
 
