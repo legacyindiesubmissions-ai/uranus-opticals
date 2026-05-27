@@ -129,6 +129,42 @@ function initNavHighlighting() {
   sections.forEach(section => observer.observe(section));
 }
 
+// ── Stripe Checkout Redirection ──
+async function checkoutUranus(tier) {
+  let button;
+  if (tier === 'deepprobe') {
+    button = document.querySelector('#pricing .pricing-card.premium .btn');
+  } else if (tier === 'fullsend') {
+    button = document.querySelector('#pricing .pricing-card:nth-child(3) .btn');
+  }
+
+  const originalText = button ? button.textContent : '';
+  if (button) {
+    button.textContent = 'CONNECTING...';
+    button.style.pointerEvents = 'none';
+    button.style.opacity = '0.7';
+  }
+
+  try {
+    const res = await fetch(`/api/uranus/checkout?tier=${tier}`);
+    if (!res.ok) throw new Error('Checkout API failed');
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('No checkout URL returned');
+    }
+  } catch (err) {
+    console.error('Checkout error:', err);
+    alert('Failed to initiate checkout. Please try again or contact support.');
+    if (button) {
+      button.textContent = originalText;
+      button.style.pointerEvents = '';
+      button.style.opacity = '';
+    }
+  }
+}
+
 // ── Init ──
 updateConfigurator();
 initScrollAnimations();
