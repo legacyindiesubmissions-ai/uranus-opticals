@@ -6,7 +6,7 @@
 let dbPrices = {};
 
 const scopes = {
-  none:       { name: "None / Have my own",                         backfocus: 0,  thread: "N/A", weight: 0,   len: 0,   reqFlattener: false },
+  none:       { name: "Custom Profile Active",                      backfocus: 0,  thread: "N/A", weight: 0,   len: 0,   reqFlattener: false },
   glancer:    { name: "Svbony SV503 80ED (Beginner Probe)",         backfocus: 55, thread: "M48", weight: 3.9, len: 470, reqFlattener: true },
   penetrator: { name: "Askar FRA300 Pro (The Deep Explorer)",       backfocus: 55, thread: "M48", weight: 3.1, len: 303, reqFlattener: false },
   panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 5.2, len: 410, reqFlattener: false }
@@ -78,6 +78,16 @@ async function updateConfigurator() {
   const cameraId = byId("cameraSelect").value;
   const mountId = byId("mountSelect").value;
   
+  const customScopeDiv = byId("customScopeForm");
+  const cLen = parseFloat(byId("customScopeLen").value) || 0;
+  const cFR = parseFloat(byId("customScopeFR").value) || 0;
+
+  if (scopeId === 'none') {
+    customScopeDiv.style.display = 'block';
+  } else {
+    customScopeDiv.style.display = 'none';
+  }
+
   const scope  = scopes[scopeId];
   const camera = cameras[cameraId];
   const mount  = mounts[mountId];
@@ -85,61 +95,59 @@ async function updateConfigurator() {
   if (!scope || !camera || !mount) return;
 
   // 1. Dynamic Accessory Logic
-  const accList = [
-    { id: 'flattener' },
-    { id: 'spacers' },
-    { id: 'guidescope' },
-    { id: 'guidecam' },
-    { id: 'filter' },
-    { id: 'dewheater' },
-    { id: 'bag' },
-    { id: 'bag_lg' },
-    { id: 'case' },
-    { id: 'case_xl' },
-    { id: 'power' },
-    { id: 'tripod' }
-  ];
+  const accList = ['flattener', 'spacers', 'guidescope', 'guidecam', 'filter', 'dewheater', 'bag', 'bag_lg', 'case', 'case_xl', 'power', 'tripod'];
 
-  accList.forEach(item => {
-    const chk = byId(`chk_${item.id}`);
-    const lbl = byId(`lbl_${item.id}`);
-    const desc = byId(`desc_${item.id}`);
+  accList.forEach(id => {
+    const chk = byId(`chk_${id}`);
+    const lbl = byId(`lbl_${id}`);
+    const desc = byId(`desc_${id}`);
     if (!chk || !lbl || !desc) return;
 
     let show = true;
     let forceCheck = false;
     let note = '';
 
+    const effectiveLen = (scopeId === 'none') ? cLen : scope.len;
+
     // Flattener Rules
-    if (item.id === 'flattener') {
+    if (id === 'flattener') {
       if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for Doublet)'; }
-      else if (scopeId === 'none') { show = true; note = '(Optional)'; }
+      else if (scopeId === 'none') { 
+        if (cFR > 0) {
+            show = true;
+            note = (cFR >= 6) ? '(Highly Recommended for f/' + cFR + ')' : '(Optional)';
+        } else {
+            show = true; note = '(Optional for Refractors)';
+        }
+      }
       else { show = false; }
     }
-    // Bag Rules
-    else if (item.id === 'bag') {
-      if (scopeId === 'penetrator' || scopeId === 'none') { show = true; note = scopeId === 'penetrator' ? '(Perfect Fit)' : '(Small Scopes)'; }
+    // Bag Rules (Small = 40cm, Large = 65cm)
+    else if (id === 'bag') {
+      if (effectiveLen > 0 && effectiveLen <= 380) { show = true; note = '(Perfect Fit)'; }
+      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 40cm)'; }
       else { show = false; }
     }
-    else if (item.id === 'bag_lg') {
-      if (scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(High Quality Soft Shell)'; }
-      else if (scopeId === 'none') { show = true; note = '(65cm Large)'; }
+    else if (id === 'bag_lg') {
+      if (effectiveLen > 380 && effectiveLen <= 620) { show = true; note = '(Confirmed Fit)'; }
+      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 65cm)'; }
       else { show = false; }
     }
-    // Case Rules
-    else if (item.id === 'case') {
-      if (scopeId === 'penetrator' || scopeId === 'none') { show = true; note = '(Hard Shell Protection)'; }
+    // Case Rules (Small = 55cm, XL = 60cm+)
+    else if (id === 'case') {
+      if (effectiveLen > 0 && effectiveLen <= 520) { show = true; note = '(Hard Shell Protection)'; }
+      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 55cm)'; }
       else { show = false; }
     }
-    else if (item.id === 'case_xl') {
-      if (scopeId === 'glancer' || scopeId === 'panoramic') { show = true; note = '(Maximum Protection)'; }
-      else if (scopeId === 'none') { show = true; note = '(60cm Extra Large)'; }
+    else if (id === 'case_xl') {
+      if (effectiveLen > 520 || (scopeId === 'glancer' || scopeId === 'panoramic')) { show = true; note = '(Maximum Protection)'; }
+      else if (scopeId === 'none' && effectiveLen === 0) { show = true; note = '(Fits < 65cm)'; }
       else { show = false; }
     }
     // Spacer Rules
-    else if (item.id === 'spacers') {
+    else if (id === 'spacers') {
       if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for Backfocus)'; }
-      else { show = true; note = '(Optional)'; }
+      else { show = true; note = '(Recommended for focus)'; }
     }
 
     if (!show) {
@@ -179,7 +187,7 @@ async function updateConfigurator() {
   }
 
   // 3. UI Updates
-  byId("scopeName").textContent   = scope.name;
+  byId("scopeName").textContent   = (scopeId === 'none' && cLen > 0) ? `Custom Scope (${cLen}mm)` : scope.name;
   byId("cameraName").textContent  = camera.name;
   
   if (scopeId !== 'none' && cameraId !== 'none') {
@@ -190,7 +198,7 @@ async function updateConfigurator() {
     byId("spacerResult").textContent  = `${spacerRequired.toFixed(1)}mm Spacer required`;
   } else {
     byId("adapterResult").textContent = "N/A";
-    byId("spacerResult").textContent  = "N/A";
+    byId("spacerResult").textContent  = (scopeId === 'none' && cLen > 0) ? "Review Specs" : "N/A";
   }
 
   byId("payloadResult").textContent = payloadMsg;
@@ -201,7 +209,7 @@ async function updateConfigurator() {
   status.className   = `result-status ${compatible ? "ok" : "bad"}`;
   
   byId("resultNote").textContent = compatible
-    ? (scopeId === 'none' && cameraId === 'none' && mountId === 'none' ? "Standalone parts mode active." : "This rig passed the private compatibility checks. We show the verdict, not the recipe.")
+    ? (scopeId === 'none' ? "Smart Recommendations active for your custom scope." : "This rig passed the private compatibility checks. We show the verdict, not the recipe.")
     : "This rig did not pass the private compatibility checks. Mission Control caught it before checkout got ugly.";
 
   // 4. Price Calculation
@@ -273,6 +281,8 @@ async function checkoutRig() {
 // ── Event listeners ──
 if (byId("builderControls")) {
   byId("builderControls").addEventListener("change", updateConfigurator);
+  byId("customScopeLen").addEventListener("input", updateConfigurator);
+  byId("customScopeFR").addEventListener("input", updateConfigurator);
   byId("btnCheckoutRig").addEventListener("click", checkoutRig);
   fetchPrices();
 }

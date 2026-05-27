@@ -735,6 +735,23 @@ footer .footer-joke {
             <option value="panoramic" selected>Uranus Signature 80 APO (Full Insertion)</option>
           </select>
         </label>
+
+        <!-- CUSTOM SCOPE FORM (Hidden by default) -->
+        <div id="customScopeForm" style="display: none; background: rgba(160,208,240,0.05); border: 1px dashed var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+          <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Your Telescope Specs</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <label style="padding: 0; background: transparent; border: none;">
+              <span style="font-size: 0.7rem; color: var(--muted);">Retracted Length (mm)</span>
+              <input type="number" id="customScopeLen" placeholder="e.g. 450" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+            </label>
+            <label style="padding: 0; background: transparent; border: none;">
+              <span style="font-size: 0.7rem; color: var(--muted);">Focal Ratio (f/)</span>
+              <input type="number" id="customScopeFR" placeholder="e.g. 7" step="0.1" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+            </label>
+          </div>
+          <p style="font-size: 0.65rem; color: var(--muted); margin-top: 8px;">Input your specs and we'll dynamically filter the compatible gear below.</p>
+        </div>
+
         <label>
           <span>Camera (The Sensor)</span>
           <select id="cameraSelect">
