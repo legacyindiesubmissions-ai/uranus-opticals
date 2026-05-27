@@ -70,39 +70,67 @@ async function updateConfigurator() {
   if (!scope || !camera || !mount) return;
 
   // 1. Dynamic Accessory Logic
-  const chkFlattener = byId("chk_flattener");
-  const lblFlattener = byId("lbl_flattener");
-  const descFlattener = byId("desc_flattener");
-  if (chkFlattener && descFlattener) {
-    if (scope.reqFlattener) {
-      chkFlattener.disabled = true;
-      chkFlattener.checked = true;
-      descFlattener.innerHTML = 'Svbony 0.8x Field Flattener <br><small style="color: var(--accent); font-weight: 600;">(Required for 80ED)</small>';
-      lblFlattener.style.opacity = '1';
-    } else if (scopeId === 'none') {
-      chkFlattener.disabled = false;
-      descFlattener.innerHTML = 'Svbony 0.8x Field Flattener <br><small style="color: var(--muted); font-weight: 400;">(Optional)</small>';
-      lblFlattener.style.opacity = '1';
-    } else {
-      chkFlattener.disabled = true;
-      chkFlattener.checked = false;
-      descFlattener.innerHTML = 'Svbony 0.8x Field Flattener <br><small style="color: var(--warn); font-weight: 600;">(Incompatible with Petzval)</small>';
-      lblFlattener.style.opacity = '0.5';
+  const accList = [
+    { id: 'flattener' },
+    { id: 'spacers' },
+    { id: 'guidescope' },
+    { id: 'guidecam' },
+    { id: 'filter' },
+    { id: 'dewheater' },
+    { id: 'case' },
+    { id: 'bag' },
+    { id: 'power' },
+    { id: 'tripod' }
+  ];
+
+  accList.forEach(item => {
+    const chk = byId(`chk_${item.id}`);
+    const lbl = byId(`lbl_${item.id}`);
+    const desc = byId(`desc_${item.id}`);
+    if (!chk || !lbl || !desc) return;
+
+    let show = true;
+    let forceCheck = false;
+    let note = '';
+
+    // Flattener Rules
+    if (item.id === 'flattener') {
+      if (scopeId === 'glancer') { show = true; forceCheck = true; note = '(Required for 80ED)'; }
+      else if (scopeId === 'none') { show = true; note = '(Optional)'; }
+      else { show = false; } // Completely hide for Petzval
     }
-  }
-  
-  const chkSpacers = byId("chk_spacers");
-  const descSpacers = byId("desc_spacers");
-  if (chkSpacers && descSpacers) {
-    if (scopeId !== 'none' && cameraId !== 'none') {
-      chkSpacers.checked = true;
-      chkSpacers.disabled = true;
-      descSpacers.innerHTML = 'M42/M48 Spacer Kit <br><small style="color: var(--accent); font-weight: 600;">(Required for 55mm Backfocus)</small>';
-    } else {
-      chkSpacers.disabled = false;
-      descSpacers.innerHTML = 'M42/M48 Spacer Kit <br><small style="color: var(--muted); font-weight: 400;">(Optional)</small>';
+    // Case Rules: glancer (80ED) and panoramic (80 APO) fit hard case, penetrator (FRA300) does not
+    else if (item.id === 'case') {
+      if (scopeId === 'penetrator') show = false;
     }
-  }
+    // Bag Rules: penetrator and panoramic fit bag, glancer does not
+    else if (item.id === 'bag') {
+      if (scopeId === 'glancer') show = false;
+    }
+    // Spacer Rules
+    else if (item.id === 'spacers') {
+      if (scopeId !== 'none' && cameraId !== 'none') { show = true; forceCheck = true; note = '(Required for 55mm Backfocus)'; }
+      else { show = true; note = '(Optional)'; }
+    }
+
+    if (!show) {
+      lbl.style.display = 'none';
+      chk.checked = false;
+    } else {
+      lbl.style.display = 'flex';
+      chk.disabled = forceCheck;
+      if (forceCheck) chk.checked = true;
+      
+      const baseText = desc.innerHTML.split('<br>')[0].trim();
+      if (note) {
+        const color = forceCheck ? 'var(--accent)' : 'var(--muted)';
+        const weight = forceCheck ? '600' : '400';
+        desc.innerHTML = `${baseText} <br><small style="color: ${color}; font-weight: ${weight};">${note}</small>`;
+      } else {
+        desc.innerHTML = baseText;
+      }
+    }
+  });
 
   // 2. Compatibility Math
   let payload = scope.weight + camera.weight;
