@@ -132,7 +132,7 @@ function getEffectiveScope() {
     if (!s) return null;
     // Determine type from the preset
     let type = 'Refractor';
-    if (scopeId === 'penetrator') type = 'Petzval';
+    if (scopeId === 'penetrator') type = 'Quintuplet';
     else if (scopeId === 'glancer') type = 'Doublet';
     else if (scopeId === 'panoramic') type = 'Triplet';
     return { len: s.len, weight: s.weight, thread: s.thread, backfocus: s.backfocus, type, reqFlattener: s.reqFlattener, name: s.name };
@@ -188,71 +188,111 @@ function renderAccessories() {
     let forceOn = false;
     let note = '';
     let rowClass = 'excluded';
+    const hasScope = eff && eff.len > 0;
+    const isRefractor = eff && ['Doublet','Triplet','Petzval','Quintuplet','Refractor'].includes(eff.type);
+    const isSCT = eff && eff.type === 'SCT';
+    const isNewtonian = eff && eff.type === 'Newtonian';
+    const isAstrograph = eff && eff.type === 'Astrograph';
+    const hasBuiltinCorrection = eff && ['Petzval','Quintuplet','SCT','Astrograph','Newtonian'].includes(eff.type);
+    const hasCamera = cameraId !== 'none';
+    const backfocus = eff ? eff.backfocus : 55;
+    const isStandardBF = backfocus >= 50 && backfocus <= 60;
 
-    // ── Flattener logic ──
+    // ── Flattener ──
     if (a.id === 'flattener') {
-      if (!eff || eff.len === 0) {
-        visible = true; note = 'Select a scope to evaluate';
-      } else if (eff.type === 'Petzval' || eff.type === 'Astrograph' || eff.type === 'SCT') {
-        visible = false; note = 'Built-in field correction — flattener not needed';
+      if (!hasScope) {
+        visible = true; note = 'Select a scope to evaluate compatibility';
+      } else if (hasBuiltinCorrection) {
+        visible = false; note = `Not needed — ${eff.type} design has built-in field correction`;
       } else if (eff.type === 'Doublet') {
-        visible = true; forceOn = true; note = 'Required — doublet refractors need field flattening';
+        visible = true; forceOn = true; note = 'Required — doublet refractors need field flattening for sharp corners';
         rowClass = 'included';
       } else if (eff.type === 'Triplet') {
-        visible = true; note = 'Optional — triplet is well-corrected but flattener improves edges';
+        visible = true; note = 'Optional — triplet is well-corrected; flattener tightens extreme edges';
       } else {
-        visible = true; note = 'Recommended for best edge performance';
+        visible = true; note = 'May improve edge performance on this optical design';
       }
     }
 
-    // ── Spacers logic ──
+    // ── Spacers ──
     if (a.id === 'spacers') {
-      if (scopeId !== 'none' && cameraId !== 'none') {
-        forceOn = true; note = 'Required — included free with scope + camera purchase';
-        rowClass = 'included';
-      } else if (eff && eff.len > 0 && cameraId !== 'none') {
-        visible = true; note = 'Recommended for backfocus adjustment';
+      if (!hasScope && !hasCamera) {
+        visible = true; note = 'Select scope and camera to calculate spacer requirements';
+      } else if (hasScope && hasCamera) {
+        forceOn = true; rowClass = 'included';
+        if (!isStandardBF) {
+          note = `Required — this scope uses ${backfocus}mm backfocus; we calculate exact spacer stack`;
+        } else {
+          note = 'Required — included free with every scope + camera purchase';
+        }
+      } else if (hasCamera) {
+        visible = true; note = 'Select a scope to calculate backfocus spacing';
       } else {
-        visible = true; note = 'Optional — needed when camera is connected';
+        visible = true; note = 'Select a camera to calculate backfocus spacing';
       }
     }
 
-    // ── Bag / Case sizing ──
-    if (a.id === 'bag') {
-      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
-      else if (eff.len <= 380) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
-      else { visible = false; note = `Too small — your scope is ${eff.len}mm`; }
-    }
-    if (a.id === 'bag_lg') {
-      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
-      else if (eff.len > 380 && eff.len <= 620) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
-      else if (eff.len <= 380) { visible = false; note = `Overkill — your ${eff.len}mm scope fits the small bag`; }
-      else { visible = false; note = `Too large — your scope is ${eff.len}mm`; }
-    }
-    if (a.id === 'case') {
-      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
-      else if (eff.len <= 520) { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
-      else { visible = false; note = `Too small — your scope is ${eff.len}mm`; }
-    }
-    if (a.id === 'case_xl') {
-      if (!eff || eff.len === 0) { visible = true; note = 'Select a scope to check fit'; }
-      else if (eff.len > 520 || scopeId === 'glancer' || scopeId === 'panoramic') { visible = true; note = `Verified — fits your ${eff.len}mm scope`; }
-      else if (eff.len <= 520 && eff.len > 0) { visible = true; note = 'Fits — but the small case is more compact'; }
-      else { visible = false; }
-    }
-
-    // ── Dew heater ──
+    // ── Dew Heater ──
     if (a.id === 'dewheater') {
-      if (eff && eff.len > 400) note = 'Recommended — longer scopes dew up faster';
-      else if (eff && eff.len > 0) note = 'Optional — good insurance for humid nights';
-      else note = 'Optional — prevents fogged optics';
+      if (isSCT) {
+        note = 'Critical — SCT corrector plates are extreme dew magnets';
+        forceOn = true; rowClass = 'included';
+      } else if (isNewtonian) {
+        note = 'Recommended — open tubes fog secondary mirrors quickly';
+      } else if (isAstrograph) {
+        note = 'Recommended — fast optics with exposed corrector';
+      } else if (eff && eff.type === 'Doublet' && eff.len < 400) {
+        note = 'Recommended — doublets cool faster and fog earlier';
+      } else if (eff && eff.len > 400) {
+        note = 'Recommended — longer tubes collect more dew';
+      } else if (hasScope) {
+        note = 'Optional — good insurance for humid nights';
+      } else {
+        note = 'Optional — prevents fogged optics on any scope';
+      }
     }
 
-    // ── Tripod weight note ──
+    // ── Bags & Cases ──
+    if (a.id === 'bag' || a.id === 'bag_lg' || a.id === 'case' || a.id === 'case_xl') {
+      if (isSCT || isNewtonian) {
+        visible = false;
+        note = `Designed for refractor tubes — not compatible with ${eff.type} form factor`;
+      } else if (!hasScope) {
+        visible = true; note = 'Select a scope to verify fit';
+      }
+      // Length-based rules for refractors
+      if (isRefractor || (!isSCT && !isNewtonian)) {
+        if (a.id === 'bag') {
+          if (hasScope && eff.len <= 380) note = `Verified fit — ${eff.len}mm within 380mm max`;
+          else if (hasScope && eff.len > 380) { visible = false; note = `Too small — ${eff.len}mm exceeds 380mm max`; }
+        }
+        if (a.id === 'bag_lg') {
+          if (hasScope && eff.len > 380 && eff.len <= 620) note = `Verified fit — ${eff.len}mm within 381-620mm range`;
+          else if (hasScope && eff.len <= 380) { visible = false; note = `Overkill — ${eff.len}mm fits the small bag`; }
+          else if (hasScope && eff.len > 620) { visible = false; note = `Too large — ${eff.len}mm exceeds 620mm max`; }
+        }
+        if (a.id === 'case') {
+          if (hasScope && eff.len <= 520) note = `Verified fit — ${eff.len}mm within 520mm max`;
+          else if (hasScope && eff.len > 520) { visible = false; note = `Too small — ${eff.len}mm exceeds 520mm max`; }
+        }
+        if (a.id === 'case_xl') {
+          if (hasScope && eff.len > 520) note = `Verified fit — ${eff.len}mm fits the XL case`;
+          else if (hasScope && eff.len <= 520 && eff.len > 0) { visible = true; note = 'Fits — but the small case is more compact'; }
+        }
+      }
+    }
+
+    // ── Tripod ──
     if (a.id === 'tripod') {
-      if (eff && eff.weight > 5) note = `Your ${eff.weight}kg scope is within the 8kg payload limit`;
-      else if (eff && eff.weight > 0) note = `Well within limits — your scope is only ${eff.weight}kg`;
-      else note = 'Select a scope for weight verification';
+      if (eff && eff.weight > 8) {
+        note = `WARNING — ${eff.weight}kg exceeds the 8kg payload limit`;
+      } else if (eff && eff.weight > 5) {
+        note = `${eff.weight}kg scope — within the 8kg payload rating`;
+      } else if (eff && eff.weight > 0) {
+        note = `${eff.weight}kg scope — well within the 8kg payload limit`;
+      } else {
+        note = 'Select a scope for weight verification';
+      }
     }
 
     const price = dbPrices[a.priceKey] ? `$${dbPrices[a.priceKey].toFixed(2)}` : '...';
