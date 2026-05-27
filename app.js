@@ -40,12 +40,12 @@ async function updateConfigurator() {
     // Update optical train
     byId("scopeName").textContent = data.scopeName;
     byId("cameraName").textContent = data.cameraName;
-    byId("adapterResult").textContent = data.adapterResult;
+    byId("adapterResult").textContent = data.compatible ? "Fit reviewed" : "Fit blocked";
 
-    // Update readouts
-    byId("spacerResult").textContent = data.spacerResult;
-    byId("payloadResult").textContent = data.payloadResult;
-    byId("cartResult").textContent = data.cartResult;
+    // Keep public readouts outcome-level; the detailed recipe belongs server-side.
+    byId("spacerResult").textContent = data.compatible ? "Locked" : "Needs review";
+    byId("payloadResult").textContent = data.compatible ? "Within range" : "Upgrade required";
+    byId("cartResult").textContent = data.compatible ? "Ready" : "Blocked";
 
     // Update status badge
     const status = byId("resultStatus");
@@ -53,32 +53,34 @@ async function updateConfigurator() {
     status.className = `result-status ${data.compatible ? "ok" : "bad"}`;
 
     // Update result note
-    byId("resultNote").textContent = data.note;
-  } catch (err) {
-    console.error("Configurator fetch error:", err);
+    byId("resultNote").textContent = data.publicNote || (
+      data.compatible
+        ? "This rig passed the private compatibility checks. We show the verdict, not the recipe."
+        : "This rig did not pass the private compatibility checks. Mission Control caught it before checkout got ugly."
+    );
+  } catch {
     // Fallback local calculations in case backend is offline
     const scope  = scopes[scopeId];
     const camera = cameras[cameraId];
     const mount  = mounts[mountId];
 
-    const spacer         = Math.max(scope.backfocus - camera.depth, 0);
-    const adapter        = scope.thread === camera.thread ? "Direct thread" : `${scope.thread} → ${camera.thread}`;
     const payload        = scope.weight + camera.weight + accessoriesWeight;
     const practicalLimit = mount.capacity * 0.5;
     const compatible     = payload <= practicalLimit;
-    const spacerCount    = spacer > 30 ? "2 spacer rings" : "1 spacer ring";
 
     byId("scopeName").textContent   = scope.name;
     byId("cameraName").textContent  = camera.name;
-    byId("adapterResult").textContent = adapter;
-    byId("spacerResult").textContent  = `${spacer.toFixed(1)}mm`;
-    byId("payloadResult").textContent = `${payload.toFixed(1)}kg / ${mount.capacity}kg`;
-    byId("cartResult").textContent    = adapter === "Direct thread" ? spacerCount : `${spacerCount} + adapter`;
+    byId("adapterResult").textContent = compatible ? "Fit reviewed" : "Fit blocked";
+    byId("spacerResult").textContent  = compatible ? "Locked" : "Needs review";
+    byId("payloadResult").textContent = compatible ? "Within range" : "Upgrade required";
+    byId("cartResult").textContent    = compatible ? "Ready" : "Blocked";
 
     const status = byId("resultStatus");
     status.textContent = compatible ? "Cleared for Contact" : "Mount Blocked";
     status.className   = `result-status ${compatible ? "ok" : "bad"}`;
-    byId("resultNote").textContent = "Local computation mode (backup). " + (compatible ? "Cleared!" : "Exceeded payload.");
+    byId("resultNote").textContent = compatible
+      ? "This rig passed the private compatibility checks. We show the verdict, not the recipe."
+      : "This rig did not pass the private compatibility checks. Mission Control caught it before checkout got ugly.";
   }
 }
 

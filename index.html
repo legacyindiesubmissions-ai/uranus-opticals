@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URANUS OPTICALS — Peer Deeper</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
 <style>
 :root {
   --space: #070b14;
@@ -709,6 +711,88 @@ footer .footer-joke {
   </div>
 </section>
 
+<!-- CONFIGURATOR -->
+<section id="configurator">
+  <div class="container">
+    <div class="section-label">THE URANUS PENETRATOR&trade;</div>
+    <h2 class="section-title">We Do the Math So You Can Focus on Uranus.</h2>
+      <p class="section-sub">
+      Pick your glass. Pick your sensor. We handle the rest behind the curtain and only show you the outcome.
+      </p>
+
+    <div class="config-shell">
+      <div class="controls">
+        <div class="controls-title">
+          <h3>Penetrator Control</h3>
+          <span>Gear Select</span>
+        </div>
+        <label>
+          <span>Telescope (The Glass)</span>
+          <select id="scopeSelect">
+            <option value="sv503">Svbony SV503 80ED (Beginner Probe)</option>
+            <option value="fra300">Askar FRA300 Pro (The Deep Explorer)</option>
+            <option value="kuo80" selected>Uranus Signature 80 APO (Full Insertion)</option>
+          </select>
+        </label>
+        <label>
+          <span>Camera (The Sensor)</span>
+          <select id="cameraSelect">
+            <option value="sv605">Svbony SV605CC (Cooled Deep Sensor)</option>
+            <option value="poseidon">Player One Poseidon-C (Direct Core)</option>
+            <option value="touptek533" selected>Uranus Signature 533C (High Penetration)</option>
+          </select>
+        </label>
+        <label>
+          <span>Mount (The Handler)</span>
+          <select id="mountSelect">
+            <option value="gti">Sky-Watcher GTi (Light duty)</option>
+            <option value="am3n">ZWO AM3N (Medium load)</option>
+            <option value="juwei17" selected>Uranus Harmonic 17 (Heavy handler)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="results" aria-live="polite">
+        <div class="result-header">
+          <h3>Compatibility Readout</h3>
+          <div class="result-status ok" id="resultStatus">Cleared for Contact</div>
+        </div>
+
+        <div class="optical-train">
+          <div class="train-node">
+            <span>Telescope</span>
+            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
+          </div>
+          <div class="train-connector" id="adapterResult">Fit reviewed</div>
+          <div class="train-node">
+            <span>Camera</span>
+            <b id="cameraName">Uranus Signature 533C (High Penetration)</b>
+          </div>
+        </div>
+
+        <div class="readout-grid">
+          <div class="readout">
+            <span>Alignment status</span>
+            <strong id="spacerResult">Locked</strong>
+          </div>
+          <div class="readout">
+            <span>Mount status</span>
+            <strong id="payloadResult">Within range</strong>
+          </div>
+          <div class="readout">
+            <span>Setup status</span>
+            <strong id="cartResult">Ready</strong>
+          </div>
+        </div>
+
+        <div class="result-note" id="resultNote">
+          This rig passed the private compatibility checks. We show the verdict, not the recipe.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- THE PROBLEM — aka "THE HOLE" -->
 <section id="problem">
   <div class="container">
@@ -741,6 +825,103 @@ footer .footer-joke {
         <p>That strict 55mm backfocus requirement isn't a suggestion — miss it and your image of Uranus 
         is a fuzzy brown smear. Our logic engine enforces the math so every photon from Uranus lands 
         exactly where it belongs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="container">
+    <div class="section-label">WHAT PEOPLE SAY ABOUT URANUS</div>
+    <h2 class="section-title">Real Feedback From Real Amateurs.</h2>
+    <p class="section-sub">These are definitely real reviews from actual customers and not written by us at 2 AM.</p>
+
+    <div class="quote-grid">
+      <div class="quote-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="quote">"I spent years fumbling around in the dark trying to find Uranus. The Penetrator&trade;
+        Configurator did all the math and now I'm seeing Uranus with crystal clarity. My wife is concerned about
+        how much time I spend looking at Uranus now."</div>
+        <div class="author">Gary T., Amateur Astronomer</div>
+        <div class="author-role">Obsessed with Uranus since 2026</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="quote">"The thread adapter situation was a nightmare until Uranus Opticals.
+        Now every connection to Uranus is smooth, satisfying, and mechanically sound. I've never felt
+        so confident about my Uranus setup."</div>
+        <div class="author">Melissa K., Deep-Sky Imager</div>
+        <div class="author-role">6-time Uranus prober</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+        <div class="quote">"Honestly I just came for the jokes and ended up buying a full rig. The
+        Uranus Penetrator 9000 is genuinely a great telescope. I can't tell anyone what it's called
+        without them laughing, but the images of Uranus speak for themselves."</div>
+        <div class="author">Dr. Chen, Astrophysics PhD</div>
+        <div class="author-role">Published 3 papers on Uranus</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">URANUS SUBSCRIPTIONS</div>
+    <h2 class="section-title">Choose Your Level of Commitment to Uranus.</h2>
+    <p class="section-sub">
+      From casual observation to full-blown Uranus obsession, we have a plan for you.
+    </p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-name">Quick Peek</div>
+        <div class="pricing-feature">For the Uranus-curious</div>
+        <div class="pricing-price">$0<span>/mo</span></div>
+        <div class="pricing-month">Free forever. Seriously.</div>
+        <ul class="pricing-features">
+          <li>Access to the Configurator</li>
+          <li>Basic fit guidance</li>
+          <li>Clear compatibility status</li>
+          <li>Access to 3 Uranus jokes/week</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center">PEEK AT URANUS</a>
+      </div>
+
+      <div class="pricing-card premium">
+        <div class="pricing-name">Deep Probe</div>
+        <div class="pricing-feature">For serious Uranus enthusiasts</div>
+        <div class="pricing-price">$9.99<span>/mo</span></div>
+        <div class="pricing-month">or $69/year — nice</div>
+        <ul class="pricing-features">
+          <li>Everything in Quick Peek</li>
+          <li>Priority setup review</li>
+          <li>Advanced alignment guidance</li>
+          <li>Unlimited Uranus jokes</li>
+          <li>Monthly Uranus photo digest</li>
+          <li>Early access to new Uranus products</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;text-align:center">COMMIT TO URANUS</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Mission Control</div>
+        <div class="pricing-feature">For people who want a second set of eyes on Uranus</div>
+        <div class="pricing-price">$29.99<span>/mo</span></div>
+        <div class="pricing-month">You are now a Uranus shareholder.</div>
+        <ul class="pricing-features">
+          <li>Everything in Deep Probe</li>
+          <li>Priority Uranus consultation queue</li>
+          <li>Custom fit support</li>
+          <li>Manual review before you buy expensive gear</li>
+          <li>Saved rig notes for future upgrades</li>
+          <li>Member access to the Uranus image feed</li>
+        </ul>
+        <a href="community.html" class="btn btn-outline" style="width:100%;text-align:center">ENTER MISSION CONTROL</a>
       </div>
     </div>
   </div>
@@ -903,185 +1084,6 @@ footer .footer-joke {
         </ul>
         <div class="product-price">$1,199 <s>$1,799</s></div>
         <a href="#" class="btn btn-outline" style="width:100%;text-align:center">LOCK ONTO URANUS</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONFIGURATOR -->
-<section id="configurator">
-  <div class="container">
-    <div class="section-label">THE URANUS PENETRATOR&trade;</div>
-    <h2 class="section-title">We Do the Math So You Can Focus on Uranus.</h2>
-      <p class="section-sub">
-      Pick your glass. Pick your sensor. We handle the rest behind the curtain and only show you the outcome.
-      </p>
-
-    <div class="config-shell">
-      <div class="controls">
-        <div class="controls-title">
-          <h3>Penetrator Control</h3>
-          <span>Gear Select</span>
-        </div>
-        <label>
-          <span>Telescope (The Glass)</span>
-          <select id="scopeSelect">
-            <option value="sv503">Svbony SV503 80ED (Beginner Probe)</option>
-            <option value="fra300">Askar FRA300 Pro (The Deep Explorer)</option>
-            <option value="kuo80" selected>Uranus Signature 80 APO (Full Insertion)</option>
-          </select>
-        </label>
-        <label>
-          <span>Camera (The Sensor)</span>
-          <select id="cameraSelect">
-            <option value="sv605">Svbony SV605CC (Cooled Deep Sensor)</option>
-            <option value="poseidon">Player One Poseidon-C (Direct Core)</option>
-            <option value="touptek533" selected>Uranus Signature 533C (High Penetration)</option>
-          </select>
-        </label>
-        <label>
-          <span>Mount (The Handler)</span>
-          <select id="mountSelect">
-            <option value="gti">Sky-Watcher GTi (Light duty)</option>
-            <option value="am3n">ZWO AM3N (Medium load)</option>
-            <option value="juwei17" selected>Uranus Harmonic 17 (Heavy handler)</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="results" aria-live="polite">
-        <div class="result-header">
-          <h3>Compatibility Readout</h3>
-          <div class="result-status ok" id="resultStatus">Cleared for Contact</div>
-        </div>
-
-        <div class="optical-train">
-          <div class="train-node">
-            <span>Telescope</span>
-            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
-          </div>
-          <div class="train-connector" id="adapterResult">Direct thread</div>
-          <div class="train-node">
-            <span>Camera</span>
-            <b id="cameraName">Uranus Signature 533C (High Penetration)</b>
-          </div>
-        </div>
-
-        <div class="readout-grid">
-          <div class="readout">
-            <span>Required spacer stack</span>
-            <strong id="spacerResult">37.5mm</strong>
-          </div>
-          <div class="readout">
-            <span>Payload Weight</span>
-            <strong id="payloadResult">4.5kg / 10kg</strong>
-          </div>
-          <div class="readout">
-            <span>Cart Addition</span>
-            <strong id="cartResult">2 spacer rings</strong>
-          </div>
-        </div>
-
-        <div class="result-note" id="resultNote">
-          This rig clears the 55mm backfocus target and stays inside the practical imaging payload rule.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section>
-  <div class="container">
-    <div class="section-label">WHAT PEOPLE SAY ABOUT URANUS</div>
-    <h2 class="section-title">Real Feedback From Real Amateurs.</h2>
-    <p class="section-sub">These are definitely real reviews from actual customers and not written by us at 2 AM.</p>
-
-    <div class="quote-grid">
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"I spent years fumbling around in the dark trying to find Uranus. The Penetrator&trade; 
-        Configurator did all the math and now I'm seeing Uranus with crystal clarity. My wife is concerned about 
-        how much time I spend looking at Uranus now."</div>
-        <div class="author">Gary T., Amateur Astronomer</div>
-        <div class="author-role">Obsessed with Uranus since 2026</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="quote">"The thread adapter situation was a nightmare until Uranus Opticals. 
-        Now every connection to Uranus is smooth, satisfying, and mechanically sound. I've never felt 
-        so confident about my Uranus setup."</div>
-        <div class="author">Melissa K., Deep-Sky Imager</div>
-        <div class="author-role">6-time Uranus prober</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-        <div class="quote">"Honestly I just came for the jokes and ended up buying a full rig. The 
-        Uranus Penetrator 9000 is genuinely a great telescope. I can't tell anyone what it's called 
-        without them laughing, but the images of Uranus speak for themselves."</div>
-        <div class="author">Dr. Chen, Astrophysics PhD</div>
-        <div class="author-role">Published 3 papers on Uranus</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-label">URANUS SUBSCRIPTIONS</div>
-    <h2 class="section-title">Choose Your Level of Commitment to Uranus.</h2>
-    <p class="section-sub">
-      From casual observation to full-blown Uranus obsession, we have a plan for you.
-    </p>
-
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-name">Quick Peek</div>
-        <div class="pricing-feature">For the Uranus-curious</div>
-        <div class="pricing-price">$0<span>/mo</span></div>
-        <div class="pricing-month">Free forever. Seriously.</div>
-        <ul class="pricing-features">
-          <li>Access to the Configurator</li>
-          <li>Basic fit guidance</li>
-          <li>Clear compatibility status</li>
-          <li>Access to 3 Uranus jokes/week</li>
-        </ul>
-        <a href="#" class="btn btn-outline" style="width:100%;text-align:center">PEEK AT URANUS</a>
-      </div>
-
-      <div class="pricing-card premium">
-        <div class="pricing-name">Deep Probe</div>
-        <div class="pricing-feature">For serious Uranus enthusiasts</div>
-        <div class="pricing-price">$9.99<span>/mo</span></div>
-        <div class="pricing-month">or $69/year — nice</div>
-        <ul class="pricing-features">
-          <li>Everything in Quick Peek</li>
-          <li>Priority setup review</li>
-          <li>Advanced alignment guidance</li>
-          <li>Unlimited Uranus jokes</li>
-          <li>Monthly Uranus photo digest</li>
-          <li>Early access to new Uranus products</li>
-        </ul>
-        <a href="#" class="btn btn-primary" style="width:100%;text-align:center">COMMIT TO URANUS</a>
-      </div>
-
-      <div class="pricing-card">
-        <div class="pricing-name">Mission Control</div>
-        <div class="pricing-feature">For people who want a second set of eyes on Uranus</div>
-        <div class="pricing-price">$29.99<span>/mo</span></div>
-        <div class="pricing-month">You are now a Uranus shareholder.</div>
-        <ul class="pricing-features">
-          <li>Everything in Deep Probe</li>
-          <li>Priority Uranus consultation queue</li>
-          <li>Custom fit support</li>
-          <li>Manual review before you buy expensive gear</li>
-          <li>Saved rig notes for future upgrades</li>
-          <li>Member access to the Uranus image feed</li>
-        </ul>
-        <a href="community.html" class="btn btn-outline" style="width:100%;text-align:center">ENTER MISSION CONTROL</a>
       </div>
     </div>
   </div>
