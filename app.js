@@ -9,7 +9,7 @@ const scopes = {
   none:       { name: "None / Have my own",                         backfocus: 0,  thread: "N/A", weight: 0,   reqFlattener: false },
   glancer:    { name: "Svbony SV503 80ED (Beginner Probe)",         backfocus: 55, thread: "M48", weight: 2.7, reqFlattener: true },
   penetrator: { name: "Askar FRA300 Pro (The Deep Explorer)",       backfocus: 55, thread: "M48", weight: 2.9, reqFlattener: false },
-  panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 3.2, reqFlattener: false }
+  panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 4.1, reqFlattener: false } // Fixed weight to 4.1kg for FRA500 eq
 };
 
 const cameras = {
@@ -23,7 +23,7 @@ const mounts = {
   none:       { name: "None / Have my own",                capacity: 999 },
   steadygaze: { name: "Sky-Watcher GTi (Light duty)",      capacity: 5  },
   am3:        { name: "ZWO AM3N (Medium load)",            capacity: 8  },
-  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 10 }
+  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 15 } // Fixed from 10kg to 15kg for AM5 equivalent
 };
 
 const accessoriesWeight = 1.2;
@@ -154,8 +154,11 @@ async function updateConfigurator() {
   byId("cameraName").textContent  = camera.name;
   
   if (scopeId !== 'none' && cameraId !== 'none') {
-    byId("adapterResult").textContent = compatible ? "Fit reviewed" : "Fit blocked";
-    byId("spacerResult").textContent  = compatible ? "Locked" : "Needs review";
+    const spacerRequired = scope.backfocus - camera.depth;
+    const adapterType = scope.thread === camera.thread ? `Direct ${scope.thread}` : `${scope.thread} to ${camera.thread} adapter`;
+    
+    byId("adapterResult").textContent = adapterType;
+    byId("spacerResult").textContent  = `${spacerRequired.toFixed(1)}mm Spacer required`;
   } else {
     byId("adapterResult").textContent = "N/A";
     byId("spacerResult").textContent  = "N/A";
