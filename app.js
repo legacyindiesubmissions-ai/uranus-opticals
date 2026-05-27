@@ -27,50 +27,58 @@ function byId(id) {
   return document.getElementById(id);
 }
 
-function updateConfigurator() {
-  const scope  = scopes[byId("scopeSelect").value];
-  const camera = cameras[byId("cameraSelect").value];
-  const mount  = mounts[byId("mountSelect").value];
+async function updateConfigurator() {
+  const scopeId = byId("scopeSelect").value;
+  const cameraId = byId("cameraSelect").value;
+  const mountId = byId("mountSelect").value;
 
-  const spacer         = Math.max(scope.backfocus - camera.depth, 0);
-  const adapter        = scope.thread === camera.thread ? "Direct thread" : `${scope.thread} → ${camera.thread}`;
-  const payload        = scope.weight + camera.weight + accessoriesWeight;
-  const practicalLimit = mount.capacity * 0.5;
-  const compatible     = payload <= practicalLimit;
-  const spacerCount    = spacer > 30 ? "2 spacer rings" : "1 spacer ring";
+  try {
+    const res = await fetch(`https://license.taterlabs.shop/api/uranus/configure?scope=${scopeId}&camera=${cameraId}&mount=${mountId}`);
+    if (!res.ok) throw new Error("Backend error");
+    const data = await res.json();
 
-  // Update optical train
-  byId("scopeName").textContent   = scope.name;
-  byId("cameraName").textContent  = camera.name;
-  byId("adapterResult").textContent = adapter;
+    // Update optical train
+    byId("scopeName").textContent = data.scopeName;
+    byId("cameraName").textContent = data.cameraName;
+    byId("adapterResult").textContent = data.adapterResult;
 
-  // Update readouts
-  byId("spacerResult").textContent  = `${spacer.toFixed(1)}mm`;
-  byId("payloadResult").textContent = `${payload.toFixed(1)}kg / ${mount.capacity}kg`;
-  byId("cartResult").textContent    = adapter === "Direct thread"
-    ? spacerCount
-    : `${spacerCount} + adapter`;
+    // Update readouts
+    byId("spacerResult").textContent = data.spacerResult;
+    byId("payloadResult").textContent = data.payloadResult;
+    byId("cartResult").textContent = data.cartResult;
 
-  // Update status badge
-  const status = byId("resultStatus");
-  status.textContent = compatible ? "Cleared for Contact" : "Mount Blocked";
-  status.className   = `result-status ${compatible ? "ok" : "bad"}`;
+    // Update status badge
+    const status = byId("resultStatus");
+    status.textContent = data.status;
+    status.className = `result-status ${data.compatible ? "ok" : "bad"}`;
 
-  // Update result note with custom humor
-  if (!compatible) {
-    byId("resultNote").textContent = `Mount blocked. Your rig is too heavy for safe entry into Uranus. The ${scope.name.split(" (")[0]} telescope and accessories exceed the payload capacity of the ${mount.name.split(" (")[0]} mount, and pretending otherwise would be embarrassing for everyone involved.`;
-  } else {
-    let customizedNote = `This rig has been fully cleared for Uranus. Backfocus target of ${scope.backfocus}mm is met, the payload is supported, and the setup is not lying to itself. `;
-    
-    if (scope.name.includes("APO") && camera.name.includes("High Penetration")) {
-      customizedNote += "Warning: high-intensity pairing. This combination yields maximum deep penetration and the kind of resolution that makes amateur setups look rude.";
-    } else if (mount.name.includes("GTi")) {
-      customizedNote += "Note: easy entry. However, the Sky-Watcher GTi is living right at the edge of its comfort zone, so do not shake anything or start improvising.";
-    } else {
-      customizedNote += "Everything slides in smoothly. You are ready for a long, satisfying deep-sky exposure tonight, assuming you can keep your hands off the focus knob.";
-    }
-    
-    byId("resultNote").textContent = customizedNote;
+    // Update result note
+    byId("resultNote").textContent = data.note;
+  } catch (err) {
+    console.error("Configurator fetch error:", err);
+    // Fallback local calculations in case backend is offline
+    const scope  = scopes[scopeId];
+    const camera = cameras[cameraId];
+    const mount  = mounts[mountId];
+
+    const spacer         = Math.max(scope.backfocus - camera.depth, 0);
+    const adapter        = scope.thread === camera.thread ? "Direct thread" : `${scope.thread} → ${camera.thread}`;
+    const payload        = scope.weight + camera.weight + accessoriesWeight;
+    const practicalLimit = mount.capacity * 0.5;
+    const compatible     = payload <= practicalLimit;
+    const spacerCount    = spacer > 30 ? "2 spacer rings" : "1 spacer ring";
+
+    byId("scopeName").textContent   = scope.name;
+    byId("cameraName").textContent  = camera.name;
+    byId("adapterResult").textContent = adapter;
+    byId("spacerResult").textContent  = `${spacer.toFixed(1)}mm`;
+    byId("payloadResult").textContent = `${payload.toFixed(1)}kg / ${mount.capacity}kg`;
+    byId("cartResult").textContent    = adapter === "Direct thread" ? spacerCount : `${spacerCount} + adapter`;
+
+    const status = byId("resultStatus");
+    status.textContent = compatible ? "Cleared for Contact" : "Mount Blocked";
+    status.className   = `result-status ${compatible ? "ok" : "bad"}`;
+    byId("resultNote").textContent = "Local computation mode (backup). " + (compatible ? "Cleared!" : "Exceeded payload.");
   }
 }
 
