@@ -623,7 +623,7 @@ function toggleCart() {
 async function checkoutCart() {
   const cart = getCart();
   if (!cart.length) return;
-  const items = cart.map(i => `${i.id}:${i.qty}`).join(',');
+  const items = cart.map(i => i.id).join(',');
   try {
     const res = await fetch(`/api/uranus/checkout_hardware?items=${items}`);
     const data = await res.json();
