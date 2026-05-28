@@ -701,19 +701,39 @@ if (byId('builderControls')) {
 // Tweaks panel toggle
 const toggle = document.getElementById('tweaksToggle');
 const panel = document.getElementById('tweaksPanel');
-toggle.addEventListener('click', () => panel.classList.toggle('open'));
+if (toggle && panel) {
+  toggle.addEventListener('click', () => panel.classList.toggle('open'));
+}
 
 // Joke counter
 let jokeCount = 0;
-function countJokes() {
-  // Count every instance of "Uranus" as a joke (because it is)
-  const text = document.body.innerText;
-  const matches = text.match(/Uranus/gi);
-  jokeCount = matches ? matches.length : 0;
-  document.getElementById('jokeCounter').textContent = 
-    jokeCount + ' Uranus references detected. You\'re welcome.';
-  const tc = document.getElementById('tweakJokeCount');
-  if (tc) tc.textContent = jokeCount;
+async function countJokes() {
+  try {
+    const pages = ['index.html', 'loose-debris.html', 'community.html'];
+    let totalMatches = 0;
+    
+    for (const page of pages) {
+      const res = await fetch(page);
+      if (!res.ok) continue;
+      const text = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      if (doc.body) {
+        const matches = doc.body.innerText.match(/Uranus/gi);
+        totalMatches += matches ? matches.length : 0;
+      }
+    }
+    
+    jokeCount = totalMatches;
+    const counter = document.getElementById('jokeCounter');
+    if (counter) {
+      counter.textContent = jokeCount + ' Uranus references detected across the site. You\'re welcome.';
+    }
+    const tc = document.getElementById('tweakJokeCount');
+    if (tc) tc.textContent = jokeCount;
+  } catch (err) {
+    console.error("Joke counting failed:", err);
+  }
 }
 countJokes();
 
