@@ -3,6 +3,9 @@
    "We've seen the backside of every telescope."
    ═══════════════════════════════════════════ */
 
+document.addEventListener('DOMContentLoaded', () => {
+
+
 let dbPrices = {};
 let globalScopes = [];
 let selectedGlobalScope = null;
@@ -692,3 +695,74 @@ if (byId('builderControls')) {
   byId('customScopeLen').addEventListener('input', () => { renderAccessories(); updateConfigurator(); });
   byId('customScopeFR').addEventListener('input', updateConfigurator);
 }
+
+
+// ── INLINE SCRIPTS MOVED FROM HTML ──
+// Tweaks panel toggle
+const toggle = document.getElementById('tweaksToggle');
+const panel = document.getElementById('tweaksPanel');
+toggle.addEventListener('click', () => panel.classList.toggle('open'));
+
+// Joke counter
+let jokeCount = 0;
+function countJokes() {
+  // Count every instance of "Uranus" as a joke (because it is)
+  const text = document.body.innerText;
+  const matches = text.match(/Uranus/gi);
+  jokeCount = matches ? matches.length : 0;
+  document.getElementById('jokeCounter').textContent = 
+    jokeCount + ' Uranus references detected. You\'re welcome.';
+  const tc = document.getElementById('tweakJokeCount');
+  if (tc) tc.textContent = jokeCount;
+}
+countJokes();
+
+// Joke intensity
+function setJokeIntensity(level) {
+  const planets = document.querySelectorAll('.uranus-orb');
+  if (level === 'apocalyptic') {
+    document.body.style.setProperty('--accent', '#ff6b9d');
+    document.body.style.setProperty('--accent-glow', '#ff8fb3');
+    document.body.style.setProperty('--hot', '#ff3366');
+  } else if (level === 'extreme') {
+    document.body.style.setProperty('--accent', '#8ec8e0');
+    document.body.style.setProperty('--accent-glow', '#b0ddf0');
+    document.body.style.setProperty('--hot', '#e0558a');
+  } else {
+    document.body.style.setProperty('--accent', '#7eb8da');
+    document.body.style.setProperty('--accent-glow', '#a0d0f0');
+    document.body.style.setProperty('--hot', '#e0558a');
+  }
+}
+
+// Theme
+function setTheme(theme) {
+  if (theme === 'brown') {
+    document.body.style.setProperty('--space', '#1a1008');
+    document.body.style.setProperty('--deep', '#241810');
+    document.body.style.setProperty('--surface', '#2d1f14');
+    document.body.style.setProperty('--border', '#4a3522');
+    document.body.style.setProperty('--accent', '#d4a76a');
+    document.body.style.setProperty('--accent-glow', '#e8c48a');
+  } else {
+    document.body.style.setProperty('--space', '#070b14');
+    document.body.style.setProperty('--deep', '#0d1326');
+    document.body.style.setProperty('--surface', '#131b33');
+    document.body.style.setProperty('--border', '#1e2d52');
+    document.body.style.setProperty('--accent', '#7eb8da');
+    document.body.style.setProperty('--accent-glow', '#a0d0f0');
+  }
+}
+
+// ── EXPOSE TO WINDOW FOR INLINE HTML HANDLERS ──
+window.setJokeIntensity = typeof setJokeIntensity !== 'undefined' ? setJokeIntensity : null;
+window.setTheme = typeof setTheme !== 'undefined' ? setTheme : null;
+window.toggleCart = typeof toggleCart !== 'undefined' ? toggleCart : null;
+window.updateCartQty = typeof updateCartQty !== 'undefined' ? updateCartQty : null;
+window.removeFromCart = typeof removeFromCart !== 'undefined' ? removeFromCart : null;
+window.checkoutCart = typeof checkoutCart !== 'undefined' ? checkoutCart : null;
+window.clearCart = typeof clearCart !== 'undefined' ? clearCart : null;
+window.startSimulation = typeof startSimulation !== 'undefined' ? startSimulation : null;
+window.checkoutRig = typeof checkoutRig !== 'undefined' ? checkoutRig : null;
+
+});
