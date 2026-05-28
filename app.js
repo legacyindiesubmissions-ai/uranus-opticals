@@ -587,6 +587,14 @@ function renderAccessories() {
 async function updateConfigurator() {
   // Configurator-only: bail cleanly on pages without it (e.g. loose-debris).
   if (!byId("scopeSelect")) return;
+
+  // Blank the tolerance up front so a wrong value from a prior scope can never
+  // linger if anything below short-circuits before it's recomputed. On a
+  // customer-facing accuracy field, the worst case must be "—", never a stale
+  // number from a different telescope.
+  const _tolReset = byId("tolResult");
+  if (_tolReset) _tolReset.textContent = "—";
+
   const scopeId = byId("scopeSelect").value;
   const cameraId = byId("cameraSelect").value;
   const mountId = byId("mountSelect").value;
