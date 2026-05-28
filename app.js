@@ -677,10 +677,10 @@ function checkoutHardware(id) {
   toggleCart();
 }
 
-document.addEventListener('DOMContentLoaded', () => { renderCartBadge(); });
+renderCartBadge();
 
 // ── Configurator Init ──
-document.addEventListener('DOMContentLoaded', initData);
+initData();
 if (byId('builderControls')) {
   byId('builderControls').addEventListener('change', (e) => {
     if (e.target.id === 'scopeSelect') {
