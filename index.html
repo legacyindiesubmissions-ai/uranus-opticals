@@ -6,7 +6,7 @@
 <title>URANUS OPTICALS — Peer Deeper</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="stylesheet" href="styles.css?v=2.0.4">
-<script src="app.js?v=2.0.8" defer></script>
+<script src="app.js?v=2.0.9" defer></script>
 
 </head>
 <body>
@@ -70,9 +70,9 @@
           <span>Telescope (The Glass)</span>
           <select id="scopeSelect">
             <option value="none">None (I have my own)</option>
-            <option value="glancer">Svbony SV503 80ED (Beginner Probe)</option>
-            <option value="penetrator">Askar FRA300 Pro (The Deep Explorer)</option>
-            <option value="panoramic" selected>Uranus Signature 80 APO (Full Insertion)</option>
+            <option value="glancer">Uranus Glancer 80ED (Beginner Probe)</option>
+            <option value="penetrator">Uranus Penetrator 9000 (The Deep Explorer)</option>
+            <option value="panoramic" selected>Uranus Panoramic 90 APO (Full Insertion)</option>
           </select>
         </label>
 
@@ -103,8 +103,8 @@
           <span>Camera (The Sensor)</span>
           <select id="cameraSelect">
             <option value="none">None (I have my own)</option>
-            <option value="snapshot533">Svbony SV605CC (Cooled Deep Sensor)</option>
-            <option value="deepgaze571">Player One Poseidon-C (Direct Core)</option>
+            <option value="snapshot533">Uranus Snapshot 533 (Cooled Deep Sensor)</option>
+            <option value="deepgaze571">Uranus DeepGaze 571 (Direct Core)</option>
             <option value="omnivision455" selected>Uranus Signature 533C (High Penetration)</option>
           </select>
         </label>
@@ -112,8 +112,8 @@
           <span>Mount (The Handler)</span>
           <select id="mountSelect">
             <option value="none">None (I have my own)</option>
-            <option value="steadygaze">Sky-Watcher GTi (Light duty)</option>
-            <option value="am3">ZWO AM3N (Medium load)</option>
+            <option value="steadygaze">Uranus SteadyGaze GTi (Light duty)</option>
+            <option value="am3">Uranus OrbitLock AM3 (Medium load)</option>
             <option value="hm17" selected>Uranus Harmonic 17 (Heavy handler)</option>
           </select>
         </label>
@@ -135,7 +135,7 @@
         <div class="optical-train">
           <div class="train-node">
             <span>Telescope</span>
-            <b id="scopeName">Uranus Signature 80 APO (Full Insertion)</b>
+            <b id="scopeName">Uranus Panoramic 90 APO (Full Insertion)</b>
           </div>
           <div class="train-connector" id="adapterResult">Fit reviewed</div>
           <div class="train-node">
@@ -148,6 +148,10 @@
           <div class="readout">
             <span>Alignment status</span>
             <strong id="spacerResult">Locked</strong>
+          </div>
+          <div class="readout">
+            <span>Spacing precision</span>
+            <strong id="tolResult">—</strong>
           </div>
           <div class="readout">
             <span>Mount status</span>

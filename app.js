@@ -115,25 +115,49 @@ let dbPrices = {};
 let globalScopes = [];
 let selectedGlobalScope = null;
 let analysisUnlocked = false;
+let scopeMap = {};          // house item_id -> real global_scopes id (cross-ref)
+let globalScopesById = {};  // id -> verified scope record (built after fetch)
+
+// House-brand display names for the sell presets (customer-facing). The real
+// OEM scope behind each lives in the cross-reference / CRM only, never here.
+const houseNames = {
+  glancer:    'Uranus Glancer 80ED',
+  penetrator: 'Uranus Penetrator 9000',
+  panoramic:  'Uranus Panoramic 90 APO'
+};
+
+// Critical Focus Zone (half), mm: 2.44 * λ * f² with λ = 550nm. The real
+// physical spacing precision a scope demands — tightens with the square of the
+// focal ratio. Not a tunable figure; it is diffraction physics.
+function computeCFZ(fr) {
+  if (!fr || fr <= 0) return null;
+  return 2.44 * 0.00055 * fr * fr;
+}
+
+// Focal ratio from a verified global scope record (focal_length / aperture).
+function scopeFR(rec) {
+  if (rec && rec.focal_length && rec.aperture) return rec.focal_length / rec.aperture;
+  return 0;
+}
 
 const scopes = {
   none:       { name: "Custom Profile Active",                      backfocus: 0,  thread: "N/A", weight: 0,   len: 0,   reqFlattener: false },
-  glancer:    { name: "Svbony SV503 80ED (Beginner Probe)",         backfocus: 55, thread: "M48", weight: 3.9, len: 470, reqFlattener: true },
-  penetrator: { name: "Askar FRA300 Pro (The Deep Explorer)",       backfocus: 55, thread: "M48", weight: 3.1, len: 303, reqFlattener: false },
-  panoramic:  { name: "Uranus Signature 80 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 5.2, len: 410, reqFlattener: false }
+  glancer:    { name: "Uranus Glancer 80ED (Beginner Probe)",       backfocus: 55, thread: "M48", weight: 3.9, len: 470, reqFlattener: true },
+  penetrator: { name: "Uranus Penetrator 9000 (The Deep Explorer)", backfocus: 55, thread: "M48", weight: 3.1, len: 303, reqFlattener: false },
+  panoramic:  { name: "Uranus Panoramic 90 APO (Full Insertion)",   backfocus: 55, thread: "M54", weight: 5.2, len: 410, reqFlattener: false }
 };
 
 const cameras = {
   none:          { name: "None / Have my own",                         depth: 0,    thread: "N/A", weight: 0 },
-  snapshot533:   { name: "Svbony SV605CC (Cooled Deep Sensor)",        depth: 17.5, thread: "M42", weight: 0.42 },
-  deepgaze571:   { name: "Player One Poseidon-C (Direct Core)",        depth: 17.5, thread: "M42", weight: 0.68 },
+  snapshot533:   { name: "Uranus Snapshot 533 (Cooled Deep Sensor)",   depth: 17.5, thread: "M42", weight: 0.42 },
+  deepgaze571:   { name: "Uranus DeepGaze 571 (Direct Core)",          depth: 17.5, thread: "M42", weight: 0.68 },
   omnivision455: { name: "Uranus Signature 533C (High Penetration)", depth: 17.5, thread: "M42", weight: 0.72 }
 };
 
 const mounts = {
   none:       { name: "None / Have my own",                capacity: 999 },
-  steadygaze: { name: "Sky-Watcher GTi (Light duty)",      capacity: 5  },
-  am3:        { name: "ZWO AM3N (Medium load)",            capacity: 8  },
+  steadygaze: { name: "Uranus SteadyGaze GTi (Light duty)", capacity: 5  },
+  am3:        { name: "Uranus OrbitLock AM3 (Medium load)", capacity: 8  },
   hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 15 }
 };
 
@@ -146,14 +170,19 @@ function byId(id) {
 // ── Database & Price Loading ──
 async function initData() {
   try {
-    const [priceRes, scopeRes] = await Promise.all([
+    const [priceRes, scopeRes, mapRes] = await Promise.all([
       fetch("/api/uranus/prices"),
-      fetch("global_scopes.json")
+      fetch("global_scopes.json"),
+      fetch("/api/uranus/scope_map")
     ]);
-    
+
     if (priceRes.ok) dbPrices = await priceRes.json();
     if (scopeRes.ok) globalScopes = await scopeRes.json();
-    
+    if (mapRes.ok) scopeMap = await mapRes.json();
+
+    globalScopesById = {};
+    globalScopes.forEach(s => { globalScopesById[s.id] = s; });
+
     initSearch();
   } catch (e) {
     console.error("Failed to load mission data", e);
@@ -232,7 +261,10 @@ function selectGlobalScope(scope) {
   localStorage.setItem('uranusLastScope', JSON.stringify(scope));
   byId("scopeSearch").value = `${scope.brand} ${scope.model}`;
   byId("customScopeLen").value = scope.len;
-  byId("customScopeFR").value = 0; // Not strictly needed if we have the profile
+  // Show the matched scope's real focal ratio (drives the spacing-precision
+  // readout and travels with the paid quote). Blank only if specs are absent.
+  byId("customScopeFR").value = (scope.focal_length && scope.aperture)
+    ? (scope.focal_length / scope.aperture).toFixed(1) : '';
   byId("selectedScopeLabel").textContent = `${scope.brand} ${scope.model} Profile Loaded`;
   byId("searchSuggestions").style.display = "none";
   analysisUnlocked = false; // Reset lock on change
@@ -296,12 +328,25 @@ function getEffectiveScope() {
   if (scopeId !== 'none') {
     const s = scopes[scopeId];
     if (!s) return null;
-    // Determine type from the preset
+    const name = houseNames[scopeId] || s.name;
+    // Specs resolve from the verified real scope this house item is
+    // cross-referenced to (single source of truth). Fall back to the
+    // hardcoded preset only if the map hasn't loaded yet.
+    const linked = globalScopesById[scopeMap[scopeId]];
+    if (linked) {
+      return {
+        len: linked.len, weight: linked.weight, thread: linked.thread,
+        backfocus: linked.backfocus, type: linked.type,
+        reqFlattener: linked.type === 'Doublet',
+        aperture: linked.aperture, focal_length: linked.focal_length,
+        fr: scopeFR(linked), name
+      };
+    }
     let type = 'Refractor';
     if (scopeId === 'penetrator') type = 'Quintuplet';
     else if (scopeId === 'glancer') type = 'Doublet';
     else if (scopeId === 'panoramic') type = 'Triplet';
-    return { len: s.len, weight: s.weight, thread: s.thread, backfocus: s.backfocus, type, reqFlattener: s.reqFlattener, name: s.name };
+    return { len: s.len, weight: s.weight, thread: s.thread, backfocus: s.backfocus, type, reqFlattener: s.reqFlattener, fr: 0, name };
   }
 
   // Custom scope — check if global scope is loaded
@@ -313,13 +358,16 @@ function getEffectiveScope() {
       backfocus: selectedGlobalScope.backfocus,
       type: selectedGlobalScope.type || 'Refractor',
       reqFlattener: selectedGlobalScope.type === 'Doublet',
+      aperture: selectedGlobalScope.aperture,
+      focal_length: selectedGlobalScope.focal_length,
+      fr: scopeFR(selectedGlobalScope),
       name: `${selectedGlobalScope.brand} ${selectedGlobalScope.model}`
     };
   }
 
   // Fully custom — only length and FR known
   if (cLen > 0) {
-    return { len: cLen, weight: 0, thread: 'Unknown', backfocus: 55, type: (cFR >= 6 ? 'Doublet' : 'Refractor'), reqFlattener: (cFR >= 6), name: 'Custom Telescope' };
+    return { len: cLen, weight: 0, thread: 'Unknown', backfocus: 55, type: (cFR >= 6 ? 'Doublet' : 'Refractor'), reqFlattener: (cFR >= 6), fr: cFR, name: 'Custom Telescope' };
   }
 
   return null;
@@ -576,6 +624,8 @@ async function updateConfigurator() {
     if (rigTotalEmpty) rigTotalEmpty.textContent = "$0.00";
     byId("adapterResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">Mxx to Mxx Adapter</span>';
     byId("spacerResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">xx.x mm Required</span>';
+    const tolEmpty = byId("tolResult");
+    if (tolEmpty) tolEmpty.textContent = "—";
     const cb = byId("btnCheckoutRig");
     if (cb) { cb.textContent = "SEARCH YOUR TELESCOPE"; cb.onclick = null; }
     return;
@@ -607,18 +657,36 @@ async function updateConfigurator() {
   
   const checkoutBtn = byId("btnCheckoutRig");
 
+  const tolEl = byId("tolResult");
+
   if (scopeId === 'none' && !analysisUnlocked) {
     byId("adapterResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">Mxx to Mxx Adapter</span>';
     byId("spacerResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">xx.x mm Required</span>';
+    if (tolEl) tolEl.innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">±x.xxx mm</span>';
     checkoutBtn.textContent = "RUN MISSION SIMULATION";
     checkoutBtn.onclick = startSimulation;
   } else {
-    const spacerVal = scope.backfocus - camera.depth;
+    // A filter in the optical path shifts focus back by ≈ 1/3 of its glass
+    // thickness (n≈1.5 → t·(n-1)/n). Unaccounted-for, this throws the spacing
+    // off by a real, visible amount — so fold it into the required spacer.
+    const FILTER_GLASS_MM = 2.0;
+    const filterShift = getAccessoryState().filter ? FILTER_GLASS_MM / 3 : 0;
+    const spacerVal = (scope.backfocus - camera.depth) + filterShift;
     const adapterVal = scope.thread === camera.thread ? `Direct ${scope.thread}` : `${scope.thread} to ${camera.thread} adapter`;
-    
-    byId("adapterResult").textContent = (scopeId !== 'none' || analysisUnlocked) ? adapterVal : "N/A";
-    byId("spacerResult").textContent = (scopeId !== 'none' || analysisUnlocked) ? `${spacerVal.toFixed(1)}mm Required` : "N/A";
-    
+    const showRecipe = (scopeId !== 'none' || analysisUnlocked);
+
+    byId("adapterResult").textContent = showRecipe ? adapterVal : "N/A";
+    byId("spacerResult").textContent = showRecipe
+      ? `${spacerVal.toFixed(1)}mm Required${filterShift ? ' (filter-corrected)' : ''}`
+      : "N/A";
+
+    // Critical Focus Zone — the real spacing precision this scope's focal ratio
+    // demands. Guidance, never a guarantee; shown only once the recipe unlocks.
+    const cfz = computeCFZ(scope.fr);
+    if (tolEl) tolEl.textContent = showRecipe
+      ? (cfz ? `±${cfz.toFixed(3)}mm (f/${scope.fr.toFixed(1)})` : "—")
+      : "N/A";
+
     checkoutBtn.textContent = compatible ? "SECURE YOUR RIG" : "RIG INVALID";
     checkoutBtn.onclick = checkoutRig;
   }
@@ -720,6 +788,7 @@ if (unlockBtn) unlockBtn.onclick = async () => {
     scope_backfocus: scope.backfocus ?? 55,
     scope_thread: scope.thread ?? "",
     scope_len: scope.len ?? "",
+    scope_fr: scope.fr ? scope.fr.toFixed(2) : "",
     cam_depth: (cam && cam.depth) ? cam.depth : "",
     cam_thread: (cam && cam.thread) ? cam.thread : ""
   });
@@ -761,7 +830,11 @@ async function checkQuoteReturn() {
       // Overwrite with server-verified recipe (authoritative)
       byId("adapterResult").textContent = data.adapter;
       byId("spacerResult").textContent = data.spacer;
-      showQuoteSuccess(data.adapter, data.spacer);
+      if (data.tolerance) {
+        const t = byId("tolResult");
+        if (t) t.textContent = data.tolerance;
+      }
+      showQuoteSuccess(data.adapter, data.spacer, data.tolerance);
     }
   } catch {}
   // Strip the param so a refresh can't replay it
@@ -770,7 +843,7 @@ async function checkQuoteReturn() {
 
 // Success modal shown on return from a paid quote — confirms payment and
 // shows the recipe, then dismisses into the unlocked configurator.
-function showQuoteSuccess(adapter, spacer) {
+function showQuoteSuccess(adapter, spacer, tolerance) {
   if (document.getElementById('quoteSuccessOverlay')) return;
   const overlay = document.createElement('div');
   overlay.id = 'quoteSuccessOverlay';
@@ -782,7 +855,8 @@ function showQuoteSuccess(adapter, spacer) {
       <p style="color:var(--muted,#6b7da8);margin:0 0 20px;font-size:0.95rem;">Your Deep Probe fitment is unlocked. Pick your camera below to finalize the exact spacer.</p>
       <div style="background:var(--deep,#0d1326);border-radius:10px;padding:18px;margin-bottom:22px;text-align:left;">
         <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:var(--muted,#6b7da8);">Adapter</span><strong style="color:var(--text,#d4dcee);">${adapter}</strong></div>
-        <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted,#6b7da8);">Backfocus / Spacer</span><strong style="color:var(--text,#d4dcee);">${spacer}</strong></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:${tolerance ? '10px' : '0'};"><span style="color:var(--muted,#6b7da8);">Backfocus / Spacer</span><strong style="color:var(--text,#d4dcee);">${spacer}</strong></div>
+        ${tolerance ? `<div style="display:flex;justify-content:space-between;"><span style="color:var(--muted,#6b7da8);">Spacing precision</span><strong style="color:var(--text,#d4dcee);">${tolerance}</strong></div>` : ''}
       </div>
       <button id="quoteSuccessClose" style="width:100%;background:var(--accent,#7eb8da);color:#04101f;border:none;padding:14px;border-radius:8px;font-weight:800;font-size:1rem;cursor:pointer;">VIEW MY UNLOCKED RIG</button>
     </div>`;
@@ -919,9 +993,9 @@ async function checkoutCart() {
 // Backwards compat for existing loose debris product buttons
 function checkoutHardware(id) {
   const names = {
-    glancer:'Uranus Glancer 80ED', penetrator:'Uranus Penetrator 9000', panoramic:'Uranus Panoramic 60mm',
-    snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Omnivision 455',
-    steadygaze:'Uranus SteadyGaze GTi', hm17:'Uranus DeepTracker HM-17', am3:'Uranus OrbitLock AM3'
+    glancer:'Uranus Glancer 80ED', penetrator:'Uranus Penetrator 9000', panoramic:'Uranus Panoramic 90 APO',
+    snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Signature 533C',
+    steadygaze:'Uranus SteadyGaze GTi', hm17:'Uranus Harmonic 17', am3:'Uranus OrbitLock AM3'
   };
   const price = dbPrices[id] || 0;
   addToCart(id, names[id] || id, price);
