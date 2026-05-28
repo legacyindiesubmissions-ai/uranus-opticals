@@ -525,6 +525,8 @@ async function updateConfigurator() {
     customScopeDiv.style.display = 'none';
   }
 
+  const scope  = getEffectiveScope();
+  const camera = cameras[cameraId];
   const mount  = mounts[mountId];
 
   if (!scope || !camera || !mount) return;
@@ -534,8 +536,17 @@ async function updateConfigurator() {
   if (accPicker) {
     if (scopeId === 'none' && !selectedGlobalScope) {
       accPicker.style.display = 'none';
+      // Hide the header too
+      const pickerHeader = accPicker.previousElementSibling;
+      if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
+        pickerHeader.style.display = 'none';
+      }
     } else {
       accPicker.style.display = 'block';
+      const pickerHeader = accPicker.previousElementSibling;
+      if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
+        pickerHeader.style.display = 'flex';
+      }
     }
   }
 
