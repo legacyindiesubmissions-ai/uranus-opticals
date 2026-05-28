@@ -89,6 +89,7 @@ function initTweaks() {
   const intensity = localStorage.getItem('jokeIntensity') || 'normal';
   setTheme(theme);
   setJokeIntensity(intensity);
+  updateTweakVisibility();
 }
 
 function initCartUI() {
@@ -229,6 +230,7 @@ function initSearch() {
 
 function selectGlobalScope(scope) {
   selectedGlobalScope = scope;
+  localStorage.setItem('uranusLastScope', JSON.stringify(scope));
   byId("scopeSearch").value = `${scope.brand} ${scope.model}`;
   byId("customScopeLen").value = scope.len;
   byId("customScopeFR").value = 0; // Not strictly needed if we have the profile
@@ -236,6 +238,40 @@ function selectGlobalScope(scope) {
   byId("searchSuggestions").style.display = "none";
   analysisUnlocked = false; // Reset lock on change
   updateConfigurator();
+}
+
+function updateTweakVisibility() {
+  const themeBtn = document.getElementById('navThemeToggle');
+  const jokeBtn = document.getElementById('navJokeToggle');
+  if (!themeBtn || !jokeBtn) return;
+
+  const scopeSelect = document.getElementById('scopeSelect');
+  
+  // If we are NOT on the configurator page, check localStorage
+  if (!scopeSelect) {
+    const isUnlocked = localStorage.getItem('uranusTweakUnlocked') === 'true';
+    const display = isUnlocked ? 'flex' : 'none';
+    themeBtn.style.display = display;
+    jokeBtn.style.display = display;
+    return;
+  }
+
+  // On configurator page:
+  const scopeId = scopeSelect.value;
+  const isBYO = (scopeId === 'none');
+  const hasScopeMatch = (selectedGlobalScope !== null);
+
+  if (isBYO && hasScopeMatch) {
+    themeBtn.style.display = 'flex';
+    jokeBtn.style.display = 'flex';
+    localStorage.setItem('uranusTweakUnlocked', 'true');
+  } else {
+    themeBtn.style.display = 'none';
+    jokeBtn.style.display = 'none';
+    if (!isBYO) {
+       localStorage.setItem('uranusTweakUnlocked', 'false');
+    }
+  }
 }
 
 function updateAllPrices() {
@@ -516,11 +552,12 @@ async function updateConfigurator() {
     customScopeDiv.style.display = 'none';
   }
 
-  const scope  = selectedGlobalScope && scopeId === 'none' ? { ...selectedGlobalScope, name: selectedGlobalScope.model } : scopes[scopeId];
-  const camera = cameras[cameraId];
   const mount  = mounts[mountId];
 
   if (!scope || !camera || !mount) return;
+
+  // Update visibility of tweak buttons
+  updateTweakVisibility();
 
   // 1. Re-render accessories with current scope visibility rules
   renderAccessories();
