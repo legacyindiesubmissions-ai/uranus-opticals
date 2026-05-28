@@ -2109,3 +2109,21 @@ select:focus, input:focus {
   color: var(--muted); cursor: pointer; font-size: 0.8rem;
 }
 
+
+/* Section Card Wrapper */
+.section-card {
+  background: rgba(19, 27, 51, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 48px;
+  margin-bottom: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .section-card {
+    padding: 24px;
+  }
+}
