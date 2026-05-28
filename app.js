@@ -761,10 +761,35 @@ async function checkQuoteReturn() {
       // Overwrite with server-verified recipe (authoritative)
       byId("adapterResult").textContent = data.adapter;
       byId("spacerResult").textContent = data.spacer;
+      showQuoteSuccess(data.adapter, data.spacer);
     }
   } catch {}
   // Strip the param so a refresh can't replay it
   history.replaceState({}, '', location.pathname + '#configurator');
+}
+
+// Success modal shown on return from a paid quote — confirms payment and
+// shows the recipe, then dismisses into the unlocked configurator.
+function showQuoteSuccess(adapter, spacer) {
+  if (document.getElementById('quoteSuccessOverlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'quoteSuccessOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(4,8,16,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--surface,#131b33);border:2px solid var(--accent,#7eb8da);border-radius:16px;padding:36px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+      <div style="font-size:2.6rem;margin-bottom:8px;">&#9989;</div>
+      <h2 style="color:var(--accent,#7eb8da);margin:0 0 6px;font-size:1.5rem;">Payment Confirmed</h2>
+      <p style="color:var(--muted,#6b7da8);margin:0 0 20px;font-size:0.95rem;">Your Deep Probe fitment is unlocked. Pick your camera below to finalize the exact spacer.</p>
+      <div style="background:var(--deep,#0d1326);border-radius:10px;padding:18px;margin-bottom:22px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="color:var(--muted,#6b7da8);">Adapter</span><strong style="color:var(--text,#d4dcee);">${adapter}</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted,#6b7da8);">Backfocus / Spacer</span><strong style="color:var(--text,#d4dcee);">${spacer}</strong></div>
+      </div>
+      <button id="quoteSuccessClose" style="width:100%;background:var(--accent,#7eb8da);color:#04101f;border:none;padding:14px;border-radius:8px;font-weight:800;font-size:1rem;cursor:pointer;">VIEW MY UNLOCKED RIG</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('#quoteSuccessClose').onclick = close;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
 }
 
 async function checkoutRig() {
