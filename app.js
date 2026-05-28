@@ -484,6 +484,7 @@ function renderAccessories() {
     if (a.id === 'tripod') {
       if (eff && eff.weight > 8) {
         note = `WARNING — ${eff.weight}kg exceeds the 8kg payload limit`;
+        visible = false;
       } else if (eff && eff.weight > 5) {
         note = `${eff.weight}kg scope — within the 8kg payload rating`;
       } else if (eff && eff.weight > 0) {
@@ -491,6 +492,13 @@ function renderAccessories() {
       } else {
         note = 'Select a scope for weight verification';
       }
+    }
+
+    // ── BYO Accessory Filter ──
+    if (scopeId === 'none' && hasScope) {
+       // Only show relevant gear for the matched BYO scope
+       if (a.id === 'flattener' && !isRefractor) visible = false;
+       if (a.id === 'spacers' && !hasCamera) visible = false;
     }
 
     // ── Catch-all: no scope selected ──
