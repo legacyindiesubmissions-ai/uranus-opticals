@@ -45,12 +45,12 @@ function applyApocalypticJokes() {
 }
 
 function cycleJokeIntensity() {
-  const intensities = ['normal', 'extreme', 'apocalyptic'];
-  const current = localStorage.getItem('jokeIntensity') || 'normal';
+  const intensities = ['unbearable', 'extreme', 'apocalyptic'];
+  const current = localStorage.getItem('jokeIntensity') || 'unbearable';
   let nextIdx = (intensities.indexOf(current) + 1) % intensities.length;
   const next = intensities[nextIdx];
   
-  if (current === 'apocalyptic' && next === 'normal') {
+  if (current === 'apocalyptic' && next === 'unbearable') {
     localStorage.setItem('jokeIntensity', next);
     location.reload();
   } else {
@@ -86,7 +86,7 @@ function cycleTheme() {
 
 function initTweaks() {
   const theme = localStorage.getItem('uranusTheme') || 'default';
-  const intensity = localStorage.getItem('jokeIntensity') || 'normal';
+  const intensity = localStorage.getItem('jokeIntensity') || 'unbearable';
   setTheme(theme);
   setJokeIntensity(intensity);
   updateTweakVisibility();
