@@ -722,7 +722,11 @@ async function countJokes() {
         // Remove script and style tags so we don't count code references
         const scripts = doc.body.querySelectorAll('script, style');
         scripts.forEach(s => s.remove());
-        const matches = doc.body.textContent.match(/Uranus/gi);
+        let bodyText = doc.body.textContent;
+        if (localStorage.getItem('jokeIntensity') === 'apocalyptic') {
+          bodyText = bodyText.replace(/\b(planet|stars|space|it|hole|telescope|equipment|gear|system|view|astrophotography|universe|galaxy|nebula)\b/gi, "Uranus");
+        }
+        const matches = bodyText.match(/Uranus/gi);
         totalMatches += matches ? matches.length : 0;
       }
     }
@@ -742,11 +746,13 @@ countJokes();
 
 // Joke intensity
 function setJokeIntensity(level) {
-  const planets = document.querySelectorAll('.uranus-orb');
+  localStorage.setItem('jokeIntensity', level);
+  
   if (level === 'apocalyptic') {
     document.body.style.setProperty('--accent', '#ff6b9d');
     document.body.style.setProperty('--accent-glow', '#ff8fb3');
     document.body.style.setProperty('--hot', '#ff3366');
+    applyApocalypticJokes();
   } else if (level === 'extreme') {
     document.body.style.setProperty('--accent', '#8ec8e0');
     document.body.style.setProperty('--accent-glow', '#b0ddf0');
@@ -758,8 +764,42 @@ function setJokeIntensity(level) {
   }
 }
 
+function applyApocalypticJokes() {
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+  let node;
+  const words = [
+    /planet/gi, /stars/gi, /space/gi, /\bit\b/gi, /hole/gi, 
+    /telescope/gi, /equipment/gi, /gear/gi, /system/gi, /view/gi,
+    /astrophotography/gi, /universe/gi, /galaxy/gi, /nebula/gi
+  ];
+  while(node = walk.nextNode()) {
+    let text = node.nodeValue;
+    words.forEach(re => {
+      text = text.replace(re, "Uranus");
+    });
+    node.nodeValue = text;
+  }
+  // Recount jokes after injection
+  setTimeout(countJokes, 100);
+}
+
+function cycleJokeIntensity() {
+  const intensities = ['normal', 'extreme', 'apocalyptic'];
+  const current = localStorage.getItem('jokeIntensity') || 'normal';
+  let nextIdx = (intensities.indexOf(current) + 1) % intensities.length;
+  const next = intensities[nextIdx];
+  
+  if (current === 'apocalyptic' && next === 'normal') {
+    localStorage.setItem('jokeIntensity', next);
+    location.reload();
+  } else {
+    setJokeIntensity(next);
+  }
+}
+
 // Theme
 function setTheme(theme) {
+  localStorage.setItem('uranusTheme', theme);
   if (theme === 'brown') {
     document.body.style.setProperty('--space', '#1a1008');
     document.body.style.setProperty('--deep', '#241810');
@@ -777,9 +817,35 @@ function setTheme(theme) {
   }
 }
 
+function cycleTheme() {
+  const current = localStorage.getItem('uranusTheme') || 'default';
+  const next = current === 'default' ? 'brown' : 'default';
+  setTheme(next);
+}
+
+function initTweaks() {
+  const theme = localStorage.getItem('uranusTheme') || 'default';
+  const intensity = localStorage.getItem('jokeIntensity') || 'normal';
+  setTheme(theme);
+  setJokeIntensity(intensity);
+}
+
+function initCartUI() {
+  if (document.getElementById('cartFloat')) return;
+  const cartHtml = `
+    <div class="cart-float" id="cartFloat" onclick="toggleCart()">
+      <span class="cart-icon">&#128722;</span>
+      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+    </div>
+    <div class="cart-drawer" id="cartDrawer"></div>`;
+  document.body.insertAdjacentHTML('beforeend', cartHtml);
+}
+
 // ── EXPOSE TO WINDOW FOR INLINE HTML HANDLERS ──
-window.setJokeIntensity = typeof setJokeIntensity !== 'undefined' ? setJokeIntensity : null;
-window.setTheme = typeof setTheme !== 'undefined' ? setTheme : null;
+window.setJokeIntensity = setJokeIntensity;
+window.setTheme = setTheme;
+window.cycleJokeIntensity = cycleJokeIntensity;
+window.cycleTheme = cycleTheme;
 window.toggleCart = typeof toggleCart !== 'undefined' ? toggleCart : null;
 window.updateCartQty = typeof updateCartQty !== 'undefined' ? updateCartQty : null;
 window.removeFromCart = typeof removeFromCart !== 'undefined' ? removeFromCart : null;
@@ -787,5 +853,9 @@ window.checkoutCart = typeof checkoutCart !== 'undefined' ? checkoutCart : null;
 window.clearCart = typeof clearCart !== 'undefined' ? clearCart : null;
 window.startSimulation = typeof startSimulation !== 'undefined' ? startSimulation : null;
 window.checkoutRig = typeof checkoutRig !== 'undefined' ? checkoutRig : null;
+
+initTweaks();
+initCartUI();
+countJokes();
 
 });

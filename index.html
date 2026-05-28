@@ -26,7 +26,11 @@
       <li><a href="community.html">Image Feed</a></li>
       <li><a href="#pricing">Plans</a></li>
     </ul>
-    <a href="#configurator" class="nav-cta">PROBE NOW</a>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <button class="nav-tweak-btn" id="navThemeToggle" title="Toggle Theme (Deep Space / Gas Giant)" onclick="cycleTheme()" aria-label="Toggle Theme">🌑</button>
+      <button class="nav-tweak-btn" id="navJokeToggle" title="Nuclear Option (Apocalyptic Jokes)" onclick="cycleJokeIntensity()" aria-label="Toggle Jokes">☢️</button>
+      <a href="#configurator" class="nav-cta">PROBE NOW</a>
+    </div>
   </div>
 </nav>
 
@@ -334,39 +338,6 @@
     </p>
   </div>
 </footer>
-
-<!-- TWEAAKS -->
-<button class="tweaks-toggle" id="tweaksToggle" aria-label="Tweaks">&#9881;</button>
-<div class="tweaks-panel" id="tweaksPanel">
-  <h4>Tweaks</h4>
-  <div class="tweak-row">
-    <span>Joke Intensity</span>
-    <select id="jokeIntensity" onchange="setJokeIntensity(this.value)">
-      <option value="unbearable" selected>Unbearable</option>
-      <option value="extreme">Extreme</option>
-      <option value="apocalyptic">Apocalyptic</option>
-    </select>
-  </div>
-  <div class="tweak-row">
-    <span>Theme</span>
-    <select id="themeSelect" onchange="setTheme(this.value)">
-      <option value="dark" selected>Deep Space</option>
-      <option value="brown">Gas Giant</option>
-    </select>
-  </div>
-  <div style="margin-top:12px;font-size:0.7rem;color:var(--muted)">
-    Jokes detected: <span id="tweakJokeCount">--</span>
-  </div>
-</div>
-
-
-
-<!-- CART -->
-<div class="cart-float" id="cartFloat" onclick="toggleCart()">
-  <span class="cart-icon">&#128722;</span>
-  <span class="cart-badge" id="cartBadge" style="display:none">0</span>
-</div>
-<div class="cart-drawer" id="cartDrawer"></div>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "424cae6297b84535ba71d370ddca8146"}'></script><!-- End Cloudflare Web Analytics -->
 

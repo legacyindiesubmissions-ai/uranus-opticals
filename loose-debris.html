@@ -690,7 +690,11 @@ footer .footer-joke {
       <li><a href="community.html">Image Feed</a></li>
       <li><a href="index.html#pricing">Plans</a></li>
     </ul>
-    <a href="index.html#configurator" class="nav-cta">PROBE NOW</a>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <button class="nav-tweak-btn" id="navThemeToggle" title="Toggle Theme (Deep Space / Gas Giant)" onclick="cycleTheme()" aria-label="Toggle Theme">🌑</button>
+      <button class="nav-tweak-btn" id="navJokeToggle" title="Nuclear Option (Apocalyptic Jokes)" onclick="cycleJokeIntensity()" aria-label="Toggle Jokes">☢️</button>
+      <a href="index.html#configurator" class="nav-cta">PROBE NOW</a>
+    </div>
   </div>
 </nav>
 
@@ -1073,100 +1077,6 @@ footer .footer-joke {
     </p>
   </div>
 </footer>
-
-<!-- TWEAAKS -->
-<button class="tweaks-toggle" id="tweaksToggle" aria-label="Tweaks">&#9881;</button>
-<div class="tweaks-panel" id="tweaksPanel">
-  <h4>Tweaks</h4>
-  <div class="tweak-row">
-    <span>Joke Intensity</span>
-    <select id="jokeIntensity" onchange="setJokeIntensity(this.value)">
-      <option value="unbearable" selected>Unbearable</option>
-      <option value="extreme">Extreme</option>
-      <option value="apocalyptic">Apocalyptic</option>
-    </select>
-  </div>
-  <div class="tweak-row">
-    <span>Theme</span>
-    <select id="themeSelect" onchange="setTheme(this.value)">
-      <option value="dark" selected>Deep Space</option>
-      <option value="brown">Gas Giant</option>
-    </select>
-  </div>
-  <div style="margin-top:12px;font-size:0.7rem;color:var(--muted)">
-    Jokes detected: <span id="tweakJokeCount">--</span>
-  </div>
-</div>
-
-<script>
-// Tweaks panel toggle
-const toggle = document.getElementById('tweaksToggle');
-const panel = document.getElementById('tweaksPanel');
-toggle.addEventListener('click', () => panel.classList.toggle('open'));
-
-// Joke counter
-let jokeCount = 0;
-function countJokes() {
-  // Count every instance of "Uranus" as a joke (because it is)
-  const text = document.body.innerText;
-  const matches = text.match(/Uranus/gi);
-  jokeCount = matches ? matches.length : 0;
-  document.getElementById('jokeCounter').textContent = 
-    jokeCount + ' Uranus references detected. You\'re welcome.';
-  const tc = document.getElementById('tweakJokeCount');
-  if (tc) tc.textContent = jokeCount;
-}
-countJokes();
-
-// Joke intensity
-function setJokeIntensity(level) {
-  const planets = document.querySelectorAll('.uranus-orb');
-  if (level === 'apocalyptic') {
-    document.body.style.setProperty('--accent', '#ff6b9d');
-    document.body.style.setProperty('--accent-glow', '#ff8fb3');
-    document.body.style.setProperty('--hot', '#ff3366');
-  } else if (level === 'extreme') {
-    document.body.style.setProperty('--accent', '#8ec8e0');
-    document.body.style.setProperty('--accent-glow', '#b0ddf0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  } else {
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  }
-}
-
-// Theme
-function setTheme(theme) {
-  if (theme === 'brown') {
-    document.body.style.setProperty('--space', '#1a1008');
-    document.body.style.setProperty('--deep', '#241810');
-    document.body.style.setProperty('--surface', '#2d1f14');
-    document.body.style.setProperty('--border', '#4a3522');
-    document.body.style.setProperty('--accent', '#d4a76a');
-    document.body.style.setProperty('--accent-glow', '#e8c48a');
-  } else {
-    document.body.style.setProperty('--space', '#070b14');
-    document.body.style.setProperty('--deep', '#0d1326');
-    document.body.style.setProperty('--surface', '#131b33');
-    document.body.style.setProperty('--border', '#1e2d52');
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-  }
-}
-
-// CART UI
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('cartFloat')) return; // already exists
-  const cartHtml = `
-    <div class="cart-float" id="cartFloat" onclick="toggleCart()">
-      <span class="cart-icon">&#128722;</span>
-      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
-    </div>
-    <div class="cart-drawer" id="cartDrawer"></div>`;
-  document.body.insertAdjacentHTML('beforeend', cartHtml);
-});
-</script>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "424cae6297b84535ba71d370ddca8146"}'></script><!-- End Cloudflare Web Analytics -->
 
