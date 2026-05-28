@@ -523,20 +523,21 @@ async function updateConfigurator() {
     customScopeDiv.style.display = 'block';
   } else {
     customScopeDiv.style.display = 'none';
+    selectedGlobalScope = null; // RESET BYO match when switching back to presets
   }
 
   const scope  = getEffectiveScope();
   const camera = cameras[cameraId];
   const mount  = mounts[mountId];
 
-  if (!scope || !camera || !mount) return;
-
   // BYO Logic: Hide accessory list until a scope is matched
   const accPicker = byId('accessoryPicker');
   if (accPicker) {
-    if (scopeId === 'none' && !selectedGlobalScope) {
+    const isBYO = (scopeId === 'none');
+    const hasMatch = (selectedGlobalScope !== null);
+    
+    if (isBYO && !hasMatch) {
       accPicker.style.display = 'none';
-      // Hide the header too
       const pickerHeader = accPicker.previousElementSibling;
       if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
         pickerHeader.style.display = 'none';
@@ -549,6 +550,8 @@ async function updateConfigurator() {
       }
     }
   }
+
+  if (!scope || !camera || !mount) return;
 
   // 1. Re-render accessories with current scope visibility rules
   renderAccessories();
