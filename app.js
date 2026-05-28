@@ -59,6 +59,7 @@ async function initData() {
 function initSearch() {
   const searchInput = byId("scopeSearch");
   const suggestions = byId("searchSuggestions");
+  const scopeSelect = byId("searchScopeSelect");
   
   if (!searchInput || !suggestions) return;
 
@@ -72,26 +73,49 @@ function initSearch() {
 
     const matches = globalScopes.filter(s => 
       s.brand.toLowerCase().includes(val) || s.model.toLowerCase().includes(val)
-    ).slice(0, 5);
+    ).slice(0, 8);
 
     if (matches.length > 0) {
+      const sel = document.createElement("select");
+      sel.id = "searchScopeSelect";
+      sel.size = Math.min(matches.length + 1, 6);
+      sel.style.cssText = "width:100%;background:var(--deep);border:1px solid var(--ice);color:var(--text);padding:8px;border-radius:6px;font-size:0.8rem;cursor:pointer;";
+      
+      const opt = document.createElement("option");
+      opt.textContent = `— Select your telescope (${matches.length} matches) —`;
+      opt.disabled = true;
+      opt.selected = true;
+      sel.appendChild(opt);
+
       matches.forEach(m => {
-        const div = document.createElement("div");
-        div.style.padding = "10px";
-        div.style.cursor = "pointer";
-        div.style.borderBottom = "1px solid var(--border)";
-        div.innerHTML = `<div style="font-weight:bold; font-size:0.85rem;">${m.brand} ${m.model}</div><div style="font-size:0.7rem; color:var(--muted);">${m.type} | ${m.len}mm</div>`;
-        div.addEventListener("click", () => selectGlobalScope(m));
-        suggestions.appendChild(div);
+        const o = document.createElement("option");
+        o.textContent = `${m.brand} ${m.model} (${m.type}, ${m.len}mm)`;
+        o.value = m.id;
+        o.dataset.brand = m.brand;
+        o.dataset.model = m.model;
+        sel.appendChild(o);
       });
+
+      sel.addEventListener("change", () => {
+        if (sel.selectedIndex > 0) {
+          const m = matches[sel.selectedIndex - 1];
+          selectGlobalScope(m);
+        }
+      });
+
+      suggestions.innerHTML = "";
+      suggestions.appendChild(sel);
       suggestions.style.display = "block";
     } else {
-      suggestions.style.display = "none";
+      suggestions.innerHTML = "<div style='padding:10px;color:var(--muted);font-size:0.8rem;'>No telescopes found. Try a different search.</div>";
+      suggestions.style.display = "block";
     }
   });
 
   document.addEventListener("click", (e) => {
-    if (e.target !== searchInput) suggestions.style.display = "none";
+    if (e.target !== searchInput && !suggestions.contains(e.target)) {
+      suggestions.style.display = "none";
+    }
   });
 }
 
@@ -323,6 +347,11 @@ function renderAccessories() {
       } else {
         note = 'Select a scope for weight verification';
       }
+    }
+
+    // ── Catch-all: no scope selected ──
+    if (!note && !hasScope) {
+      note = 'Search for your telescope below to verify compatibility';
     }
 
     const price = dbPrices[a.priceKey] ? `$${dbPrices[a.priceKey].toFixed(2)}` : '...';
