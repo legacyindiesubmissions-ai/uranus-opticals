@@ -568,11 +568,16 @@ async function updateConfigurator() {
     }
   }
 
-  // No valid rig yet (BYO with no telescope match) — clear the total so the
-  // price always reflects the live selection instead of a stale preset value.
+  // No valid rig yet (BYO with no telescope match) — clear the total and reset
+  // any recipe/button left over from a previous (preset) selection so nothing
+  // leaks before a telescope is matched.
   if (!scope || !camera || !mount) {
     const rigTotalEmpty = byId("rigTotal");
     if (rigTotalEmpty) rigTotalEmpty.textContent = "$0.00";
+    byId("adapterResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">Mxx to Mxx Adapter</span>';
+    byId("spacerResult").innerHTML = '<span style="filter: blur(4px); opacity: 0.5;">xx.x mm Required</span>';
+    const cb = byId("btnCheckoutRig");
+    if (cb) { cb.textContent = "SEARCH YOUR TELESCOPE"; cb.onclick = null; }
     return;
   }
 
