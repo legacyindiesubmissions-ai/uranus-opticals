@@ -680,7 +680,13 @@ document.addEventListener('DOMContentLoaded', () => { renderCartBadge(); });
 document.addEventListener('DOMContentLoaded', initData);
 if (byId('builderControls')) {
   byId('builderControls').addEventListener('change', (e) => {
-    if (e.target.id === 'scopeSelect') renderAccessories();
+    if (e.target.id === 'scopeSelect') {
+      if (e.target.value === 'none') {
+        byId('cameraSelect').value = 'none';
+        byId('mountSelect').value = 'none';
+      }
+      renderAccessories();
+    }
     updateConfigurator();
   });
   byId('customScopeLen').addEventListener('input', () => { renderAccessories(); updateConfigurator(); });
