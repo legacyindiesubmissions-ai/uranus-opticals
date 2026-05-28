@@ -51,6 +51,7 @@ async function initData() {
     console.error("Failed to load mission data", e);
   } finally {
     renderAccessories();
+    updateAllPrices();
     updateConfigurator();
   }
 }
@@ -103,6 +104,28 @@ function selectGlobalScope(scope) {
   byId("searchSuggestions").style.display = "none";
   analysisUnlocked = false; // Reset lock on change
   updateConfigurator();
+}
+
+function updateAllPrices() {
+  // Update price tags on configurator and loose debris pages
+  const priceMap = {
+    'price_flattener': dbPrices.acc_flattener,
+    'price_spacers': dbPrices.acc_spacers,
+    'price_guidescope': dbPrices.acc_guidescope,
+    'price_guidecam': dbPrices.acc_guidecam,
+    'price_filter': dbPrices.acc_filter,
+    'price_dewheater': dbPrices.acc_dewheater,
+    'price_bag_scope': dbPrices.acc_bag_scope,
+    'price_bag_lg': dbPrices.acc_bag_lg,
+    'price_case_hard': dbPrices.acc_case_hard,
+    'price_case_xl': dbPrices.acc_case_xl,
+    'price_power': dbPrices.acc_power,
+    'price_tripod': dbPrices.acc_tripod,
+  };
+  Object.entries(priceMap).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.textContent = `$${val.toFixed(2)}`;
+  });
 }
 
 // ── Accessory Definitions ──
@@ -501,12 +524,129 @@ async function checkoutRig() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", initData);
-if (byId("builderControls")) {
-  byId("builderControls").addEventListener("change", (e) => {
+// ── Cart System ──
+const CART_KEY = 'uranus_cart';
+
+function getCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  renderCartBadge();
+}
+
+function addToCart(id, name, price) {
+  const cart = getCart();
+  const existing = cart.find(i => i.id === id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ id, name, price: parseFloat(price) || 0, qty: 1 }); }
+  saveCart(cart);
+}
+
+function removeFromCart(id) {
+  const cart = getCart().filter(i => i.id !== id);
+  saveCart(cart);
+}
+
+function updateCartQty(id, qty) {
+  const cart = getCart();
+  const item = cart.find(i => i.id === id);
+  if (item) { item.qty = Math.max(0, qty); if (item.qty === 0) return removeFromCart(id); }
+  saveCart(cart);
+}
+
+function cartTotal() {
+  return getCart().reduce((sum, i) => sum + (i.price * i.qty), 0);
+}
+
+function cartCount() {
+  return getCart().reduce((sum, i) => sum + i.qty, 0);
+}
+
+function clearCart() { saveCart([]); }
+
+function renderCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  const count = cartCount();
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function renderCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  const cart = getCart();
+
+  if (cart.length === 0) {
+    drawer.innerHTML = `<div class="cart-header"><h3>Mission Manifest</h3><button class="cart-close" onclick="toggleCart()">×</button></div><div class="cart-empty">No gear loaded. Probe Uranus responsibly.</div>`;
+    return;
+  }
+
+  const items = cart.map(i => `
+    <div class="cart-item">
+      <div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">$${i.price.toFixed(2)}</div></div>
+      <div class="cart-item-controls">
+        <button class="cart-qty-btn" onclick="updateCartQty('${i.id}',${i.qty-1})">−</button>
+        <span class="cart-qty">${i.qty}</span>
+        <button class="cart-qty-btn" onclick="updateCartQty('${i.id}',${i.qty+1})">+</button>
+        <button class="cart-remove" onclick="removeFromCart('${i.id}');renderCartDrawer()" title="Remove">🗑</button>
+      </div>
+    </div>`).join('');
+
+  drawer.innerHTML = `
+    <div class="cart-header"><h3>Mission Manifest</h3><button class="cart-close" onclick="toggleCart()">×</button></div>
+    <div class="cart-items">${items}</div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total</span><strong>$${cartTotal().toFixed(2)}</strong></div>
+      <button class="cart-checkout-btn" onclick="checkoutCart()">SECURE PAYLOAD</button>
+      <button class="cart-clear-btn" onclick="clearCart();renderCartDrawer()">Clear Manifest</button>
+    </div>`;
+}
+
+function toggleCart() {
+  const drawer = document.getElementById('cartDrawer');
+  if (!drawer) return;
+  renderCartDrawer();
+  drawer.classList.toggle('open');
+}
+
+async function checkoutCart() {
+  const cart = getCart();
+  if (!cart.length) return;
+  const items = cart.map(i => `${i.id}:${i.qty}`).join(',');
+  try {
+    const res = await fetch(`/api/uranus/checkout_hardware?items=${items}`);
+    const data = await res.json();
+    if (data.url) { clearCart(); window.location.href = data.url; }
+    else alert('Mission Control could not process. Try again.');
+  } catch {
+    alert('Checkout failed. Mission Control is looking into it.');
+  }
+}
+
+// Backwards compat for existing loose debris product buttons
+function checkoutHardware(id) {
+  const names = {
+    glancer:'Uranus Glancer 80ED', penetrator:'Uranus Penetrator 9000', panoramic:'Uranus Panoramic 60mm',
+    snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Omnivision 455',
+    steadygaze:'Uranus SteadyGaze GTi', hm17:'Uranus DeepTracker HM-17', am3:'Uranus OrbitLock AM3'
+  };
+  addToCart(id, names[id] || id, 0);
+  toggleCart();
+}
+
+document.addEventListener('DOMContentLoaded', () => { renderCartBadge(); });
+
+// ── Configurator Init ──
+document.addEventListener('DOMContentLoaded', initData);
+if (byId('builderControls')) {
+  byId('builderControls').addEventListener('change', (e) => {
     if (e.target.id === 'scopeSelect') renderAccessories();
     updateConfigurator();
   });
-  byId("customScopeLen").addEventListener("input", () => { renderAccessories(); updateConfigurator(); });
-  byId("customScopeFR").addEventListener("input", updateConfigurator);
+  byId('customScopeLen').addEventListener('input', () => { renderAccessories(); updateConfigurator(); });
+  byId('customScopeFR').addEventListener('input', updateConfigurator);
 }
