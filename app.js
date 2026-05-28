@@ -3,6 +3,111 @@
    "We've seen the backside of every telescope."
    ═══════════════════════════════════════════ */
 
+// Joke intensity
+function setJokeIntensity(level) {
+  localStorage.setItem('jokeIntensity', level);
+  
+  if (level === 'apocalyptic') {
+    document.body.style.setProperty('--accent', '#ff6b9d');
+    document.body.style.setProperty('--accent-glow', '#ff8fb3');
+    document.body.style.setProperty('--hot', '#ff3366');
+    applyApocalypticJokes();
+  } else if (level === 'extreme') {
+    document.body.style.setProperty('--accent', '#8ec8e0');
+    document.body.style.setProperty('--accent-glow', '#b0ddf0');
+    document.body.style.setProperty('--hot', '#e0558a');
+  } else {
+    document.body.style.setProperty('--accent', '#7eb8da');
+    document.body.style.setProperty('--accent-glow', '#a0d0f0');
+    document.body.style.setProperty('--hot', '#e0558a');
+  }
+}
+
+function applyApocalypticJokes() {
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+  let node;
+  const words = [
+    /planet/gi, /stars/gi, /space/gi, /\bit\b/gi, /hole/gi, 
+    /telescope/gi, /equipment/gi, /gear/gi, /system/gi, /view/gi,
+    /astrophotography/gi, /universe/gi, /galaxy/gi, /nebula/gi
+  ];
+  while(node = walk.nextNode()) {
+    let text = node.nodeValue;
+    words.forEach(re => {
+      text = text.replace(re, "Uranus");
+    });
+    node.nodeValue = text;
+  }
+  // Recount jokes after injection
+  setTimeout(() => {
+    if (typeof countJokes === 'function') countJokes();
+  }, 100);
+}
+
+function cycleJokeIntensity() {
+  const intensities = ['normal', 'extreme', 'apocalyptic'];
+  const current = localStorage.getItem('jokeIntensity') || 'normal';
+  let nextIdx = (intensities.indexOf(current) + 1) % intensities.length;
+  const next = intensities[nextIdx];
+  
+  if (current === 'apocalyptic' && next === 'normal') {
+    localStorage.setItem('jokeIntensity', next);
+    location.reload();
+  } else {
+    setJokeIntensity(next);
+  }
+}
+
+// Theme
+function setTheme(theme) {
+  localStorage.setItem('uranusTheme', theme);
+  if (theme === 'brown') {
+    document.body.style.setProperty('--space', '#1a1008');
+    document.body.style.setProperty('--deep', '#241810');
+    document.body.style.setProperty('--surface', '#2d1f14');
+    document.body.style.setProperty('--border', '#4a3522');
+    document.body.style.setProperty('--accent', '#d4a76a');
+    document.body.style.setProperty('--accent-glow', '#e8c48a');
+  } else {
+    document.body.style.setProperty('--space', '#070b14');
+    document.body.style.setProperty('--deep', '#0d1326');
+    document.body.style.setProperty('--surface', '#131b33');
+    document.body.style.setProperty('--border', '#1e2d52');
+    document.body.style.setProperty('--accent', '#7eb8da');
+    document.body.style.setProperty('--accent-glow', '#a0d0f0');
+  }
+}
+
+function cycleTheme() {
+  const current = localStorage.getItem('uranusTheme') || 'default';
+  const next = current === 'default' ? 'brown' : 'default';
+  setTheme(next);
+}
+
+function initTweaks() {
+  const theme = localStorage.getItem('uranusTheme') || 'default';
+  const intensity = localStorage.getItem('jokeIntensity') || 'normal';
+  setTheme(theme);
+  setJokeIntensity(intensity);
+}
+
+function initCartUI() {
+  if (document.getElementById('cartFloat')) return;
+  const cartHtml = `
+    <div class="cart-float" id="cartFloat" onclick="toggleCart()">
+      <span class="cart-icon">&#128722;</span>
+      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+    </div>
+    <div class="cart-drawer" id="cartDrawer"></div>`;
+  document.body.insertAdjacentHTML('beforeend', cartHtml);
+}
+
+// ── EXPOSE TO WINDOW FOR INLINE HTML HANDLERS ──
+window.setJokeIntensity = setJokeIntensity;
+window.setTheme = setTheme;
+window.cycleJokeIntensity = cycleJokeIntensity;
+window.cycleTheme = cycleTheme;
+
 document.addEventListener('DOMContentLoaded', () => {
 
 
@@ -743,116 +848,6 @@ async function countJokes() {
   }
 }
 countJokes();
-
-// Joke intensity
-function setJokeIntensity(level) {
-  localStorage.setItem('jokeIntensity', level);
-  
-  if (level === 'apocalyptic') {
-    document.body.style.setProperty('--accent', '#ff6b9d');
-    document.body.style.setProperty('--accent-glow', '#ff8fb3');
-    document.body.style.setProperty('--hot', '#ff3366');
-    applyApocalypticJokes();
-  } else if (level === 'extreme') {
-    document.body.style.setProperty('--accent', '#8ec8e0');
-    document.body.style.setProperty('--accent-glow', '#b0ddf0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  } else {
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-    document.body.style.setProperty('--hot', '#e0558a');
-  }
-}
-
-function applyApocalypticJokes() {
-  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-  let node;
-  const words = [
-    /planet/gi, /stars/gi, /space/gi, /\bit\b/gi, /hole/gi, 
-    /telescope/gi, /equipment/gi, /gear/gi, /system/gi, /view/gi,
-    /astrophotography/gi, /universe/gi, /galaxy/gi, /nebula/gi
-  ];
-  while(node = walk.nextNode()) {
-    let text = node.nodeValue;
-    words.forEach(re => {
-      text = text.replace(re, "Uranus");
-    });
-    node.nodeValue = text;
-  }
-  // Recount jokes after injection
-  setTimeout(countJokes, 100);
-}
-
-function cycleJokeIntensity() {
-  const intensities = ['normal', 'extreme', 'apocalyptic'];
-  const current = localStorage.getItem('jokeIntensity') || 'normal';
-  let nextIdx = (intensities.indexOf(current) + 1) % intensities.length;
-  const next = intensities[nextIdx];
-  
-  if (current === 'apocalyptic' && next === 'normal') {
-    localStorage.setItem('jokeIntensity', next);
-    location.reload();
-  } else {
-    setJokeIntensity(next);
-  }
-}
-
-// Theme
-function setTheme(theme) {
-  localStorage.setItem('uranusTheme', theme);
-  if (theme === 'brown') {
-    document.body.style.setProperty('--space', '#1a1008');
-    document.body.style.setProperty('--deep', '#241810');
-    document.body.style.setProperty('--surface', '#2d1f14');
-    document.body.style.setProperty('--border', '#4a3522');
-    document.body.style.setProperty('--accent', '#d4a76a');
-    document.body.style.setProperty('--accent-glow', '#e8c48a');
-  } else {
-    document.body.style.setProperty('--space', '#070b14');
-    document.body.style.setProperty('--deep', '#0d1326');
-    document.body.style.setProperty('--surface', '#131b33');
-    document.body.style.setProperty('--border', '#1e2d52');
-    document.body.style.setProperty('--accent', '#7eb8da');
-    document.body.style.setProperty('--accent-glow', '#a0d0f0');
-  }
-}
-
-function cycleTheme() {
-  const current = localStorage.getItem('uranusTheme') || 'default';
-  const next = current === 'default' ? 'brown' : 'default';
-  setTheme(next);
-}
-
-function initTweaks() {
-  const theme = localStorage.getItem('uranusTheme') || 'default';
-  const intensity = localStorage.getItem('jokeIntensity') || 'normal';
-  setTheme(theme);
-  setJokeIntensity(intensity);
-}
-
-function initCartUI() {
-  if (document.getElementById('cartFloat')) return;
-  const cartHtml = `
-    <div class="cart-float" id="cartFloat" onclick="toggleCart()">
-      <span class="cart-icon">&#128722;</span>
-      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
-    </div>
-    <div class="cart-drawer" id="cartDrawer"></div>`;
-  document.body.insertAdjacentHTML('beforeend', cartHtml);
-}
-
-// ── EXPOSE TO WINDOW FOR INLINE HTML HANDLERS ──
-window.setJokeIntensity = setJokeIntensity;
-window.setTheme = setTheme;
-window.cycleJokeIntensity = cycleJokeIntensity;
-window.cycleTheme = cycleTheme;
-window.toggleCart = typeof toggleCart !== 'undefined' ? toggleCart : null;
-window.updateCartQty = typeof updateCartQty !== 'undefined' ? updateCartQty : null;
-window.removeFromCart = typeof removeFromCart !== 'undefined' ? removeFromCart : null;
-window.checkoutCart = typeof checkoutCart !== 'undefined' ? checkoutCart : null;
-window.clearCart = typeof clearCart !== 'undefined' ? clearCart : null;
-window.startSimulation = typeof startSimulation !== 'undefined' ? startSimulation : null;
-window.checkoutRig = typeof checkoutRig !== 'undefined' ? checkoutRig : null;
 
 initTweaks();
 initCartUI();
