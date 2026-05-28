@@ -115,10 +115,12 @@ function updateAllPrices() {
     'price_guidecam': dbPrices.acc_guidecam,
     'price_filter': dbPrices.acc_filter,
     'price_dewheater': dbPrices.acc_dewheater,
-    'price_bag_scope': dbPrices.acc_bag_scope,
-    'price_bag_lg': dbPrices.acc_bag_lg,
-    'price_case_hard': dbPrices.acc_case_hard,
-    'price_case_xl': dbPrices.acc_case_xl,
+    'price_bag_300': dbPrices.acc_bag_300, 'price_bag_400': dbPrices.acc_bag_400,
+    'price_bag_520': dbPrices.acc_bag_520, 'price_bag_650': dbPrices.acc_bag_650,
+    'price_bag_800': dbPrices.acc_bag_800, 'price_bag_xxl': dbPrices.acc_bag_xxl,
+    'price_case_300': dbPrices.acc_case_300, 'price_case_400': dbPrices.acc_case_400,
+    'price_case_520': dbPrices.acc_case_520, 'price_case_650': dbPrices.acc_case_650,
+    'price_case_800': dbPrices.acc_case_800, 'price_case_xxl': dbPrices.acc_case_xxl,
     'price_power': dbPrices.acc_power,
     'price_tripod': dbPrices.acc_tripod,
   };
@@ -136,10 +138,18 @@ const accessoryDefs = [
   {id: 'guidecam',   name: 'Ceres-M Guide Camera',           desc: 'High-sensitivity mono guide sensor. Rock-solid lock.',                     priceKey: 'acc_guidecam' },
   {id: 'filter',     name: 'Dual-Band Light Pollution Filter', desc: '2" mounted. Cuts city glow, saturates nebulae.',                        priceKey: 'acc_filter' },
   {id: 'dewheater',  name: 'USB Dew Heater Strip',           desc: 'Prevents lens fog on cold nights. Wraps any OTA.',                         priceKey: 'acc_dewheater' },
-  {id: 'bag',        name: 'Padded Telescope Bag (Small)',   desc: 'Fits scopes up to 380mm retracted. Padded shell.',                         priceKey: 'acc_bag_scope' },
-  {id: 'bag_lg',     name: 'XL Padded Telescope Bag (65cm)', desc: 'Heavy padding for refractors up to 620mm retracted.',                      priceKey: 'acc_bag_lg' },
-  {id: 'case',       name: 'Hard Case w/ Pluck Foam (Small)', desc: 'Waterproof protection for scopes up to 520mm retracted.',                priceKey: 'acc_case_hard' },
-  {id: 'case_xl',    name: 'XL Waterproof Hard Case (60cm)', desc: 'Deep rugged case for large OTAs and refractors.',                          priceKey: 'acc_case_xl' },
+  {id: 'bag_300',    name: 'Padded Bag — Micro (≤300mm)',   desc: 'Fits tiny scopes up to 300mm. RedCat 51, ZS61, guide scope kits.',       priceKey: 'acc_bag_300',   tier: '300' },
+  {id: 'bag_400',    name: 'Padded Bag — Small (301-400mm)', desc: 'Fits compact refractors 301-400mm. RedCat 61/71, ZS73, GT71, Evostar 72ED.', priceKey: 'acc_bag_400',   tier: '400' },
+  {id: 'bag_520',    name: 'Padded Bag — Medium (401-520mm)', desc: 'Fits mid-size scopes 401-520mm. RedCat 91, ZS81, Esprit 80ED, FRA500.',priceKey: 'acc_bag_520',   tier: '520' },
+  {id: 'bag_650',    name: 'Padded Bag — Large (521-650mm)', desc: 'Fits full-size refractors 521-650mm. ZS103, GT102, FLT120, Esprit 100ED.',priceKey: 'acc_bag_650',   tier: '650' },
+  {id: 'bag_800',    name: 'Padded Bag — XL (651-800mm)',   desc: 'Fits big glass 651-800mm. ZS126, FLT132, Esprit 120ED, 120APO.',          priceKey: 'acc_bag_800',   tier: '800' },
+  {id: 'bag_xxl',    name: 'Padded Bag — XXL (801mm+)',     desc: 'Fits massive refractors 801mm+. Esprit 150ED, 140APO, 185APO.',           priceKey: 'acc_bag_xxl',   tier: 'xxl' },
+  {id: 'case_300',   name: 'Hard Case — Micro (≤300mm)',    desc: 'Waterproof hard shell for scopes up to 300mm. Pluck foam interior.',     priceKey: 'acc_case_300',  tier: '300' },
+  {id: 'case_400',   name: 'Hard Case — Small (301-400mm)', desc: 'Waterproof protection for scopes 301-400mm. Crushproof.',                 priceKey: 'acc_case_400',  tier: '400' },
+  {id: 'case_520',   name: 'Hard Case — Medium (401-520mm)', desc: 'Rugged hard case for scopes 401-520mm. Pressure valve, lockable.',       priceKey: 'acc_case_520',  tier: '520' },
+  {id: 'case_650',   name: 'Hard Case — Large (521-650mm)', desc: 'Heavy-duty protection for scopes 521-650mm. Pluck foam + egg-crate.',     priceKey: 'acc_case_650',  tier: '650' },
+  {id: 'case_800',   name: 'Hard Case — XL (651-800mm)',    desc: 'Maximum protection for scopes 651-800mm. Lockable, waterproof.',          priceKey: 'acc_case_800',  tier: '800' },
+  {id: 'case_xxl',   name: 'Hard Case — XXL (801mm+)',     desc: 'Industrial-grade case for scopes 801mm+. Custom foam, reinforced shell.',  priceKey: 'acc_case_xxl',  tier: 'xxl' },
   {id: 'power',      name: '12V Portable Power Bank',        desc: '60Wh capacity. Runs mount + camera for 4-6 hours in the field.',           priceKey: 'acc_power' },
   {id: 'tripod',     name: 'Carbon Fiber Tripod',            desc: 'Lightweight, vibration-dampening. 8kg payload rating.',                    priceKey: 'acc_tripod' },
 ];
@@ -275,33 +285,30 @@ function renderAccessories() {
       }
     }
 
-    // ── Bags & Cases ──
-    if (a.id === 'bag' || a.id === 'bag_lg' || a.id === 'case' || a.id === 'case_xl') {
-      if (isSCT || isNewtonian) {
-        visible = false;
-        note = `Designed for refractor tubes — not compatible with ${eff.type} form factor`;
+    // ── Bags & Cases (tiered by scope length) ──
+    if (a.tier) {
+      const tierMax = a.tier === 'xxl' ? Infinity : parseInt(a.tier);
+      const tierMin = (() => {
+        const tiers = ['300','400','520','650','800','xxl'];
+        const idx = tiers.indexOf(a.tier);
+        if (idx === 0) return 1;
+        return parseInt(tiers[idx - 1]) + 1;
+      })();
+
+      if (isSCT) {
+        visible = false; note = 'Designed for refractor tubes — SCTs have different form factor';
+      } else if (isNewtonian) {
+        visible = false; note = 'Designed for refractor tubes — Newtonians need tube rings, not bags';
+      } else if (isAstrograph) {
+        visible = false; note = 'Astrograph form factor requires custom case solution — contact us';
       } else if (!hasScope) {
-        visible = true; note = 'Select a scope to verify fit';
-      }
-      // Length-based rules for refractors
-      if (isRefractor || (!isSCT && !isNewtonian)) {
-        if (a.id === 'bag') {
-          if (hasScope && eff.len <= 380) note = `Verified fit — ${eff.len}mm within 380mm max`;
-          else if (hasScope && eff.len > 380) { visible = false; note = `Too small — ${eff.len}mm exceeds 380mm max`; }
-        }
-        if (a.id === 'bag_lg') {
-          if (hasScope && eff.len > 380 && eff.len <= 620) note = `Verified fit — ${eff.len}mm within 381-620mm range`;
-          else if (hasScope && eff.len <= 380) { visible = false; note = `Overkill — ${eff.len}mm fits the small bag`; }
-          else if (hasScope && eff.len > 620) { visible = false; note = `Too large — ${eff.len}mm exceeds 620mm max`; }
-        }
-        if (a.id === 'case') {
-          if (hasScope && eff.len <= 520) note = `Verified fit — ${eff.len}mm within 520mm max`;
-          else if (hasScope && eff.len > 520) { visible = false; note = `Too small — ${eff.len}mm exceeds 520mm max`; }
-        }
-        if (a.id === 'case_xl') {
-          if (hasScope && eff.len > 520) note = `Verified fit — ${eff.len}mm fits the XL case`;
-          else if (hasScope && eff.len <= 520 && eff.len > 0) { visible = true; note = 'Fits — but the small case is more compact'; }
-        }
+        visible = true; note = 'Select a scope to match the correct case size';
+      } else if (eff.len >= tierMin && eff.len <= tierMax) {
+        visible = true; note = `Matched — your ${eff.len}mm scope fits this ${a.tier}mm tier`;
+      } else {
+        visible = false;
+        if (eff.len < tierMin) note = `Oversized — your ${eff.len}mm scope fits a smaller tier`;
+        else note = `Too small — your ${eff.len}mm scope needs a larger tier`;
       }
     }
 
