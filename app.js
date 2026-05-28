@@ -524,6 +524,8 @@ function renderAccessories() {
 
 // ── Core Engine ──
 async function updateConfigurator() {
+  // Configurator-only: bail cleanly on pages without it (e.g. loose-debris).
+  if (!byId("scopeSelect")) return;
   const scopeId = byId("scopeSelect").value;
   const cameraId = byId("cameraSelect").value;
   const mountId = byId("mountSelect").value;
@@ -698,7 +700,9 @@ function startSimulation() {
 
 // Paywall → real $5 Stripe quote checkout. Recipe is delivered server-side
 // only after payment clears (see checkQuoteReturn).
-byId("btnUnlockAnalysis").onclick = async () => {
+// Guarded: this element only exists on the configurator page, not loose-debris.
+const unlockBtn = byId("btnUnlockAnalysis");
+if (unlockBtn) unlockBtn.onclick = async () => {
   const btn = byId("btnUnlockAnalysis");
   const scope = getEffectiveScope();
   if (!scope) {
