@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URANUS OPTICALS — Peer Deeper</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="stylesheet" href="styles.css?v=2.0.3">
+<link rel="stylesheet" href="styles.css?v=2.0.4">
 <script src="app.js?v=2.0.2" defer></script>
 <style>
 :root {
@@ -737,26 +737,26 @@ footer .footer-joke {
         </label>
 
         <!-- CUSTOM SCOPE FORM (Hidden by default) -->
-        <div id="customScopeForm" style="display: none; background: rgba(160,208,240,0.05); border: 1px dashed var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-          <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Global Mission Profile</h4>
+        <div id="customScopeForm" style="display: none; background: rgba(160,208,240,0.05); border: 1px dashed var(--accent); padding: 16px; border-radius: 8px; margin-bottom: 16px; box-sizing: border-box; max-width: 100%;">
+          <h4 style="font-size: 0.8125rem; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Global Mission Profile</h4>
           
           <div style="margin-bottom: 12px; position: relative;">
-            <span style="font-size: 0.7rem; color: var(--muted);">Search 100+ Verified Telescopes</span>
-            <input type="text" id="scopeSearch" placeholder="e.g. RedCat 51, EdgeHD..." style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+            <span style="font-size: 0.8125rem; color: var(--muted);">Search 100+ Verified Telescopes</span>
+            <input type="text" id="scopeSearch" placeholder="e.g. RedCat 51, EdgeHD..." style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.875rem;">
             <div id="searchSuggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); z-index: 100; max-height: 200px; overflow-y: auto; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);"></div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <label style="padding: 0; background: transparent; border: none;">
-              <span style="font-size: 0.7rem; color: var(--muted);">Retracted Length (mm)</span>
-              <input type="number" id="customScopeLen" placeholder="e.g. 450" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+              <span style="font-size: 0.8125rem; color: var(--muted);">Retracted Length (mm)</span>
+              <input type="number" id="customScopeLen" placeholder="e.g. 450" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.875rem;">
             </label>
             <label style="padding: 0; background: transparent; border: none;">
-              <span style="font-size: 0.7rem; color: var(--muted);">Focal Ratio (f/)</span>
-              <input type="number" id="customScopeFR" placeholder="e.g. 7" step="0.1" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.8rem;">
+              <span style="font-size: 0.8125rem; color: var(--muted);">Focal Ratio (f/)</span>
+              <input type="number" id="customScopeFR" placeholder="e.g. 7" step="0.1" style="width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 4px; font-size: 0.875rem;">
             </label>
           </div>
-          <p style="font-size: 0.65rem; color: var(--muted); margin-top: 8px;">Selected: <span id="selectedScopeLabel" style="color: var(--accent);">Generic Profile</span></p>
+          <p style="font-size: 0.75rem; color: var(--muted); margin-top: 8px;">Selected: <span id="selectedScopeLabel" style="color: var(--accent);">Generic Profile</span></p>
         </div>
 
         <label>
