@@ -412,19 +412,32 @@ function renderAccessories() {
     const backfocus = eff ? eff.backfocus : 55;
     const isStandardBF = backfocus >= 50 && backfocus <= 60;
 
-    // ── Flattener ──
+    // ── Flattener (focal-ratio aware) ──
+    // Field curvature scales with focal ratio: the faster the scope (lower f/),
+    // the harder a flattener is needed, and very fast scopes also benefit from a
+    // focal reducer. Slower scopes are forgiving.
     if (a.id === 'flattener') {
+      const fr = eff && eff.fr ? eff.fr : 0;
+      const frTag = fr ? `f/${fr.toFixed(1)}` : '';
       if (!hasScope) {
         visible = true; note = 'Select a scope to evaluate compatibility';
       } else if (hasBuiltinCorrection) {
         visible = false; note = `Not needed — ${eff.type} design has built-in field correction`;
       } else if (eff.type === 'Doublet') {
-        visible = true; forceOn = true; note = 'Required — doublet refractors need field flattening for sharp corners';
-        rowClass = 'included';
+        visible = true; forceOn = true; rowClass = 'included';
+        note = (fr && fr < 6)
+          ? `Required — fast ${frTag} doublet, field curvature is heavy; a flattener is essential for sharp corners`
+          : 'Required — doublet refractors need field flattening for sharp corners';
+      } else if (fr && fr < 5) {
+        // Very fast scope of any refractor type — curvature dominates the field
+        visible = true; forceOn = true; rowClass = 'included';
+        note = `Required — at ${frTag} field curvature is severe; a flattener is essential. A focal reducer would also flatten the field and speed the system.`;
+      } else if (fr && fr < 6.5) {
+        visible = true; note = `Recommended — ${frTag} is fast enough that corners soften noticeably without a flattener`;
       } else if (eff.type === 'Triplet') {
-        visible = true; note = 'Optional — triplet is well-corrected; flattener tightens extreme edges';
+        visible = true; note = `Optional — triplet is well-corrected${frTag ? ` and ${frTag} is forgiving` : ''}; flattener only tightens extreme edges`;
       } else {
-        visible = true; note = 'May improve edge performance on this optical design';
+        visible = true; note = frTag ? `Optional — ${frTag} is forgiving; a flattener only tightens extreme edges` : 'May improve edge performance on this optical design';
       }
     }
 
