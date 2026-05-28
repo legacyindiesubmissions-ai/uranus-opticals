@@ -490,11 +490,24 @@ function renderAccessories() {
         </div>
         <div class="col-price">
           <span class="price-val">${price}</span>
+          <button class="acc-addcart" data-key="${a.priceKey}" data-name="${a.name}"
+            style="margin-top:8px;width:100%;background:var(--accent);color:#04101f;border:none;padding:8px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem;">
+            + Add to Cart
+          </button>
         </div>
       </div>`;
   });
 
   container.innerHTML = html;
+
+  // Bind per-accessory add-to-cart so BYO customers can stack multiple parts
+  container.querySelectorAll('.acc-addcart').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      addToCart(key, btn.dataset.name, dbPrices[key] || 0);
+      toggleCart();
+    });
+  });
 
   // Bind dropdown change events
   container.querySelectorAll('.acc-select').forEach(sel => {
@@ -530,24 +543,26 @@ async function updateConfigurator() {
   const camera = cameras[cameraId];
   const mount  = mounts[mountId];
 
-  // BYO Logic: Hide accessory list until a scope is matched
+  // BYO gating: until the customer pays the $5 quote, hide the camera + mount
+  // pickers AND the accessory wall. Everything in the results unlocks together
+  // only after payment clears (analysisUnlocked). Presets are never gated.
+  const isBYO = (scopeId === 'none');
+  const hasMatch = (selectedGlobalScope !== null);
+  const byoLocked = isBYO && !analysisUnlocked;
+
+  const cameraField = byId('cameraField');
+  const mountField = byId('mountField');
+  if (cameraField) cameraField.style.display = byoLocked ? 'none' : '';
+  if (mountField) mountField.style.display = byoLocked ? 'none' : '';
+
   const accPicker = byId('accessoryPicker');
   if (accPicker) {
-    const isBYO = (scopeId === 'none');
-    const hasMatch = (selectedGlobalScope !== null);
-    
-    if (isBYO && !hasMatch) {
-      accPicker.style.display = 'none';
-      const pickerHeader = accPicker.previousElementSibling;
-      if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
-        pickerHeader.style.display = 'none';
-      }
-    } else {
-      accPicker.style.display = 'block';
-      const pickerHeader = accPicker.previousElementSibling;
-      if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
-        pickerHeader.style.display = 'flex';
-      }
+    // Accessories show only once BYO is paid AND a telescope is matched.
+    const showAcc = !isBYO || (analysisUnlocked && hasMatch);
+    const pickerHeader = accPicker.previousElementSibling;
+    accPicker.style.display = showAcc ? 'block' : 'none';
+    if (pickerHeader && pickerHeader.classList.contains('controls-title')) {
+      pickerHeader.style.display = showAcc ? 'flex' : 'none';
     }
   }
 
@@ -649,15 +664,22 @@ function startSimulation() {
   scanner.style.animation = "scan 2s infinite";
 
   let p = 0;
-  let jokeIdx = 0;
-  
+  let lastJokeIdx = -1;
+
+  // Seed the ticker with a random joke immediately so it never starts empty
+  const seedJoke = Math.floor(Math.random() * jokes.length);
+  lastJokeIdx = seedJoke;
+  ticker.innerHTML = `<div style="animation: fadeIn 0.5s;">${jokes[seedJoke]}</div>`;
+
   const interval = setInterval(() => {
     p += 0.5;
     progress.style.width = p + "%";
-    
-    if (Math.floor(p) % 15 === 0) {
-      ticker.innerHTML = `<div style="animation: fadeIn 0.5s;">${jokes[jokeIdx % jokes.length]}</div>` + ticker.innerHTML;
-      jokeIdx++;
+
+    if (p % 15 === 0) {
+      let next;
+      do { next = Math.floor(Math.random() * jokes.length); } while (jokes.length > 1 && next === lastJokeIdx);
+      lastJokeIdx = next;
+      ticker.innerHTML = `<div style="animation: fadeIn 0.5s;">${jokes[next]}</div>` + ticker.innerHTML;
     }
 
     if (p >= 100) {
@@ -674,15 +696,67 @@ function startSimulation() {
   }, 100);
 }
 
-byId("btnUnlockAnalysis").onclick = () => {
-  byId("btnUnlockAnalysis").textContent = "VERIFYING PAYMENT...";
-  setTimeout(() => {
-    analysisUnlocked = true;
-    byId("paywallModal").style.display = "none";
-    updateConfigurator();
-    alert("Consultation Unlocked. Millimetric Recipe now visible.");
-  }, 2000);
+// Paywall → real $5 Stripe quote checkout. Recipe is delivered server-side
+// only after payment clears (see checkQuoteReturn).
+byId("btnUnlockAnalysis").onclick = async () => {
+  const btn = byId("btnUnlockAnalysis");
+  const scope = getEffectiveScope();
+  if (!scope) {
+    alert("Search and match your telescope first so we can quote your fitment.");
+    return;
+  }
+  btn.textContent = "CONNECTING TO PROBE...";
+  const cam = cameras[byId("cameraSelect").value];
+  const params = new URLSearchParams({
+    scope_backfocus: scope.backfocus ?? 55,
+    scope_thread: scope.thread ?? "",
+    scope_len: scope.len ?? "",
+    cam_depth: (cam && cam.depth) ? cam.depth : "",
+    cam_thread: (cam && cam.thread) ? cam.thread : ""
+  });
+  try {
+    const res = await fetch(`/api/uranus/checkout_quote?${params.toString()}`);
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Could not start quote checkout. Try again.");
+      btn.textContent = "Unlock Mission Data";
+    }
+  } catch {
+    alert("Connection to Mission Control failed.");
+    btn.textContent = "Unlock Mission Data";
+  }
 };
+
+// On return from a paid Stripe quote, verify server-side and reveal the recipe.
+async function checkQuoteReturn() {
+  const sid = new URLSearchParams(location.search).get('quote_paid');
+  if (!sid) return;
+  try {
+    const res = await fetch(`/api/uranus/quote_result?session_id=${encodeURIComponent(sid)}`);
+    const data = await res.json();
+    if (data.paid) {
+      analysisUnlocked = true;
+      byId("paywallModal").style.display = "none";
+      // Restore the telescope they were quoting so the accessory list populates
+      const saved = localStorage.getItem('uranusLastScope');
+      if (saved && byId("scopeSelect").value === 'none') {
+        try {
+          selectedGlobalScope = JSON.parse(saved);
+          byId("selectedScopeLabel").textContent = `${selectedGlobalScope.brand} ${selectedGlobalScope.model} Profile Loaded`;
+          byId("scopeSearch").value = `${selectedGlobalScope.brand} ${selectedGlobalScope.model}`;
+        } catch {}
+      }
+      updateConfigurator();
+      // Overwrite with server-verified recipe (authoritative)
+      byId("adapterResult").textContent = data.adapter;
+      byId("spacerResult").textContent = data.spacer;
+    }
+  } catch {}
+  // Strip the param so a refresh can't replay it
+  history.replaceState({}, '', location.pathname + '#configurator');
+}
 
 async function checkoutRig() {
   const checkoutBtn = byId("btnCheckoutRig");
@@ -815,14 +889,26 @@ function checkoutHardware(id) {
     snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Omnivision 455',
     steadygaze:'Uranus SteadyGaze GTi', hm17:'Uranus DeepTracker HM-17', am3:'Uranus OrbitLock AM3'
   };
-  addToCart(id, names[id] || id, 0);
+  const price = dbPrices[id] || 0;
+  addToCart(id, names[id] || id, price);
   toggleCart();
 }
 
 renderCartBadge();
 
+// Expose cart handlers for inline onclick (loose-debris buttons + cart drawer).
+// These live inside the DOMContentLoaded closure, so inline handlers can't see
+// them without this — that's why the cart was previously non-functional.
+window.checkoutHardware = checkoutHardware;
+window.toggleCart = toggleCart;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.updateCartQty = updateCartQty;
+window.checkoutCart = checkoutCart;
+window.clearCart = clearCart;
+
 // ── Configurator Init ──
-initData();
+initData().then(checkQuoteReturn);
 if (byId('builderControls')) {
   byId('builderControls').addEventListener('change', (e) => {
     if (e.target.id === 'scopeSelect') {
