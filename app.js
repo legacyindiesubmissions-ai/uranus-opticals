@@ -719,7 +719,10 @@ async function countJokes() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(text, 'text/html');
       if (doc.body) {
-        const matches = doc.body.innerText.match(/Uranus/gi);
+        // Remove script and style tags so we don't count code references
+        const scripts = doc.body.querySelectorAll('script, style');
+        scripts.forEach(s => s.remove());
+        const matches = doc.body.textContent.match(/Uranus/gi);
         totalMatches += matches ? matches.length : 0;
       }
     }
