@@ -551,7 +551,13 @@ async function updateConfigurator() {
     }
   }
 
-  if (!scope || !camera || !mount) return;
+  // No valid rig yet (BYO with no telescope match) — clear the total so the
+  // price always reflects the live selection instead of a stale preset value.
+  if (!scope || !camera || !mount) {
+    const rigTotalEmpty = byId("rigTotal");
+    if (rigTotalEmpty) rigTotalEmpty.textContent = "$0.00";
+    return;
+  }
 
   // 1. Re-render accessories with current scope visibility rules
   renderAccessories();
