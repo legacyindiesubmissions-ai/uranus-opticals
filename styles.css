@@ -438,8 +438,9 @@ p { color: var(--muted); margin-bottom: 0; }
 /* ── Configurator ── */
 .config-shell {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: minmax(350px, 2fr) 1fr;
   gap: 1.5rem;
+  width: 100%;
 }
 
 .controls {
