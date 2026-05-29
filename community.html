@@ -398,6 +398,22 @@ footer {
   box-shadow: 0 18px 50px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
+
+.pill-btn { cursor: pointer; background: none; font: inherit; }
+.pill-btn:hover { border-color: var(--accent); color: var(--text); }
+.avatar { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 4px; display: inline-block; }
+.avatar-fallback { background: var(--accent); color: var(--space); text-align: center; line-height: 22px; font-weight: 900; font-size: 0.7rem; }
+.post-meta .author { display: inline-flex; align-items: center; gap: 4px; text-transform: none; }
+.reply-box { margin-top: 14px; display: grid; gap: 8px; }
+.reply-box textarea { width: 100%; min-height: 64px; border: 1px solid var(--border); border-radius: 10px; background: #0a1020; color: var(--text); padding: 10px; resize: vertical; }
+.replies { margin-top: 12px; display: grid; gap: 10px; }
+.post.reply { background: rgba(10,16,32,0.7); border-left: 2px solid var(--accent); margin-left: 18px; }
+.post.reply .post-body { padding: 14px 16px; }
+
+.profile-card .avatar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.profile-card .avatar-row .avatar { width: 48px; height: 48px; line-height: 48px; font-size: 1.1rem; }
+.profile-card textarea { width: 100%; min-height: 64px; border: 1px solid var(--border); border-radius: 10px; background: #0a1020; color: var(--text); padding: 10px; resize: vertical; margin-bottom: 10px; }
+.profile-card input[type=file] { color: var(--muted); font-size: 0.82rem; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -462,6 +478,19 @@ footer {
           <button class="btn" id="rigCardBtn" style="margin-top:12px;">GENERATE RIG CARD</button>
           <canvas id="rigCardCanvas" width="1080" height="1080"></canvas>
           <button class="linkbtn" id="rigCardDownload" style="display:none;margin-top:10px;width:100%;">Download card</button>
+        </div>
+
+        <div class="side-card profile-card" id="profileCard" style="display:none;">
+          <h2>Your Profile</h2>
+          <div class="avatar-row">
+            <span id="profileAvatar" class="avatar avatar-fallback">?</span>
+            <div>
+              <input id="avatarInput" type="file" accept="image/*">
+              <button class="linkbtn" id="avatarSave">Update avatar</button>
+            </div>
+          </div>
+          <textarea id="bioInput" placeholder="Tell the feed about your rig and your obsession with Uranus."></textarea>
+          <button class="linkbtn" id="bioSave" style="width:100%;">Save bio</button>
         </div>
       </div>
     </aside>
@@ -701,13 +730,50 @@ function applyMembership() {
   } else {
     quota.textContent = "";
   }
+  renderProfile();
 }
 
-// ---------- Feed ----------
-function postCard(p) {
+function renderProfile() {
+  const card = $("profileCard");
+  if (!ME) { card.style.display = "none"; return; }
+  card.style.display = "block";
+  const av = $("profileAvatar");
+  if (ME.avatar) { av.outerHTML = `<img id="profileAvatar" class="avatar" src="${API}${ME.avatar}" alt="">`; }
+  else { av.textContent = ME.handle.slice(0, 1).toUpperCase(); }
+  $("bioInput").value = ME.bio || "";
+}
+
+async function saveAvatar() {
+  if (!$("avatarInput").files[0]) { toast("Pick an image first."); return; }
+  const fd = new FormData();
+  fd.append("avatar", $("avatarInput").files[0]);
+  const res = await api("/upload-avatar", { method: "POST", body: fd });
+  if (!res.ok) { toast("Avatar upload failed."); return; }
+  toast("Avatar updated.");
+  await loadMe(); await loadFeed();
+}
+
+async function saveBio() {
+  const res = await api("/profile", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bio: $("bioInput").value.trim() }),
+  });
+  if (!res.ok) { toast("Could not save bio."); return; }
+  ME.bio = $("bioInput").value.trim();
+  toast("Bio saved.");
+}
+
+// ---------- Feed (threaded) ----------
+function avatarChip(p) {
+  if (p.avatar) return `<img class="avatar" src="${API}${p.avatar}" alt="">`;
+  const h = (p.author_handle || p.author || "?").slice(0, 1).toUpperCase();
+  return `<span class="avatar avatar-fallback">${h}</span>`;
+}
+
+function postCard(p, isReply) {
   const article = document.createElement("article");
-  article.className = "post";
-  if (p.image) {
+  article.className = isReply ? "post reply" : "post";
+  if (p.image && !isReply) {
     const img = document.createElement("div");
     img.className = "post-image";
     img.style.backgroundImage = `url('${API}${p.image}')`;
@@ -716,16 +782,60 @@ function postCard(p) {
   const body = document.createElement("div");
   body.className = "post-body";
   const when = (p.created_at || "").replace("T", " ").slice(0, 16);
+  const replyBtn = isReply ? "" : `<button class="pill pill-btn reply-btn">Reply</button>`;
   body.innerHTML = `
-    <div class="post-meta"><span>@${p.author_handle || p.author || "observer"}</span><span>${when}</span></div>
+    <div class="post-meta"><span class="author">${avatarChip(p)} @${p.author_handle || p.author || "observer"}</span><span>${when}</span></div>
     <p></p>
     <div class="post-actions">
-      <span class="pill">✦ ${p.resonation || 0}</span>
+      <button class="pill pill-btn resonate-btn">✦ <span class="rcount">${p.resonation || 0}</span></button>
       <span class="pill">${p.views || 0} views</span>
-    </div>`;
+      ${replyBtn}
+    </div>
+    <div class="reply-box" style="display:none;"></div>
+    <div class="replies"></div>`;
   body.querySelector("p").textContent = p.content || "";
+
+  body.querySelector(".resonate-btn").addEventListener("click", () => resonate(p.id, body));
+  const rb = body.querySelector(".reply-btn");
+  if (rb) rb.addEventListener("click", () => toggleReplyBox(p.id, body));
   article.appendChild(body);
   return article;
+}
+
+async function resonate(id, body) {
+  if (!ME) { openAuth("login"); return; }
+  const res = await api("/resonate", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ synapse_id: id }),
+  });
+  if (res.ok) {
+    const c = body.querySelector(".rcount");
+    c.textContent = (parseInt(c.textContent, 10) || 0) + 1;
+  } else { toast("Could not react."); }
+}
+
+function toggleReplyBox(parentId, body) {
+  if (!ME) { openAuth("login"); return; }
+  if (!ME.can_post) { toast("Membership required to reply."); return; }
+  const box = body.querySelector(".reply-box");
+  if (box.style.display === "block") { box.style.display = "none"; return; }
+  box.style.display = "block";
+  box.innerHTML = `
+    <textarea class="reply-input" placeholder="Add your reply…"></textarea>
+    <button class="btn reply-send">SEND REPLY</button>`;
+  box.querySelector(".reply-send").addEventListener("click", async () => {
+    const text = box.querySelector(".reply-input").value.trim();
+    if (!text) return;
+    const fd = new FormData();
+    fd.append("content", text);
+    fd.append("parent_id", String(parentId));
+    const res = await api("/synapse", { method: "POST", body: fd });
+    if (res.status === 402) { toast("Membership required to reply."); return; }
+    if (res.status === 429) { toast("Monthly post quota reached."); return; }
+    if (!res.ok) { toast("Reply failed."); return; }
+    toast("Reply posted.");
+    await loadFeed(); await loadMe();
+  });
 }
 
 async function loadFeed() {
@@ -737,7 +847,18 @@ async function loadFeed() {
       feedEl.innerHTML = '<p style="color:var(--muted)">No captures yet. Be the first to show us Uranus.</p>';
       return;
     }
-    posts.forEach((p) => feedEl.appendChild(postCard(p)));
+    // Group replies (have parent_id) under their parent; preserve feed order for top-level.
+    const byParent = {};
+    posts.forEach((p) => {
+      if (p.parent_id) (byParent[p.parent_id] = byParent[p.parent_id] || []).push(p);
+    });
+    posts.filter((p) => !p.parent_id).forEach((p) => {
+      const card = postCard(p, false);
+      const replies = (byParent[p.id] || []).slice().reverse();
+      const rc = card.querySelector(".replies");
+      replies.forEach((r) => rc.appendChild(postCard(r, true)));
+      feedEl.appendChild(card);
+    });
   } catch {
     feedEl.innerHTML = '<p style="color:var(--hot)">Could not load the feed.</p>';
   }
@@ -828,6 +949,8 @@ function wrapText(ctx, text, x, y, maxW, lh) {
 
 // ---------- Boot ----------
 $("authModal").addEventListener("click", (e) => { if (e.target === $("authModal")) closeAuth(); });
+$("avatarSave").addEventListener("click", saveAvatar);
+$("bioSave").addEventListener("click", saveBio);
 renderAuthBar();
 loadMe();
 loadFeed();
