@@ -349,6 +349,55 @@ footer {
     display: none;
   }
 }
+
+/* --- Phase D: auth + membership + rig card --- */
+.auth-controls { display: flex; align-items: center; gap: 12px; }
+.auth-controls .who { color: var(--accent); font-weight: 800; font-size: 0.86rem; }
+.badge {
+  display: inline-block; border: 1px solid var(--border); border-radius: 999px;
+  padding: 4px 10px; font-size: 0.72rem; font-weight: 800; color: var(--accent-glow);
+  background: rgba(126,184,218,0.08); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.badge.hot { color: var(--hot); border-color: rgba(224,85,138,0.5); background: rgba(224,85,138,0.08); }
+.linkbtn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 8px 12px; font-weight: 700; cursor: pointer; }
+.linkbtn:hover { border-color: var(--accent); }
+
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 60; display: none;
+  background: rgba(4,7,14,0.78); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  width: min(440px, 100%); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px; box-shadow: 0 30px 90px rgba(0,0,0,0.5);
+}
+.modal h2 { font-size: 1.3rem; margin-bottom: 6px; }
+.modal .sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 18px; }
+.modal label { display: grid; gap: 6px; color: var(--muted); font-size: 0.8rem; font-weight: 700; margin-bottom: 14px; }
+.modal input { width: 100%; border: 1px solid var(--border); border-radius: 10px; background: #0a1020; color: var(--text); padding: 11px 12px; }
+.modal .challenge { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.modal .challenge svg { cursor: crosshair; border: 1px dashed var(--border); border-radius: 8px; background: #0a1020; }
+.modal .err { color: var(--hot); font-size: 0.82rem; min-height: 18px; margin-bottom: 10px; }
+.modal .switch { color: var(--muted); font-size: 0.84rem; margin-top: 14px; text-align: center; }
+.modal .switch a { color: var(--accent); cursor: pointer; font-weight: 700; }
+
+.composer.locked { opacity: 0.55; pointer-events: none; }
+.lock-note {
+  border: 1px dashed rgba(224,85,138,0.5); border-radius: 12px; padding: 14px;
+  color: var(--muted); font-size: 0.86rem; margin-bottom: 16px; text-align: center;
+}
+.lock-note a { color: var(--hot); font-weight: 800; }
+.quota-line { color: var(--muted); font-size: 0.8rem; font-weight: 700; margin-top: 10px; text-align: center; }
+
+#rigCardCanvas { width: 100%; border-radius: 12px; border: 1px solid var(--border); margin-top: 12px; display: none; }
+.toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 80;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 18px; color: var(--text); font-weight: 700; font-size: 0.88rem;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -362,10 +411,9 @@ footer {
       <li><a href="index.html#configurator">Penetrator&trade;</a></li>
       <li><a href="index.html#pricing">Plans</a></li>
     </ul>
-    <div style="display: flex; gap: 12px; align-items: center;">
-      <button class="nav-tweak-btn" id="navThemeToggle" title="Toggle Theme (Deep Space / Gas Giant)" onclick="cycleTheme()" aria-label="Toggle Theme">🌑</button>
-      <button class="nav-tweak-btn" id="navJokeToggle" title="Nuclear Option (Apocalyptic Jokes)" onclick="cycleJokeIntensity()" aria-label="Toggle Jokes">☢️</button>
-      <a href="index.html#configurator" class="nav-cta">PROBE NOW</a>
+    <div class="auth-controls" id="authControls">
+      <button class="linkbtn" id="loginBtn">Log in</button>
+      <button class="linkbtn" id="registerBtn">Join</button>
     </div>
   </div>
 </nav>
@@ -388,42 +436,32 @@ footer {
 
   <section class="layout">
     <aside>
+      <div class="lock-note" id="lockNote" style="display:none;">
+        Posting is for members. <a href="index.html#pricing">Grab Deep Probe or Mission Control →</a>
+      </div>
       <form class="composer" id="postForm">
         <h2>Post an Image</h2>
-        <label>Display name
-          <input id="displayName" type="text" placeholder="Gary T.">
-        </label>
         <label>Image title
           <input id="postTitle" type="text" placeholder="First clean look at Uranus">
-        </label>
-        <label>Object
-          <select id="postObject">
-            <option>Uranus</option>
-            <option>Moon</option>
-            <option>Saturn</option>
-            <option>Jupiter</option>
-            <option>Deep-sky target</option>
-          </select>
         </label>
         <label>Rig notes
           <textarea id="postNotes" placeholder="Scope, camera, mount, exposure time, filters, and how long you stared at the result."></textarea>
         </label>
         <div class="upload-box">
-          Upload image
+          Upload image (optional)
           <input id="postImage" type="file" accept="image/*">
         </div>
         <button class="btn" type="submit">POST TO MISSION CONTROL</button>
+        <div class="quota-line" id="quotaLine"></div>
       </form>
 
       <div class="side-stack">
         <div class="side-card">
-          <h2>Mission Control Includes</h2>
-          <ul>
-            <li>Image posts with rig notes</li>
-            <li>Target tags and exposure details</li>
-            <li>Member-only Uranus gallery access</li>
-            <li>Saved captures tied to your rig history</li>
-          </ul>
+          <h2>Your Uranus Rig Card</h2>
+          <p>Generate a shareable card with your rank and latest probed rig.</p>
+          <button class="btn" id="rigCardBtn" style="margin-top:12px;">GENERATE RIG CARD</button>
+          <canvas id="rigCardCanvas" width="1080" height="1080"></canvas>
+          <button class="linkbtn" id="rigCardDownload" style="display:none;margin-top:10px;width:100%;">Download card</button>
         </div>
       </div>
     </aside>
@@ -444,104 +482,355 @@ footer {
   Uranus Opticals Mission Control. Serious images. Deeply unserious naming discipline.
 </footer>
 
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <h2 id="authTitle">Log in</h2>
+    <p class="sub" id="authSub">Welcome back to Mission Control.</p>
+    <div class="err" id="authErr"></div>
+    <form id="authForm">
+      <label>Handle
+        <input id="fHandle" type="text" autocomplete="username" placeholder="stargazer_gary">
+      </label>
+      <label id="emailRow" style="display:none;">Email
+        <input id="fEmail" type="email" autocomplete="email" placeholder="you@example.com">
+      </label>
+      <label>Password
+        <input id="fPass" type="password" autocomplete="current-password" placeholder="••••••••">
+      </label>
+      <label id="codeRow" style="display:none;">Verification code (check your email)
+        <input id="fCode" type="text" inputmode="numeric" placeholder="6-digit code">
+      </label>
+      <div class="challenge" id="challengeRow">
+        <span style="color:var(--muted);font-size:0.8rem;">Tap the circle:</span>
+        <span id="challengeSvg"></span>
+      </div>
+      <button class="btn" type="submit" id="authSubmit">Log in</button>
+    </form>
+    <div class="switch" id="authSwitch"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const samplePosts = [
-  {
-    name: "Melissa K.",
-    title: "Four hours on Uranus, finally worth it",
-    object: "Uranus",
-    notes: "90mm triplet, cooled color camera, steady seeing, 4h integration. The mount behaved for once.",
-    tag: "Featured Capture"
-  },
-  {
-    name: "Dr. Chen",
-    title: "Clean ring geometry and zero shame",
-    object: "Uranus",
-    notes: "High-gain stack with conservative sharpening. Not the biggest image, but the shape held together.",
-    tag: "Rig Verified"
-  }
-];
+// Community API: routed by the Cloudflare Worker (/api/community/* → :18650),
+// stripped to /api/* on the community host. Same-origin in production.
+const API = "/api/community";
+let TOKEN = localStorage.getItem("uo_token") || "";
+let ME = null;
+let challengeId = "", clickX = -1, clickY = -1;
+// Login-before-subscribe: index.html sends ?subscribe=deepprobe|fullsend here.
+let pendingSubscribe = new URLSearchParams(location.search).get("subscribe");
 
-const feed = document.getElementById("feed");
-const form = document.getElementById("postForm");
-const imageInput = document.getElementById("postImage");
-
-function getPosts() {
+// Subscription checkout goes to the LICENSE server (/api/uranus/*), passing the
+// logged-in handle as `account` so the webhook ties the license to the account
+// (client_reference_id) — not just the paying email.
+async function startSubscribe(tier) {
   try {
-    return JSON.parse(localStorage.getItem("uo_posts") || "[]");
-  } catch {
-    return [];
+    const res = await fetch(`/api/uranus/checkout?tier=${encodeURIComponent(tier)}&account=${encodeURIComponent(ME.handle)}`);
+    const data = await res.json();
+    if (data.url) { window.location.href = data.url; }
+    else { toast("Could not start checkout. Try again."); }
+  } catch { toast("Network error starting checkout."); }
+}
+
+function maybeSubscribe() {
+  if (!pendingSubscribe) return;
+  if (ME) { const t = pendingSubscribe; pendingSubscribe = null; startSubscribe(t); }
+  else { openAuth("login"); }
+}
+
+const $ = (id) => document.getElementById(id);
+const feedEl = $("feed");
+
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2600);
+}
+function authHeaders() { return TOKEN ? { "Authorization": "Bearer " + TOKEN } : {}; }
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: { ...(opts.headers || {}), ...authHeaders() },
+  });
+  return res;
+}
+
+// ---------- Auth ----------
+let authMode = "login"; // login | register | verify
+
+async function loadChallenge() {
+  clickX = -1; clickY = -1;
+  try {
+    const res = await fetch(API + "/challenge");
+    const data = await res.json();
+    challengeId = data.id;
+    $("challengeSvg").innerHTML = data.svg;
+    const svg = $("challengeSvg").querySelector("svg");
+    if (svg) {
+      svg.addEventListener("click", (e) => {
+        const r = svg.getBoundingClientRect();
+        clickX = Math.round((e.clientX - r.left) * (100 / r.width));
+        clickY = Math.round((e.clientY - r.top) * (100 / r.height));
+        svg.querySelectorAll(".tap").forEach((n) => n.remove());
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", clickX); dot.setAttribute("cy", clickY);
+        dot.setAttribute("r", 4); dot.setAttribute("fill", "#4ec9a0"); dot.setAttribute("class", "tap");
+        svg.appendChild(dot);
+      });
+    }
+  } catch { $("challengeSvg").textContent = "challenge unavailable"; }
+}
+
+function openAuth(mode) {
+  authMode = mode;
+  $("authErr").textContent = "";
+  $("authModal").classList.add("open");
+  $("emailRow").style.display = mode === "register" ? "grid" : "none";
+  $("codeRow").style.display = mode === "verify" ? "grid" : "none";
+  $("fPass").parentElement.style.display = mode === "verify" ? "none" : "grid";
+  $("challengeRow").style.display = mode === "verify" ? "none" : "flex";
+  if (mode === "login") {
+    $("authTitle").textContent = "Log in";
+    $("authSub").textContent = "Welcome back to Mission Control.";
+    $("authSubmit").textContent = "Log in";
+    $("authSwitch").innerHTML = 'New here? <a id="toRegister">Create an account</a>';
+  } else if (mode === "register") {
+    $("authTitle").textContent = "Join Uranus Opticals";
+    $("authSub").textContent = "Create your observer account.";
+    $("authSubmit").textContent = "Create account";
+    $("authSwitch").innerHTML = 'Already aboard? <a id="toLogin">Log in</a>';
+  } else {
+    $("authTitle").textContent = "Verify your email";
+    $("authSub").textContent = "Enter the 6-digit code we sent you.";
+    $("authSubmit").textContent = "Verify";
+    $("authSwitch").innerHTML = '<a id="toLogin">Back to log in</a>';
+  }
+  wireSwitch();
+  if (mode !== "verify") loadChallenge();
+}
+function closeAuth() { $("authModal").classList.remove("open"); }
+function wireSwitch() {
+  const r = $("toRegister"), l = $("toLogin");
+  if (r) r.onclick = () => openAuth("register");
+  if (l) l.onclick = () => openAuth("login");
+}
+
+$("authForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("authErr").textContent = "";
+  const handle = $("fHandle").value.trim().toLowerCase();
+  const pass = $("fPass").value;
+  try {
+    if (authMode === "register") {
+      if (clickX < 0) { $("authErr").textContent = "Tap the circle to prove you're human."; return; }
+      const res = await fetch(API + "/register", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle, email: $("fEmail").value.trim(), hash: pass, challenge_id: challengeId, x: clickX, y: clickY }),
+      });
+      if (!res.ok) { $("authErr").textContent = (await res.text()) || "Registration failed."; return; }
+      toast("Account created — check your email for a code.");
+      openAuth("verify");
+    } else if (authMode === "verify") {
+      const res = await fetch(API + "/verify-email", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle, code: $("fCode").value.trim() }),
+      });
+      if (!res.ok) { $("authErr").textContent = "Invalid or expired code."; return; }
+      toast("Email verified — log in to continue.");
+      openAuth("login");
+    } else {
+      if (clickX < 0) { $("authErr").textContent = "Tap the circle to prove you're human."; return; }
+      const res = await fetch(API + "/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle, hash: pass, challenge_id: challengeId, x: clickX, y: clickY }),
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        $("authErr").textContent = t.includes("verify") ? "Verify your email first." : "Login failed.";
+        return;
+      }
+      const data = await res.json();
+      TOKEN = data.token; localStorage.setItem("uo_token", TOKEN);
+      closeAuth();
+      await loadMe();
+      toast("Locked on. Welcome back.");
+    }
+  } catch { $("authErr").textContent = "Network error. Try again."; }
+});
+
+function logout() {
+  TOKEN = ""; ME = null; localStorage.removeItem("uo_token");
+  renderAuthBar(); applyMembership();
+  toast("Logged out.");
+}
+
+// ---------- Membership state ----------
+async function loadMe() {
+  if (!TOKEN) { ME = null; renderAuthBar(); applyMembership(); return; }
+  try {
+    const res = await api("/me");
+    if (!res.ok) { logout(); return; }
+    ME = await res.json();
+  } catch { ME = null; }
+  renderAuthBar(); applyMembership(); maybeSubscribe();
+}
+
+function renderAuthBar() {
+  const c = $("authControls");
+  if (ME) {
+    const badge = ME.rank_badge ? `<span class="badge">${ME.rank_badge}</span>` : "";
+    const mem = `<span class="badge hot">${ME.membership}</span>`;
+    c.innerHTML = `<span class="who">@${ME.handle}</span>${mem}${badge}<button class="linkbtn" id="logoutBtn">Log out</button>`;
+    $("logoutBtn").onclick = logout;
+  } else {
+    c.innerHTML = `<button class="linkbtn" id="loginBtn">Log in</button><button class="linkbtn" id="registerBtn">Join</button>`;
+    $("loginBtn").onclick = () => openAuth("login");
+    $("registerBtn").onclick = () => openAuth("register");
   }
 }
 
-function savePost(post) {
-  const posts = getPosts();
-  posts.unshift(post);
-  localStorage.setItem("uo_posts", JSON.stringify(posts.slice(0, 24)));
+function applyMembership() {
+  const form = $("postForm"), lock = $("lockNote"), quota = $("quotaLine");
+  const canPost = ME && ME.can_post;
+  form.classList.toggle("locked", !canPost);
+  lock.style.display = canPost ? "none" : "block";
+  if (canPost) {
+    quota.textContent = ME.posts_remaining < 0 ? "Unlimited posts (Mission Control)" : `${ME.posts_remaining} posts left this month`;
+  } else {
+    quota.textContent = "";
+  }
 }
 
-function renderPost(post) {
+// ---------- Feed ----------
+function postCard(p) {
   const article = document.createElement("article");
   article.className = "post";
-
-  const image = document.createElement("div");
-  image.className = "post-image";
-  if (post.image) {
-    image.style.backgroundImage = `url('${post.image}')`;
+  if (p.image) {
+    const img = document.createElement("div");
+    img.className = "post-image";
+    img.style.backgroundImage = `url('${API}${p.image}')`;
+    article.appendChild(img);
   }
-
   const body = document.createElement("div");
   body.className = "post-body";
+  const when = (p.created_at || "").replace("T", " ").slice(0, 16);
   body.innerHTML = `
-    <div class="post-meta"><span>${post.tag || "Member Capture"}</span><span>${post.object}</span></div>
-    <h3></h3>
+    <div class="post-meta"><span>@${p.author_handle || p.author || "observer"}</span><span>${when}</span></div>
     <p></p>
     <div class="post-actions">
-      <span class="pill">Posted by ${post.name || "Anonymous Observer"}</span>
-      <span class="pill">Mission Control</span>
-    </div>
-  `;
-
-  body.querySelector("h3").textContent = post.title || "Untitled Uranus Capture";
-  body.querySelector("p").textContent = post.notes || "No rig notes posted.";
-  article.append(image, body);
+      <span class="pill">✦ ${p.resonation || 0}</span>
+      <span class="pill">${p.views || 0} views</span>
+    </div>`;
+  body.querySelector("p").textContent = p.content || "";
+  article.appendChild(body);
   return article;
 }
 
-function renderFeed() {
-  feed.innerHTML = "";
-  [...getPosts(), ...samplePosts].forEach((post) => feed.appendChild(renderPost(post)));
-}
-
-function readImageFile(file) {
-  return new Promise((resolve) => {
-    if (!file) {
-      resolve("");
+async function loadFeed() {
+  try {
+    const res = await fetch(API + "/posts");
+    const posts = await res.json();
+    feedEl.innerHTML = "";
+    if (!posts || posts.length === 0) {
+      feedEl.innerHTML = '<p style="color:var(--muted)">No captures yet. Be the first to show us Uranus.</p>';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => resolve("");
-    reader.readAsDataURL(file);
-  });
+    posts.forEach((p) => feedEl.appendChild(postCard(p)));
+  } catch {
+    feedEl.innerHTML = '<p style="color:var(--hot)">Could not load the feed.</p>';
+  }
 }
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const image = await readImageFile(imageInput.files[0]);
-  savePost({
-    name: document.getElementById("displayName").value.trim(),
-    title: document.getElementById("postTitle").value.trim(),
-    object: document.getElementById("postObject").value,
-    notes: document.getElementById("postNotes").value.trim(),
-    image,
-    tag: "New Capture"
-  });
-  form.reset();
-  renderFeed();
+$("postForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!ME) { openAuth("login"); return; }
+  const fd = new FormData();
+  const title = $("postTitle").value.trim();
+  const notes = $("postNotes").value.trim();
+  fd.append("content", title ? `${title}\n\n${notes}` : notes);
+  if ($("postImage").files[0]) fd.append("media", $("postImage").files[0]);
+  const res = await api("/synapse", { method: "POST", body: fd });
+  if (res.status === 402) { toast("Membership required to post."); applyMembership(); return; }
+  if (res.status === 429) { toast("Monthly post quota reached — upgrade for unlimited."); return; }
+  if (!res.ok) { toast("Post failed."); return; }
+  $("postForm").reset();
+  toast("Posted to Mission Control.");
+  await loadFeed(); await loadMe();
 });
 
-renderFeed();
+// ---------- Rig Card (canvas render of /api/rigcard) ----------
+$("rigCardBtn").addEventListener("click", async () => {
+  if (!ME) { openAuth("login"); return; }
+  const res = await api("/rigcard");
+  if (!res.ok) { toast("Could not build your Rig Card."); return; }
+  const d = await res.json();
+  drawRigCard(d);
+});
+
+function drawRigCard(d) {
+  const cv = $("rigCardCanvas"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height;
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, "#091121"); g.addColorStop(0.6, "#151d3a"); g.addColorStop(1, "#090d18");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 140; i++) {
+    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.5 + 0.1})`;
+    ctx.beginPath(); ctx.arc(Math.random() * W, Math.random() * H, Math.random() * 2.4, 0, 7); ctx.fill();
+  }
+  ctx.fillStyle = "#7eb8da"; ctx.font = "800 46px Segoe UI, sans-serif";
+  ctx.fillText("URANUS OPTICALS", 70, 110);
+  ctx.fillStyle = "#a0d0f0"; ctx.font = "900 96px Segoe UI, sans-serif";
+  ctx.fillText("@" + d.handle, 70, 240);
+  ctx.fillStyle = "#e0558a"; ctx.font = "800 52px Segoe UI, sans-serif";
+  ctx.fillText((d.rank && d.rank.badge) || "Uranus Virgin", 70, 330);
+  ctx.fillStyle = "#d4dcee"; ctx.font = "700 40px Segoe UI, sans-serif";
+  ctx.fillText(d.membership + (d.rank ? `  ·  score ${d.rank.score}` : ""), 70, 410);
+
+  ctx.strokeStyle = "#1e2d52"; ctx.lineWidth = 2;
+  ctx.strokeRect(70, 470, W - 140, 320);
+  ctx.fillStyle = "#6b7da8"; ctx.font = "800 30px Segoe UI, sans-serif";
+  ctx.fillText("THE RIG", 100, 525);
+  ctx.fillStyle = "#d4dcee"; ctx.font = "600 36px Segoe UI, sans-serif";
+  if (d.rig) {
+    ctx.fillText(`Scope: ${d.rig.scope_len || "—"}`, 100, 590);
+    ctx.fillText(`Thread: ${d.rig.scope_thread || "—"}`, 100, 650);
+    ctx.fillText(`Backfocus: ${d.rig.scope_backfocus || "—"} mm`, 100, 710);
+    ctx.fillText(`Required: ${d.rig.required_backfocus || "—"}`, 100, 770);
+  } else {
+    ctx.fillStyle = "#6b7da8";
+    ctx.fillText("No rig probed yet — run a $5 Deep Probe quote.", 100, 620);
+  }
+  ctx.fillStyle = "#7eb8da"; ctx.font = "italic 700 40px Segoe UI, sans-serif";
+  wrapText(ctx, '"' + (d.verdict || "") + '"', 70, 900, W - 140, 52);
+  ctx.fillStyle = "#6b7da8"; ctx.font = "600 28px Segoe UI, sans-serif";
+  ctx.fillText("uranusopticals.space", 70, H - 60);
+
+  cv.style.display = "block";
+  const dl = $("rigCardDownload");
+  dl.style.display = "block";
+  dl.onclick = () => {
+    const a = document.createElement("a");
+    a.download = `uranus-rig-${d.handle}.png`; a.href = cv.toDataURL("image/png"); a.click();
+  };
+  toast("Rig Card ready — download and share it.");
+}
+
+function wrapText(ctx, text, x, y, maxW, lh) {
+  const words = text.split(" "); let line = "";
+  for (const w of words) {
+    if (ctx.measureText(line + w + " ").width > maxW && line) { ctx.fillText(line, x, y); line = w + " "; y += lh; }
+    else line += w + " ";
+  }
+  ctx.fillText(line, x, y);
+}
+
+// ---------- Boot ----------
+$("authModal").addEventListener("click", (e) => { if (e.target === $("authModal")) closeAuth(); });
+renderAuthBar();
+loadMe();
+loadFeed();
 </script>
 </body>
 </html>
