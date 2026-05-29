@@ -151,14 +151,14 @@ const cameras = {
   none:          { name: "None / Have my own",                         depth: 0,    thread: "N/A", weight: 0 },
   snapshot533:   { name: "Uranus Snapshot 533 (Cooled Deep Sensor)",   depth: 17.5, thread: "M42", weight: 0.42 },
   deepgaze571:   { name: "Uranus DeepGaze 571 (Direct Core)",          depth: 17.5, thread: "M42", weight: 0.68 },
-  omnivision455: { name: "Uranus Signature 533C (High Penetration)", depth: 17.5, thread: "M42", weight: 0.72 }
+  omnivision455: { name: "Uranus Omnivision 455 (High Penetration)", depth: 17.5, thread: "M42", weight: 0.72 }
 };
 
 const mounts = {
   none:       { name: "None / Have my own",                capacity: 999 },
   steadygaze: { name: "Uranus SteadyGaze GTi (Light duty)", capacity: 5  },
   am3:        { name: "Uranus OrbitLock AM3 (Medium load)", capacity: 8  },
-  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 15 }
+  hm17:       { name: "Uranus Harmonic 17 (Heavy handler)", capacity: 13 }
 };
 
 const accessoriesWeight = 1.2;
@@ -1015,7 +1015,7 @@ async function checkoutCart() {
 function checkoutHardware(id) {
   const names = {
     glancer:'Uranus Glancer 80ED', penetrator:'Uranus Penetrator 9000', panoramic:'Uranus Panoramic 90 APO',
-    snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Signature 533C',
+    snapshot533:'Uranus Snapshot 533', deepgaze571:'Uranus DeepGaze 571', omnivision455:'Uranus Omnivision 455',
     steadygaze:'Uranus SteadyGaze GTi', hm17:'Uranus Harmonic 17', am3:'Uranus OrbitLock AM3'
   };
   const price = dbPrices[id] || 0;
