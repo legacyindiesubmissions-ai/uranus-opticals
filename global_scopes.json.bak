@@ -1,0 +1,742 @@
+[
+  {
+    "id": "wo_redcat51",
+    "brand": "William Optics",
+    "model": "RedCat 51 WIFD",
+    "len": 256,
+    "weight": 1.65,
+    "thread": "M48",
+    "backfocus": 59.7,
+    "type": "Petzval"
+  },
+  {
+    "id": "wo_redcat61",
+    "brand": "William Optics",
+    "model": "RedCat 61 WIFD",
+    "len": 295,
+    "weight": 1.92,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Petzval"
+  },
+  {
+    "id": "wo_redcat71",
+    "brand": "William Optics",
+    "model": "RedCat 71",
+    "len": 330,
+    "weight": 2.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Petzval"
+  },
+  {
+    "id": "wo_redcat91",
+    "brand": "William Optics",
+    "model": "RedCat 91 WIFD",
+    "len": 420,
+    "weight": 3.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Petzval"
+  },
+  {
+    "id": "wo_zs61ii",
+    "brand": "William Optics",
+    "model": "ZenithStar 61 II",
+    "len": 285,
+    "weight": 1.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "wo_zs73iii",
+    "brand": "William Optics",
+    "model": "ZenithStar 73 III",
+    "len": 340,
+    "weight": 2.2,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "wo_zs81",
+    "brand": "William Optics",
+    "model": "ZenithStar 81",
+    "len": 455,
+    "weight": 3.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "wo_zs103",
+    "brand": "William Optics",
+    "model": "ZenithStar 103",
+    "len": 570,
+    "weight": 3.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "wo_zs126",
+    "brand": "William Optics",
+    "model": "ZenithStar 126",
+    "len": 760,
+    "weight": 5.7,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "wo_gt71",
+    "brand": "William Optics",
+    "model": "GT 71",
+    "len": 345,
+    "weight": 2.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_gt81iv",
+    "brand": "William Optics",
+    "model": "GT 81 IV",
+    "len": 385,
+    "weight": 3.2,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_gt102",
+    "brand": "William Optics",
+    "model": "GT 102",
+    "len": 575,
+    "weight": 4.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_flt91",
+    "brand": "William Optics",
+    "model": "FLT 91",
+    "len": 450,
+    "weight": 3.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_flt120",
+    "brand": "William Optics",
+    "model": "FLT 120",
+    "len": 620,
+    "weight": 5.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_flt132",
+    "brand": "William Optics",
+    "model": "FLT 132",
+    "len": 760,
+    "weight": 7.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "wo_pleiades68",
+    "brand": "William Optics",
+    "model": "Pleiades 68",
+    "len": 260,
+    "weight": 2.3,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Astrograph"
+  },
+  {
+    "id": "wo_pleiades111",
+    "brand": "William Optics",
+    "model": "Pleiades 111",
+    "len": 500,
+    "weight": 3.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Astrograph"
+  },
+  {
+    "id": "sw_evostar72ed",
+    "brand": "Sky-Watcher",
+    "model": "Evostar 72ED",
+    "len": 330,
+    "weight": 2.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sw_evostar80ed",
+    "brand": "Sky-Watcher",
+    "model": "Evostar 80ED",
+    "len": 490,
+    "weight": 2.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sw_evostar100ed",
+    "brand": "Sky-Watcher",
+    "model": "Evostar 100ED",
+    "len": 740,
+    "weight": 4.2,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sw_evostar120ed",
+    "brand": "Sky-Watcher",
+    "model": "Evostar 120ED",
+    "len": 740,
+    "weight": 5.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sw_esprit80ed",
+    "brand": "Sky-Watcher",
+    "model": "Esprit 80ED",
+    "len": 370,
+    "weight": 3.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sw_esprit100ed",
+    "brand": "Sky-Watcher",
+    "model": "Esprit 100ED",
+    "len": 470,
+    "weight": 4.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sw_esprit120ed",
+    "brand": "Sky-Watcher",
+    "model": "Esprit 120ED",
+    "len": 690,
+    "weight": 6.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sw_esprit150ed",
+    "brand": "Sky-Watcher",
+    "model": "Esprit 150ED",
+    "len": 890,
+    "weight": 11.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sw_quattro150p",
+    "brand": "Sky-Watcher",
+    "model": "Quattro 150P",
+    "len": 540,
+    "weight": 4.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Newtonian"
+  },
+  {
+    "id": "sw_quattro200p",
+    "brand": "Sky-Watcher",
+    "model": "Quattro 200P",
+    "len": 720,
+    "weight": 8.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Newtonian"
+  },
+  {
+    "id": "cel_edgehd8",
+    "brand": "Celestron",
+    "model": "EdgeHD 8",
+    "len": 432,
+    "weight": 6.35,
+    "thread": "SCT 3.29\"",
+    "backfocus": 133.4,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_edgehd925",
+    "brand": "Celestron",
+    "model": "EdgeHD 9.25",
+    "len": 559,
+    "weight": 9.5,
+    "thread": "SCT 3.29\"",
+    "backfocus": 146.1,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_edgehd11",
+    "brand": "Celestron",
+    "model": "EdgeHD 11",
+    "len": 610,
+    "weight": 12.7,
+    "thread": "SCT 3.29\"",
+    "backfocus": 146.1,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_edgehd14",
+    "brand": "Celestron",
+    "model": "EdgeHD 14",
+    "len": 787,
+    "weight": 20.4,
+    "thread": "SCT 3.29\"",
+    "backfocus": 146.1,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_rasa8",
+    "brand": "Celestron",
+    "model": "RASA 8",
+    "len": 628,
+    "weight": 7.7,
+    "thread": "M42",
+    "backfocus": 29,
+    "type": "Astrograph"
+  },
+  {
+    "id": "cel_rasa11",
+    "brand": "Celestron",
+    "model": "RASA 11",
+    "len": 838,
+    "weight": 19.5,
+    "thread": "M42",
+    "backfocus": 55,
+    "type": "Astrograph"
+  },
+  {
+    "id": "cel_rasa14",
+    "brand": "Celestron",
+    "model": "RASA 14",
+    "len": 1016,
+    "weight": 34.0,
+    "thread": "M42",
+    "backfocus": 55,
+    "type": "Astrograph"
+  },
+  {
+    "id": "cel_c8",
+    "brand": "Celestron",
+    "model": "C8",
+    "len": 432,
+    "weight": 5.7,
+    "thread": "SCT 2\"",
+    "backfocus": 127,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_c925",
+    "brand": "Celestron",
+    "model": "C9.25",
+    "len": 559,
+    "weight": 9.1,
+    "thread": "SCT 2\"",
+    "backfocus": 127,
+    "type": "SCT"
+  },
+  {
+    "id": "cel_c11",
+    "brand": "Celestron",
+    "model": "C11",
+    "len": 610,
+    "weight": 12.5,
+    "thread": "SCT 2\"",
+    "backfocus": 127,
+    "type": "SCT"
+  },
+  {
+    "id": "askar_fra300pro",
+    "brand": "Askar",
+    "model": "FRA300 Pro",
+    "len": 260,
+    "weight": 2.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "askar_fra400",
+    "brand": "Askar",
+    "model": "FRA400",
+    "len": 330,
+    "weight": 2.6,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "askar_fra500",
+    "brand": "Askar",
+    "model": "FRA500",
+    "len": 400,
+    "weight": 3.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "askar_fra600",
+    "brand": "Askar",
+    "model": "FRA600",
+    "len": 485,
+    "weight": 4.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "askar_103apo",
+    "brand": "Askar",
+    "model": "103APO",
+    "len": 565,
+    "weight": 4.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_120apo",
+    "brand": "Askar",
+    "model": "120APO",
+    "len": 680,
+    "weight": 5.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_140apo",
+    "brand": "Askar",
+    "model": "140APO",
+    "len": 790,
+    "weight": 7.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_185apo",
+    "brand": "Askar",
+    "model": "185APO",
+    "len": 1040,
+    "weight": 12.0,
+    "thread": "M68",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_61edphiii",
+    "brand": "Askar",
+    "model": "61EDPH III",
+    "len": 290,
+    "weight": 1.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_76edph",
+    "brand": "Askar",
+    "model": "76EDPH",
+    "len": 360,
+    "weight": 2.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "askar_sqa55",
+    "brand": "Askar",
+    "model": "SQA55",
+    "len": 230,
+    "weight": 1.6,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "askar_sqa85",
+    "brand": "Askar",
+    "model": "SQA85",
+    "len": 370,
+    "weight": 3.2,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Quintuplet"
+  },
+  {
+    "id": "tak_fsq85edx",
+    "brand": "Takahashi",
+    "model": "FSQ-85EDX",
+    "len": 545,
+    "weight": 3.3,
+    "thread": "M54",
+    "backfocus": 56.2,
+    "type": "Petzval"
+  },
+  {
+    "id": "tak_fsq106edx4",
+    "brand": "Takahashi",
+    "model": "FSQ-106EDX4",
+    "len": 685,
+    "weight": 7.7,
+    "thread": "M54",
+    "backfocus": 56.2,
+    "type": "Petzval"
+  },
+  {
+    "id": "tak_tsa120",
+    "brand": "Takahashi",
+    "model": "TSA-120",
+    "len": 870,
+    "weight": 6.7,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "tak_fc100dz",
+    "brand": "Takahashi",
+    "model": "FC-100DZ",
+    "len": 720,
+    "weight": 3.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "tak_epsilon130d",
+    "brand": "Takahashi",
+    "model": "Epsilon-130D",
+    "len": 503,
+    "weight": 5.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Newtonian"
+  },
+  {
+    "id": "tak_epsilon160ed",
+    "brand": "Takahashi",
+    "model": "Epsilon-160ED",
+    "len": 590,
+    "weight": 7.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Newtonian"
+  },
+  {
+    "id": "tak_epsilon180ed",
+    "brand": "Takahashi",
+    "model": "Epsilon-180ED",
+    "len": 590,
+    "weight": 10.5,
+    "thread": "M54",
+    "backfocus": 55,
+    "type": "Newtonian"
+  },
+  {
+    "id": "es_ed80",
+    "brand": "Explore Scientific",
+    "model": "ED80",
+    "len": 410,
+    "weight": 2.7,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "es_ed102fcd100",
+    "brand": "Explore Scientific",
+    "model": "ED102 FCD100",
+    "len": 660,
+    "weight": 4.3,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "es_ed127fcd100",
+    "brand": "Explore Scientific",
+    "model": "ED127 FCD100",
+    "len": 880,
+    "weight": 7.3,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "es_ed152",
+    "brand": "Explore Scientific",
+    "model": "ED152",
+    "len": 1080,
+    "weight": 10.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "tv_np101is",
+    "brand": "Tele Vue",
+    "model": "NP101is",
+    "len": 508,
+    "weight": 3.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Petzval"
+  },
+  {
+    "id": "tv_np127is",
+    "brand": "Tele Vue",
+    "model": "NP127is",
+    "len": 635,
+    "weight": 6.4,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Petzval"
+  },
+  {
+    "id": "tv_tv85",
+    "brand": "Tele Vue",
+    "model": "TV-85",
+    "len": 483,
+    "weight": 3.2,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "vixen_ed81s",
+    "brand": "Vixen",
+    "model": "ED81S",
+    "len": 500,
+    "weight": 2.7,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "vixen_ed103s",
+    "brand": "Vixen",
+    "model": "ED103S",
+    "len": 650,
+    "weight": 3.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "vixen_ed115s",
+    "brand": "Vixen",
+    "model": "ED115S",
+    "len": 730,
+    "weight": 4.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "vixen_sd81s",
+    "brand": "Vixen",
+    "model": "SD81S",
+    "len": 500,
+    "weight": 2.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "vixen_sd103s",
+    "brand": "Vixen",
+    "model": "SD103S",
+    "len": 650,
+    "weight": 4.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sv_svx080t",
+    "brand": "Stellarvue",
+    "model": "SVX080T",
+    "len": 406,
+    "weight": 2.9,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sv_svx102t",
+    "brand": "Stellarvue",
+    "model": "SVX102T",
+    "len": 584,
+    "weight": 4.5,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sv_svx127d",
+    "brand": "Stellarvue",
+    "model": "SVX127D",
+    "len": 762,
+    "weight": 7.3,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Doublet"
+  },
+  {
+    "id": "sv_svx130t",
+    "brand": "Stellarvue",
+    "model": "SVX130T",
+    "len": 700,
+    "weight": 7.7,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sv_svx140t",
+    "brand": "Stellarvue",
+    "model": "SVX140T",
+    "len": 787,
+    "weight": 10.0,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  },
+  {
+    "id": "sv_svx152t",
+    "brand": "Stellarvue",
+    "model": "SVX152T",
+    "len": 1003,
+    "weight": 11.8,
+    "thread": "M48",
+    "backfocus": 55,
+    "type": "Triplet"
+  }
+]
